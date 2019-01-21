@@ -1,0 +1,33 @@
+Klondike, Classic
+
+(Four-Suit Standard)
+(Filter (Alternating (Reverse Standard)) Any)
+
+(VLayout 
+	(HLayout
+		(HLayout
+			(Stock Start)
+			(HStack (Add 
+				Dest 
+				Input 
+				Discard
+				(Overflow 3) 
+			))
+		)
+		(Apply (Add Auto-Grab Goal Output) (HLayout
+			(Slot (Filter (Clubs Standard)))
+			(Slot (Filter (Hearts Standard)))
+			(Slot (Filter (Spades Standard)))
+			(Slot (Filter (Diamonds Standard)))
+		))
+	)
+	(Apply (Filter (Alternating (Reverse Standard))) (HLayout
+		(VStack (Start 0 1))
+		(VStack (Start 1 1))
+		(VStack (Start 2 1))
+		(VStack (Start 3 1))
+		(VStack (Start 4 1))
+		(VStack (Start 5 1))
+		(VStack (Start 6 1))
+	))
+)

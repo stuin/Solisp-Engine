@@ -1,0 +1,45 @@
+Pyramid, Classic
+
+(Four-Suit (Remove Standard King))
+(Max 1)
+
+(VLayout
+	(Apply 
+		(Filter (Any 
+			(Add Queen Ace)		(Add Ace Queen)
+			(Add Jack Two)		(Add Two Jack)
+			(Add Ten Three) 	(Add Three Ten)
+			(Add Nine Four) 	(Add Four Nine)
+			(Add Eight Five)	(Add Five Eight)
+			(Add Seven Six)		(Add Six Seven)
+		))
+		(HLayout 
+			(PStack (Start 0 28))
+			(Hidden (Add 
+				Goal
+				Auto-Grab
+				Boolean
+				(Overflow 0 1)
+			))
+		)
+	)
+	(HLayout
+		(Stock (Start))
+		(Slot (Add
+			Dest
+			Discard
+			Input
+			(Overflow 1 2)
+		))
+		(Slot (Add
+			Discard
+			Input
+			(ID 2)
+			(Overflow 1)
+		))
+	)
+	(Hidden (Add
+		Goal
+		(ID 1)
+	))
+)

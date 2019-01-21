@@ -1,0 +1,26 @@
+Streets and Alleys, Normal
+
+(Four-Suit Standard)
+(Max 1)
+
+(HLayout
+	(VLayout
+		(Clone 4 (HStack (Add
+			Mirror
+			(Start 0 7)
+			(Filter (Reverse Standard) Any)
+		)))
+	)
+	(Apply (Add Auto-Grab Goal Output) (VLayout
+		(Slot (Filter (Clubs Standard)))
+		(Slot (Filter (Hearts Standard)))
+		(Slot (Filter (Spades Standard)))
+		(Slot (Filter (Diamonds Standard)))
+	))
+	(VLayout
+		(Clone 4 (HStack (Add
+			(Start 0 6)
+			(Filter (Reverse Standard) Any)
+		)))
+	)
+)
