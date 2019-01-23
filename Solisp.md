@@ -133,8 +133,8 @@ Returns Feature
 	Any cards past Num will be hidden and unuseable
 * Filter Pattern:
 	Can only store Deck in these orders/arrangements
-* Filter Pattern Deck:
-	Filter but can start with these cards
+* Filter-Open Pattern Deck:
+	Filter but can start with any card
 * Start Num Num:
 	Delt Num hidden and Num revealed cards at the beginning
 

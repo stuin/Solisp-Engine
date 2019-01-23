@@ -8,7 +8,7 @@ Streets and Alleys, Normal
 		(Clone 4 (HStack (Add
 			Mirror
 			(Start 0 7)
-			(Filter (Reverse Standard) Any)
+			(Filter-Open (Reverse Standard))
 		)))
 	)
 	(Apply (Add Auto-Grab Goal Output) (VLayout
@@ -20,7 +20,7 @@ Streets and Alleys, Normal
 	(VLayout
 		(Clone 4 (HStack (Add
 			(Start 0 6)
-			(Filter (Reverse Standard) Any)
+			(Filter-Open (Reverse Standard))
 		)))
 	)
 )

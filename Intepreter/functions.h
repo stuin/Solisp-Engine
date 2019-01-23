@@ -1,8 +1,8 @@
 #include "structures.h"
 
 /*
- *	Created by Stuart Irwin on 7/18/2019.
- * 	Function lists for the solisp system.
+ * Created by Stuart Irwin on 18/1/2019.
+ * Function lists for the solisp system.
  */
 
 //----deck.c----
@@ -30,12 +30,18 @@ Pattern *makePattern(Deck *list);
 Pattern *addPattern(Pattern *first, Pattern *second);
 Pattern *alternatePattern(Deck *list);
 Pattern *suitPattern(Deck *list);
+int attachPattern(Pattern *source);
 
 //----feature.c----
 
 //Feature making functions
 Feature *makeFeature(char type[15], int value1, int value2);
 Feature *addFeature(Feature *first, Feature *second);
+Feature *cloneFeature(Feature *source);
 
 //----layout.c----
 
+//Layout functions
+Layout *makeLayout(char type, Feature *feature);
+Layout *addLayout(Layout *first, Layout *second);
+Layout *inLayout(Layout *parent, Layout *child);

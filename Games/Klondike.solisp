@@ -1,7 +1,7 @@
 Klondike, Classic
 
 (Four-Suit Standard)
-(Filter (Alternating (Reverse Standard)) Any)
+(Filter-Open (Alternating (Reverse Standard)))
 
 (VLayout 
 	(HLayout

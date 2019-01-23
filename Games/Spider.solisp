@@ -4,7 +4,7 @@ Spider, Classic
 	(Spades Standard) 
 	(Hearts Standard)
 ))
-(Filter (Same-Suit (Reverse Standard)) Any)
+(Filter-Open (Same-Suit (Reverse Standard)))
 
 (VLayout
 	(HLayout
@@ -25,7 +25,7 @@ Spider, Classic
 		)
 	)
 	(Apply 
-		(Add Dest (ID 1) (Filter (Reverse Standard) Any))
+		(Add Dest (ID 1) (Filter-Open (Reverse Standard)))
 		(HLayout
 			(Clone 4 (VStack (Start 5 1)))
 			(Clone 6 (VStack (Start 4 1)))

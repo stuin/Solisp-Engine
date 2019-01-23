@@ -1,14 +1,15 @@
 #include "functions.h"
 
 /*
- * Created by Stuart Irwin on 7/1/2019.
+ * Created by Stuart Irwin on 18/1/2019.
  * Deck building functions.
  */
 
 //Add single card to deck
-Deck *addCard(Deck **list, int value) {
+Deck *addCard(Deck **list, char value) {
 	Deck *card = (Deck *) malloc(sizeof Deck)
 
+	//Build plain number card
 	if(card != NULL) {
 		card->face = value;
 		card->suit = 'N';
@@ -24,6 +25,7 @@ Deck *addCard(Deck **list, int value) {
 Deck *cloneCard(Deck *source, Deck **list) {
 	Deck *card = (Deck *) malloc(sizeof Deck)
 
+	//Copy important values
 	if(card != NULL) {
 		card->face = source->face;
 		card->suit = source->suit;
@@ -38,9 +40,12 @@ Deck *cloneCard(Deck *source, Deck **list) {
 //Check if card is contained by list
 int containsCard(Deck *list, Deck *card) {
 	while(list != NULL) {
+
+		//Check card contents
 		if(list->face == card->face && matchSuit(list->suit, card->suit)) {
 			return 1;
 		}
+
 		list = list->next;
 	}
 	return 0;
@@ -49,6 +54,8 @@ int containsCard(Deck *list, Deck *card) {
 //Append list of cards together
 Deck *addDeck(Deck *first, Deck *second) {
 	Deck **current = &first;
+
+	//Find end of list
 	while(*current != NULL) {
 		current = &(current->next);
 	}
@@ -61,6 +68,7 @@ Deck *addDeck(Deck *first, Deck *second) {
 Deck *cloneDeck(Deck *source) {
 	Deck *list = NULL;
 
+	//Loop through card list
 	while(source != NULL) {
 		cloneCard(source, list);
 		source = source->next;
@@ -71,6 +79,7 @@ Deck *cloneDeck(Deck *source) {
 Deck *buildDeck(int start, int end) {
 	Deck *card = NULL;
 
+	//Add card for each number
 	for(int i = start; i <= end; i++) {
 		addDeck(&card, i);
 	}
@@ -85,7 +94,12 @@ Deck *removeDeck(Deck **list, Deck *cards) {
 	}
 
 	if(containsDeck(cards, *list)) {
+		//Remove card
+		Deck *remove = list;
 		*list = *list->next;
+		free(remove);
+
+		//Recursively continue
 		removeDeck(list, cards);
 	} else {
 		removeDeck(&(list->next, cards));
@@ -106,11 +120,13 @@ Deck *setSuit(Deck *list, char suit) {
 
 //Duplicate Deck for each suit
 Deck *fourSuit(Deck *list) {
+	//Create deck copies
 	suit(list, 'D');
 	Deck *hearts = suit(cloneDeck(list), 'H');
 	Deck *spades = suit(cloneDeck(list), 'S');
 	Deck *clubs = suit(cloneDeck(list), 'C');
 
+	//Attach decks together
 	appendDeck(list, appendDeck(hearts, appendDeck(spades, clubs)));
 	return list;
 }
