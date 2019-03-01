@@ -99,9 +99,9 @@ Returns Feature
 
 * Null:
 	Empty Feature
-* Auto-Grab:
+* Auto_Grab:
 	Can take cards from other layouts
-* Auto-Hide:
+* Auto_Hide:
 	Will hide cards after one turn
 * Boolean:
 	Will only accept a complete pattern
@@ -130,10 +130,10 @@ Returns Feature
 * Max Num:
 	Will not store more than Num cards
 * Overflow Num:
-	Any cards past Num will be hidden and unuseable
+	Any cards past Num will be hidden
 * Filter Pattern:
 	Can only store Deck in these orders/arrangements
-* Filter-Open Pattern Deck:
+* Filter_Open Pattern Deck:
 	Filter but can start with any card
 * Start Num Num:
 	Delt Num hidden and Num revealed cards at the beginning
@@ -143,9 +143,9 @@ Returns Feature
 
 * ID Num:
 	Designates Slot Num
-* Auto-Fill Num:
+* Auto_Fill Num:
 	Will take from Slot Num to never be empty
-* If-Empty Num:
-	Locks slot contents if any Slot Num is empty
+* If_Empty_Lock Num:
+	Locks Slot Num contents if self is empty
 * Overflow Num Num:
 	Any cards past Num will sent to slot Num

@@ -19,13 +19,13 @@ Spider, Classic
 		)
 		(HLayout
 			(Clone 5 (Stock (Add
-				(If-Empty 1)
+				(ID 1)
 				(Start 10 0)
 			)))
 		)
 	)
 	(Apply 
-		(Add Dest (ID 1) (Filter-Open (Reverse Standard)))
+		(Add Dest (If-Empty-Lock 1) (Filter-Open (Reverse Standard)))
 		(HLayout
 			(Clone 4 (VStack (Start 5 1)))
 			(Clone 6 (VStack (Start 4 1)))
