@@ -6,22 +6,17 @@ Klondike, Classic
 (VLayout 
 	(HLayout
 		(HLayout
-			(Stock Start)
-			(HStack (Add 
-				Dest 
-				Input 
-				Discard
-				(Overflow 3) 
-			))
+			(Stock Start-Extra)
+			(HStack INPUT)
 		)
-		(Apply (Add Auto-Grab Goal Output) (HLayout
+		(Apply (+ GOAL OUTPUT) (HLayout
 			(Slot (Filter (Clubs Standard)))
 			(Slot (Filter (Hearts Standard)))
 			(Slot (Filter (Spades Standard)))
 			(Slot (Filter (Diamonds Standard)))
 		))
 	)
-	(Apply (Filter (Alternating (Reverse Standard))) (HLayout
+	(Apply (+ T1 (Filter (Alternating (Reverse Standard)))) (HLayout
 		(VStack (Start 0 1))
 		(VStack (Start 1 1))
 		(VStack (Start 2 1))
@@ -31,3 +26,22 @@ Klondike, Classic
 		(VStack (Start 6 1))
 	))
 )
+
+(Steps
+	(If (= changed 1)
+		(Steps
+			(Move-All 2 3)
+			(Flip 1 2)
+			(Flip 1 2)
+			(Flip 1 2)
+
+			(If 1 (Count 0)
+				(Flip-All 3 1)
+			)
+		)
+	)
+	(ForEach GOAL g
+		Soft-Move changed g
+	)
+)
+

@@ -5,22 +5,28 @@ Streets and Alleys, Normal
 
 (HLayout
 	(VLayout
-		(Clone 4 (HStack (Add
-			Mirror
+		(Clone 4 (HStack (+
+			MIRRORED
 			(Start 0 7)
 			(Filter-Open (Reverse Standard))
 		)))
 	)
-	(Apply (Add Auto-Grab Goal Output) (VLayout
+	(Apply (+ GOAL OUTPUT) (VLayout
 		(Slot (Filter (Clubs Standard)))
 		(Slot (Filter (Hearts Standard)))
 		(Slot (Filter (Spades Standard)))
 		(Slot (Filter (Diamonds Standard)))
 	))
 	(VLayout
-		(Clone 4 (HStack (Add
+		(Clone 4 (HStack (+
 			(Start 0 6)
 			(Filter-Open (Reverse Standard))
 		)))
+	)
+)
+
+(Steps
+	(ForEach GOAL g
+		Soft-Move changed g
 	)
 )
