@@ -28,7 +28,7 @@ Klondike, Classic
 )
 
 (Steps
-	(If (= changed 1)
+	(If (= from 1)
 		(Steps
 			(Move-All 2 3)
 			(Flip 1 2)
@@ -40,8 +40,13 @@ Klondike, Classic
 			)
 		)
 	)
-	(ForEach GOAL g
-		Soft-Move changed g
+	(If to GOAL
+		(For-Each T1 t
+			Soft-Move t to
+		)
+	)
+	(For-Each GOAL g
+		Soft-Move from g
 	)
 )
 

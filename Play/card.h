@@ -16,6 +16,12 @@ private:
 	Card *next;
 
 public:
+	//Check what side is up
+	bool isHidden() {
+		return hidden;
+	}
+
+	//Check if normal card matches this filter card
 	bool matches(cardData other) {
 		if(data.value != other.value && data.value != 'N')
 			return false;
@@ -32,5 +38,14 @@ public:
 					return true;
 		}
 		
+	}
+
+	//Flip card
+	void flip() {
+		hidden = !hidden;
+	}
+
+	void setNext(Card *next) {
+		this->next = next;
 	}
 }

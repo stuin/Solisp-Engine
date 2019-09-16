@@ -26,7 +26,12 @@ Streets and Alleys, Normal
 )
 
 (Steps
-	(ForEach GOAL g
-		Soft-Move changed g
+	(If to GOAL
+		(For-Each T1 t
+			Soft-Move t to
+		)
+	)
+	(For-Each GOAL g
+		Soft-Move from g
 	)
 )
