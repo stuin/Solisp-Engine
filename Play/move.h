@@ -1,3 +1,5 @@
+#include <bitset>
+
 /*
  * Created by Stuart Irwin on 4/9/2019.
  * History of solitare game

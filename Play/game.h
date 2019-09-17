@@ -1,7 +1,8 @@
 #include <vector>
 #include <queue>
 
-#include "structures.h"
+#include "layout.h"
+#include "move.h"
 
 /*
  * Created by Stuart Irwin on 29/6/2019.
@@ -11,20 +12,20 @@
 class Game {
 private:
 	//Current game state
-	Slot slot[];
+	Stack stack[];
 	Move *current;
 	bool ended;
 
 	//Game definition
 	Feature functions;
-	char SLOTCOUNT;
+	char STACKCOUNT;
 
 	//Current move
 	char from = -1;
 	char to = -1;
 	int count = 0;
 
-	//Apply current moves to slot array
+	//Apply current moves to stack array
 	void apply() {
 		//Recall invalid moves
 		while(!current->getTag(2)) {
@@ -53,9 +54,9 @@ private:
 		}
 
 		//Get card stacks
-		Card *destination = slot[to].getCard();
-		Card *source = slot[from].getCard();
-		slot[to].setCard(source);
+		Card *destination = stack[to].getCard();
+		Card *source = stack[from].getCard();
+		stack[to].setCard(source);
 
 		//Find bottom moved card
 		while(count > 1) {
@@ -70,7 +71,7 @@ private:
 			source->flip();
 
 		//Set final cards
-		slot[from].setCard(source->getNext());
+		stack[from].setCard(source->getNext());
 		source.setNext(destination);
 	}
 
@@ -80,28 +81,28 @@ private:
 	}
 
 public:
-	//Pick up cards from slot
+	//Pick up cards from stack
 	bool grab(int num, char from) {
 		this->to = -1;
 		this->from = -1;
 		this->count = -1;
 
-		if(from > SLOTCOUNT)
+		if(from > STACKCOUNT)
 			return false;
 
 		//If button and top hidden
-		if(slot[from].getTag(4) && getCard()->isHidden()) {
+		if(stack[from].getTag(4) && getCard()->isHidden()) {
 			this->from = from;
 			return true;
 		}
 
-		//If slot is output
-		if(slot[from].getTag(2) || (slot[from].getTag(3) && num > 1) || num < 1)
+		//If stack is output
+		if(stack[from].getTag(2) || (stack[from].getTag(3) && num > 1) || num < 1)
 			return false;
 
 		//Check for null or hidden card in stack
 		int i = 0;
-		Card *card = slot[from].getCard();
+		Card *card = stack[from].getCard();
 		while(i < count) {
 			if(card == NULL || card->isHidden())
 				return false;
@@ -110,7 +111,7 @@ public:
 		}
 
 		//Set picked cards
-		if(slot[0].matches(num, slot[from].getCard())) {
+		if(stack[0].matches(num, stack[from].getCard())) {
 			this->from = from;
 			this->count = num;
 			return true;
@@ -122,13 +123,13 @@ public:
 	//Place cards from selected hand
 	bool place(char to) {
 		//Check if cards are in hand
-		if(this->from == -1 || this->count == -1 || this->count != -1 || to > SLOTCOUNT) {
+		if(this->from == -1 || this->count == -1 || this->count != -1 || to > STACKCOUNT) {
 			cancel();
 			return false;
 		}
 
 		//Check for proper move
-		if(slot[to].matches(count, slot[from].getCard())) {
+		if(stack[to].matches(count, stack[from].getCard())) {
 			current->addNext(new Move(count, from, to, true, false, current));
 
 			//Set hand

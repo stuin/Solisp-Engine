@@ -1,3 +1,7 @@
+#include <bitset>
+
+#include "filter.h"
+
 /*
  * Created by Stuart Irwin on 6/9/2019.
  * Individual slot for cards
@@ -5,7 +9,7 @@
 
 #define SLOTTAGCOUNT 5
 
-class Slot {
+class Stack {
 private:
 	Card *stack;
 	Filter *filter = NULL;

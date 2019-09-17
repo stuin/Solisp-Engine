@@ -1,3 +1,5 @@
+#include "card.h"
+
 /*
  * Created by Stuart Irwin on 9/9/2019.
  * Filter on card type
@@ -15,11 +17,15 @@ public:
 		this->open = open;
 	}
 
-	void setNext(Filter *next) {
+	void operator+=(const Filter *next) {
 		if(this->next == NULL) 
 			this->next = next;
 		else
-			this->next->setNext(next);
+			*(this->next) += next;
+	}
+
+	void operator+=(const Card *card) {
+		*this += new Filter(card, open);
 	}
 
 	//Check if new cards can be placed on old card in filter

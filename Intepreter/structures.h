@@ -121,31 +121,4 @@ public:
 	Feature(FeatureNode& node);
 };
 
-//Layout slot for cards only
-class SlotNode : ListNode {
-public:
-	SlotType type;
-	FeatureNode *features;
 
-	//SlotNode
-	SlotNode(SlotType& type, Feature& feature);
-};
-
-//LayoutNode for slot arrangement
-class LayoutNode : ListNode {
-public:
-	LayoutType type;
-	Layout *inside;
-
-	//LayoutNode functions
-	LayoutNode(LayoutType& type);
-	void operator+=(const Layout& child);
-};
-
-class Layout : List {
-public:
-	//Layout functions
-	Layout(SlotType& type, Feature& feature);
-	Layout(LayoutType& type);
-	Layout(LayoutType& type, Layout& child);
-};

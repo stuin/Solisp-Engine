@@ -45,7 +45,10 @@ public:
 		hidden = !hidden;
 	}
 
-	void setNext(Card *next) {
-		this->next = next;
+	void operator+=(const Card *next) {
+		if(this->next == NULL)
+			this->next = next;
+		else
+			*(this->next) += next;
 	}
 }
