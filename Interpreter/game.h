@@ -1,6 +1,8 @@
 #include <vector>
 #include <queue>
 
+//#include "core/reference.h"
+
 #include "layout.h"
 #include "move.h"
 
@@ -9,16 +11,17 @@
  * Game rules and management.
  */
 
+#define MAXSTACKCOUNT 20
+
 class Game {
 private:
-	//Current game state
-	Stack stack[];
-	Move *current;
-	bool ended;
-
 	//Game definition
-	Feature functions;
-	char STACKCOUNT;
+	//Feature functions;
+	char STACKCOUNT = 10;
+
+	//Current game state
+	Stack stack[MAXSTACKCOUNT];
+	Move *current;
 
 	//Current move
 	char from = -1;
@@ -72,7 +75,7 @@ private:
 
 		//Set final cards
 		stack[from].setCard(source->getNext());
-		source.setNext(destination);
+		source->setNext(destination);
 	}
 
 	//Run functions and check win
@@ -81,6 +84,7 @@ private:
 	}
 
 public:
+
 	//Pick up cards from stack
 	bool grab(int num, char from) {
 		this->to = -1;
@@ -91,7 +95,7 @@ public:
 			return false;
 
 		//If button and top hidden
-		if(stack[from].getTag(4) && getCard()->isHidden()) {
+		if(stack[from].getTag(4) && stack[from].getCard()->isHidden()) {
 			this->from = from;
 			return true;
 		}
@@ -154,6 +158,10 @@ public:
 	void undo();
 	void redo();
 
-	//Check game state
-	bool ended();
-}
+protected:
+	/*static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &Game::grab);
+		ClassDB::bind_method(D_METHOD("place", "to"), &Game::place);
+		ClassDB::bind_method(D_METHOD("cancel"), &Game::cencel);
+	}*/
+};

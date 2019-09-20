@@ -27,7 +27,7 @@ public:
 	}
 
 	//Add next node
-	void operator+=(const Layout *next) {
+	void operator+=(Layout *next) {
 		if(this->next == NULL)
 			this->next = next;
 		else
@@ -35,15 +35,17 @@ public:
 	}
 };
 
-class Slot extends Layout {
+class Slot : public Layout {
 private:
 	bool offScreen = false;
-	Stack stack;
-	FeatureNode *features;
+	Stack *stack;
 
 public:
-	Slot(bool horizontal, Feature& feature) : Layout(horizontal) {
-		this->type = type;
-		this->feature = &feature;
+	Slot(bool spread, bool goal=false, bool horizontal=false) : Layout(horizontal) {
+		bitset<STACKTAGCOUNT> tags;
+		tags[0] = goal;
+		tags[3] = spread;
+
+		stack = new Stack(tags);
 	}
 };

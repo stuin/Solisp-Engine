@@ -13,18 +13,18 @@ private:
 
 public:
 	Filter(Card *card, bool open=false) {
-		this->card = card;
+		this->content = card;
 		this->open = open;
 	}
 
-	void operator+=(const Filter *next) {
+	void operator+=(Filter *next) {
 		if(this->next == NULL) 
 			this->next = next;
 		else
 			*(this->next) += next;
 	}
 
-	void operator+=(const Card *card) {
+	void operator+=(Card *card) {
 		*this += new Filter(card, open);
 	}
 
@@ -34,19 +34,19 @@ public:
 		Card *filter = content;
 
 		//Check if top card matches any card in filter
-		while(filter != NULL && !filter->matches(current)) {
-			filter = filter->next;
+		while(filter != NULL && !filter->matches(current->getData())) {
+			filter = filter->getNext();
 		}
 
 		//Move through new cards alongside filter
-		while(current != NULL && filter != NULL && filter->matches(current)) {
-			current = current->next;
-			filter = filter->next;
+		while(current != NULL && filter != NULL && filter->matches(current->getData())) {
+			current = current->getNext();
+			filter = filter->getNext();
 			count--;
 
 			//Mark end of new stack
 			if(count == 0)
-				current == NULL;
+				current = NULL;
 		}
 
 		//If old stack is empty, check if end of filter
@@ -54,7 +54,7 @@ public:
 			return true;
 
 		//Check if new card lines up with old card
-		if(current == NULL && filter != NULL && filter->matches(oldCard))
+		if(current == NULL && filter != NULL && filter->matches(oldCard->getData()))
 			return true;
 
 		//If match not found, move to next filter
@@ -63,4 +63,4 @@ public:
 		else 
 			return false;
 	}
-}
+};

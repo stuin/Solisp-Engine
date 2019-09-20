@@ -6,7 +6,7 @@
 struct cardData {
 	char value = 'N';
 	char suit = 'N';
-}
+};
 
 class Card {
 private:
@@ -16,6 +16,14 @@ private:
 	Card *next;
 
 public:
+	cardData getData() {
+		return data;
+	}
+
+	Card *getNext() {
+		return next;
+	}
+
 	//Check what side is up
 	bool isHidden() {
 		return hidden;
@@ -45,10 +53,14 @@ public:
 		hidden = !hidden;
 	}
 
-	void operator+=(const Card *next) {
+	void setNext(Card *next) {
+		this->next = next;
+	}
+
+	void operator+=(Card *next) {
 		if(this->next == NULL)
 			this->next = next;
 		else
 			*(this->next) += next;
 	}
-}
+};

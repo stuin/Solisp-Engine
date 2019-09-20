@@ -7,17 +7,23 @@
  * Individual slot for cards
  */
 
-#define SLOTTAGCOUNT 5
+using std::bitset;
+
+#define STACKTAGCOUNT 6
 
 class Stack {
 private:
 	Card *stack;
 	Filter *filter = NULL;
-	bitset<SLOTTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON
+	bitset<STACKTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON
 	int count;
 	int max;
 
 public:
+	Stack(bitset<STACKTAGCOUNT> tags) {
+		this->tags = tags;
+	}
+
 	//Check if new cards can be placed on stack
 	bool matches(int count, Card *newCard) {
 		//Check if INPUT or if inserting multiple into single stack
@@ -33,7 +39,7 @@ public:
 
 	//Get tag value
 	bool getTag(int tag) {
-		if(tag > 0 && tag < SLOTTAGCOUNT)
+		if(tag > 0 && tag < STACKTAGCOUNT)
 			return tags[tag];
 		return false;
 	}
@@ -52,4 +58,4 @@ public:
 	void setCard(Card *card) {
 		stack = card;
 	}
-}
+};
