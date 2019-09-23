@@ -1,3 +1,7 @@
+namespace Solisp {
+	class Move;
+}
+
 #include <bitset>
 
 /*
@@ -7,7 +11,7 @@
 
 #define MOVETAGCOUNT 4
 
-class Move {
+class Solisp::Move {
 private:
 	//Card movements
 	int count;
@@ -91,6 +95,4 @@ public:
 	Move *getLast() {
 		return last;
 	}
-
-	
 };

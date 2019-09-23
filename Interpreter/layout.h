@@ -1,3 +1,8 @@
+namespace Solisp {
+	class Layout;
+	class Slot;
+}
+
 #include "stack.h"
 
 /*
@@ -6,7 +11,7 @@
  */
 
 //Layout for slot arrangement
-class Layout {
+class Solisp::Layout {
 private:
 	bool horizontal;
 	Layout *inside = NULL;
@@ -35,7 +40,7 @@ public:
 	}
 };
 
-class Slot : public Layout {
+class Solisp::Slot : public Solisp::Layout {
 private:
 	bool offScreen = false;
 	Stack *stack;

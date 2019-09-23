@@ -1,3 +1,7 @@
+namespace Solisp {
+	class Stack;
+}
+
 #include <bitset>
 
 #include "filter.h"
@@ -11,7 +15,7 @@ using std::bitset;
 
 #define STACKTAGCOUNT 6
 
-class Stack {
+class Solisp::Stack {
 private:
 	Card *stack;
 	Filter *filter = NULL;

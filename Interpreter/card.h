@@ -1,3 +1,7 @@
+namespace Solisp {
+	class Card;
+}
+
 /*
  * Created by Stuart Irwin on 9/9/2019.
  * Individual card data
@@ -8,7 +12,7 @@ struct cardData {
 	char suit = 'N';
 };
 
-class Card {
+class Solisp::Card {
 private:
 	cardData data;
 	bool hidden;

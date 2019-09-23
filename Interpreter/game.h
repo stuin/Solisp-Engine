@@ -1,7 +1,9 @@
+namespace Solisp {
+	class Game;
+}
+
 #include <vector>
 #include <queue>
-
-//#include "core/reference.h"
 
 #include "layout.h"
 #include "move.h"
@@ -13,7 +15,7 @@
 
 #define MAXSTACKCOUNT 20
 
-class Game {
+class Solisp::Game {
 private:
 	//Game definition
 	//Feature functions;
@@ -157,11 +159,4 @@ public:
 
 	void undo();
 	void redo();
-
-protected:
-	/*static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &Game::grab);
-		ClassDB::bind_method(D_METHOD("place", "to"), &Game::place);
-		ClassDB::bind_method(D_METHOD("cancel"), &Game::cencel);
-	}*/
 };

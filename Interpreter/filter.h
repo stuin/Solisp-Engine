@@ -1,3 +1,7 @@
+namespace Solisp {
+	class Filter;
+}
+
 #include "card.h"
 
 /*
@@ -5,7 +9,7 @@
  * Filter on card type
  */
 
-class Filter {
+class Solisp::Filter {
 private:
 	Card *content;
 	Filter *next = NULL;
