@@ -7,8 +7,8 @@
  * Godot interface for Interpreter Game
  */
 
-class Game : public Reference {
-	GDCLASS(Game, Reference);
+class GameData : public Reference {
+	GDCLASS(GameData, Reference);
 
 private:
 	Solisp::Game game;
@@ -28,8 +28,8 @@ public:
 
 protected:
 	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &Game::grab);
-		ClassDB::bind_method(D_METHOD("place", "to"), &Game::place);
-		ClassDB::bind_method(D_METHOD("cancel"), &Game::cancel);
+		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &GameData::grab);
+		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
+		ClassDB::bind_method(D_METHOD("cancel"), &GameData::cancel);
 	}
 }

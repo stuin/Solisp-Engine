@@ -1,7 +1,8 @@
 #include "register_types.h"
 #include "core/class_db.h"
 
-#include "game.h"
+#include "gamedata.h"
+#include "carddata.h"
 
 /*
  * Created by Stuart Irwin on 9/20/2019.
@@ -9,7 +10,8 @@
  */
 
 void register_summator_types() {
-    ClassDB::register_class<Game>();
+    ClassDB::register_class<GameData>();
+    ClassDB::register_class<CardData>();
 }
 
 void unregister_summator_types() {
