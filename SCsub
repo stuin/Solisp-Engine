@@ -1,16 +1,16 @@
 Import('env')
 
 sources = [
-    "godot.cpp"
+    "register_types.cpp"
 ]
 
 module_env = env.Clone()
 module_env.Append(CCFLAGS=['-O2'])
 module_env.Append(CXXFLAGS=['-std=c++11'])
 
-module_env.Append(CPPPATH=["../Interpreter"])
+module_env.Append(CPPPATH=["./Interpreter","./Godot"])
 
-if ARGUMENTS.get('summator_shared', 'no') == 'yes':
+if ARGUMENTS.get('solisp_shared', 'no') == 'yes':
     # Shared lib compilation
     module_env.Append(CCFLAGS=['-fPIC'])
     module_env['LIBS'] = []

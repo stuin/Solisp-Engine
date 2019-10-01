@@ -1,5 +1,6 @@
 namespace Solisp {
 	class Card;
+	struct cardData;
 }
 
 /*
@@ -7,7 +8,7 @@ namespace Solisp {
  * Individual card data
  */
 
-struct cardData {
+struct Solisp::cardData {
 	char value = 'N';
 	char suit = 'N';
 };
@@ -20,6 +21,10 @@ private:
 	Card *next;
 
 public:
+	Card(cardData data) {
+		this->data = data;
+	}
+
 	cardData getData() {
 		return data;
 	}
@@ -49,7 +54,7 @@ public:
 				if(other.suit == 'C' || other.suit == 'S')
 					return true;
 		}
-		
+		return false;
 	}
 
 	//Flip card

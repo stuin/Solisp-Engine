@@ -26,8 +26,8 @@ private:
 	Move *current;
 
 	//Current move
-	char from = -1;
-	char to = -1;
+	int from = -1;
+	int to = -1;
 	int count = 0;
 
 	//Apply current moves to stack array
@@ -47,8 +47,8 @@ private:
 
 	//Apply single card move
 	void apply(Move *move, bool reverse) {
-		char from = move->getFrom();
-		char to = move->getTo();
+		int from = move->getFrom();
+		int to = move->getTo();
 		int count = move->getCount();
 		bool flip = move->getTag(1);
 
@@ -87,8 +87,12 @@ private:
 
 public:
 
+	Game() {
+		
+	}
+
 	//Pick up cards from stack
-	bool grab(int num, char from) {
+	bool grab(int num, int from) {
 		this->to = -1;
 		this->from = -1;
 		this->count = -1;
@@ -127,7 +131,7 @@ public:
 	}
 
 	//Place cards from selected hand
-	bool place(char to) {
+	bool place(int to) {
 		//Check if cards are in hand
 		if(this->from == -1 || this->count == -1 || this->count != -1 || to > STACKCOUNT) {
 			cancel();

@@ -51,6 +51,6 @@ public:
 		tags[0] = goal;
 		tags[3] = spread;
 
-		stack = new Stack(tags);
+		stack = new Stack();
 	}
 };

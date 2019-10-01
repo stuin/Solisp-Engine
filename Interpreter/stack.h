@@ -24,7 +24,9 @@ private:
 	int max;
 
 public:
-	Stack(bitset<STACKTAGCOUNT> tags) {
+	Stack() {}
+
+	void setTags(bitset<STACKTAGCOUNT> tags) {
 		this->tags = tags;
 	}
 

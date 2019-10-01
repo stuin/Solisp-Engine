@@ -1,7 +1,3 @@
-#include "../Interpreter/game.h"
-
-#include "core/reference.h"
-
 /*
  * Created by Stuart Irwin on 9/23/2019.
  * Godot interface for Interpreter Game
@@ -14,11 +10,13 @@ private:
 	Solisp::Game game;
 
 public:
-	bool grab(int num, char from) {
+	GameData() {}
+
+	bool grab(int num, int from) {
 		return game.grab(num, from);
 	}
 
-	bool place(char to) {
+	bool place(int to) {
 		return game.place(to);
 	}
 
@@ -32,4 +30,4 @@ protected:
 		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
 		ClassDB::bind_method(D_METHOD("cancel"), &GameData::cancel);
 	}
-}
+};
