@@ -4,8 +4,10 @@
 #include "core/class_db.h"
 #include "core/reference.h"
 
-#include "Godot/gamedata.h"
+#include <stdexcept>
+
 #include "Godot/carddata.h"
+#include "Godot/gamedata.h"
 
 /*
  * Created by Stuart Irwin on 9/20/2019.
@@ -13,8 +15,8 @@
  */
 
 void register_solisp_types() {
-    ClassDB::register_class<GameData>();
     ClassDB::register_class<CardData>();
+    ClassDB::register_class<GameData>();
 }
 
 void unregister_solisp_types() {

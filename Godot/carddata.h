@@ -12,16 +12,22 @@ private:
 public:
 	CardData() {}
 
-	void setCard(Solisp::Card *card) {
+	CardData(Solisp::Card *card) {
 		this->card = card;
 	}
 
-	int getFace() {
-		return card->getData().value;
-	}
-
-	int getSuit() {
-		return card->getData().suit;
+	int getFrame() {
+		switch(card->getData().suit) {
+			case 'H':
+				return card->getData().value;
+			case 'D':
+				return 13 + card->getData().value;
+			case 'C':
+				return 26 + card->getData().value;
+			case 'S':
+				return 39 + card->getData().value;
+		}
+		return 0;
 	}
 
 	bool isHidden() {
@@ -31,8 +37,7 @@ public:
 
 protected:
 	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("getFace"), &CardData::getFace);
-		ClassDB::bind_method(D_METHOD("getSuit"), &CardData::getSuit);
+		ClassDB::bind_method(D_METHOD("getFrame"), &CardData::getFrame);
 		ClassDB::bind_method(D_METHOD("isHidden"), &CardData::isHidden);
 	}
 };
