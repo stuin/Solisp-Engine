@@ -17,17 +17,26 @@ using std::bitset;
 
 class Solisp::Stack {
 private:
-	Card *stack;
+	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON
-	int count;
 	int max;
+
+	//Starting count
+	int start_hidden;
+	int start_shown;
+
+	//Current state
+	Card *stack;
+	int count;
 
 public:
 	Stack() {}
 
-	void setTags(bitset<STACKTAGCOUNT> tags) {
+	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0) {
 		this->tags = tags;
+		start_hidden = hidden;
+		start_shown = shown;
 	}
 
 	//Check if new cards can be placed on stack

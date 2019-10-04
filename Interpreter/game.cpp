@@ -46,6 +46,7 @@ void Game::apply(Move *move, bool reverse) {
 			source->flip();
 
 		count--;
+		source->setSlot(to);
 		source = source->getNext();
 	}
 

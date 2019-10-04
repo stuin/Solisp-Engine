@@ -18,6 +18,8 @@ private:
 	cardData data;
 	bool hidden;
 
+	int slot = 0;
+
 	Card *next;
 
 public:
@@ -64,6 +66,10 @@ public:
 
 	void setNext(Card *next) {
 		this->next = next;
+	}
+
+	void setSlot(int slot) {
+		this->slot = slot;
 	}
 
 	void operator+=(Card *next) {
