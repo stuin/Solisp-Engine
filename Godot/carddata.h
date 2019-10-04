@@ -16,6 +16,10 @@ public:
 		this->card = card;
 	}
 
+	int getSlot() {
+		return card->getSlot();
+	}
+
 	int getFrame() {
 		switch(card->getData().suit) {
 			case 'H':
@@ -37,6 +41,7 @@ public:
 
 protected:
 	static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("getSlot"), &CardData::getSlot);
 		ClassDB::bind_method(D_METHOD("getFrame"), &CardData::getFrame);
 		ClassDB::bind_method(D_METHOD("isHidden"), &CardData::isHidden);
 	}

@@ -63,6 +63,13 @@ void Game::update() {
 	apply();
 }
 
+//Call all setup functions
+Card *Game::setup(Builder *builder) {
+	STACKCOUNT = builder->setStacks(stack);
+
+	return stack[0].getCard();
+}
+
 //Pick up cards from stack
 bool Game::grab(int num, int from) {
 	this->to = -1;

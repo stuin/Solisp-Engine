@@ -5,15 +5,13 @@ namespace Solisp {
 #include <vector>
 #include <queue>
 
-#include "layout.h"
+#include "builder.h"
 #include "move.h"
 
 /*
  * Created by Stuart Irwin on 29/6/2019.
  * Game rules and management.
  */
-
-#define MAXSTACKCOUNT 20
 
 class Solisp::Game {
 private:
@@ -37,11 +35,16 @@ private:
 	//Run functions and check win
 	void update();
 
+	//Startup functions
+	void shuffle();
+	void deal();
+
 public:
 
-	Game() {
-		
-	}
+	Game() {}
+
+	//Setup functions
+	Card *setup(Builder *builder);
 
 	//Pick up cards from stack
 	bool grab(int num, int from);

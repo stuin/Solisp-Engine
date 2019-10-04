@@ -18,9 +18,8 @@ private:
 	cardData data;
 	bool hidden;
 
-	int slot = 0;
-
 	Card *next;
+	int slot = 0;
 
 public:
 	Card(cardData data) {
@@ -33,6 +32,10 @@ public:
 
 	Card *getNext() {
 		return next;
+	}
+
+	int getSlot() {
+		return slot;
 	}
 
 	//Check what side is up

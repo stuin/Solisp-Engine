@@ -3,8 +3,6 @@ namespace Solisp {
 	class Slot;
 }
 
-#include "stack.h"
-
 /*
  * Created by Stuart Irwin on 28/2/2019.
  * Layout building functions
@@ -43,14 +41,10 @@ public:
 class Solisp::Slot : public Solisp::Layout {
 private:
 	bool offScreen = false;
-	Stack *stack;
+	int stack;
 
 public:
-	Slot(bool spread, bool goal=false, bool horizontal=false) : Layout(horizontal) {
-		bitset<STACKTAGCOUNT> tags;
-		tags[0] = goal;
-		tags[3] = spread;
-
-		stack = new Stack();
+	Slot(int stack, bool horizontal=false) : Layout(horizontal) {
+		this->stack = stack;
 	}
 };
