@@ -16,11 +16,11 @@ public:
 		this->card = card;
 	}
 
-	int getSlot() {
+	int get_slot() {
 		return card->getSlot();
 	}
 
-	int getFrame() {
+	int get_frame() {
 		switch(card->getData().suit) {
 			case 'H':
 				return card->getData().value;
@@ -34,15 +34,15 @@ public:
 		return 0;
 	}
 
-	bool isHidden() {
+	bool is_hidden() {
 		return card->isHidden();
 	}
 	
 
 protected:
 	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("getSlot"), &CardData::getSlot);
-		ClassDB::bind_method(D_METHOD("getFrame"), &CardData::getFrame);
-		ClassDB::bind_method(D_METHOD("isHidden"), &CardData::isHidden);
+		ClassDB::bind_method(D_METHOD("get_slot"), &CardData::getSlot);
+		ClassDB::bind_method(D_METHOD("get_frame"), &CardData::getFrame);
+		ClassDB::bind_method(D_METHOD("is_hidden"), &CardData::isHidden);
 	}
 };

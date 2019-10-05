@@ -15,7 +15,7 @@ private:
 public:
 	GameData() {}
 
-	CardData *nextCard() {
+	CardData *next_card() {
 		if(initial != NULL) {
 			CardData *card = new CardData(initial);
 			initial = initial->getNext();
@@ -38,7 +38,7 @@ public:
 
 protected:
 	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("nextCard"), &GameData::nextCard);
+		ClassDB::bind_method(D_METHOD("next_card"), &GameData::next_card);
 		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &GameData::grab);
 		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
 		ClassDB::bind_method(D_METHOD("cancel"), &GameData::cancel);

@@ -1,3 +1,4 @@
+#pragma once
 namespace Solisp {
 	class Filter;
 }
@@ -19,17 +20,6 @@ public:
 	Filter(Card *card, bool open=false) {
 		this->content = card;
 		this->open = open;
-	}
-
-	void operator+=(Filter *next) {
-		if(this->next == NULL) 
-			this->next = next;
-		else
-			*(this->next) += next;
-	}
-
-	void operator+=(Card *card) {
-		*this += new Filter(card, open);
 	}
 
 	//Check if new cards can be placed on old card in filter
@@ -67,4 +57,22 @@ public:
 		else 
 			return false;
 	}
+
+	//Flatten all filters into one deck
+	Card *flatten() {
+		if(next == NULL)
+			return content;
+		return content += next->flatten();
+	}
 };
+
+//Add filter to end of list
+	void operator+=(Filter *next) {
+		if(this->next == NULL)
+			this->next = next;
+		else
+			*(this->next) += next;
+	}
+	void operator+=(Card *card) {
+		*this += new Filter(card, open);
+	}

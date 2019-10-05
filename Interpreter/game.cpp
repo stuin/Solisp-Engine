@@ -50,12 +50,18 @@ void Game::apply(Move *move, bool reverse) {
 		source = source->getNext();
 	}
 
-	if(flip)
-		source->flip();
-
-	//Set final cards
+	//Disconnect from stack
 	stack[from].setCard(source->getNext());
-	source->setNext(destination);
+
+	//Reverse cards properly
+	if(flip) {
+		source->flip();
+		source->setNext(NULL);
+		stack[to].getCard()->reverse();
+		stack[to].getCard()->setNext(destination);
+		stack[to].setCard(source);
+	} else
+		source->setNext(destination);
 }
 
 //Run functions and check win

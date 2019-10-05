@@ -22,18 +22,22 @@ private:
 	int slot = 0;
 
 public:
+	//Constructors
 	Card(cardData data) {
 		this->data = data;
 	}
+	Card(char value, char suit) {
+		data.value = value;
+		data.suit = suit;
+	}
 
+	//General getters
 	cardData getData() {
 		return data;
 	}
-
 	Card *getNext() {
 		return next;
 	}
-
 	int getSlot() {
 		return slot;
 	}
@@ -67,18 +71,19 @@ public:
 		hidden = !hidden;
 	}
 
+	//General setters
 	void setNext(Card *next) {
 		this->next = next;
 	}
-
 	void setSlot(int slot) {
 		this->slot = slot;
 	}
 
-	void operator+=(Card *next) {
-		if(this->next == NULL)
-			this->next = next;
-		else
-			*(this->next) += next;
-	}
+	//Card setup functions
+	Card(char start, char end, char suit);
+	Card *reverse(Card *last=NULL);
+	Card *withSuit(char suit);
+	Filter *fourSuit();
+	Filter *alternating();
+	Card *alternating(bool black);
 };

@@ -6,8 +6,8 @@ Klondike, Classic
 (VLayout 
 	(HLayout
 		(HLayout
-			(Stock Start-Extra)
-			(HStack INPUT)
+			(Stock (+ Start-Extra BUTTON))
+			(HStack (+ INPUT SPREAD))
 		)
 		(Apply (+ GOAL OUTPUT) (HLayout
 			(Slot (Filter (Clubs Standard)))
