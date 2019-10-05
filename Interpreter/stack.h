@@ -20,8 +20,8 @@ class Solisp::Stack {
 private:
 	//Stack properties
 	Filter *filter = NULL;
-	bitset<STACKTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON
-	int max;
+	bitset<STACKTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON, T1
+	int max = -1;
 
 	//Starting count
 	int start_hidden;
@@ -34,8 +34,9 @@ private:
 public:
 	Stack() {}
 
-	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0) {
+	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {
 		this->tags = tags;
+		this->max = max;
 		start_hidden = hidden;
 		start_shown = shown;
 	}
