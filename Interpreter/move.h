@@ -25,7 +25,7 @@ private:
 
 	//Check for circular card movement
 	bool checkLoop(Move *other) {
-		if(this->from == other->from || this->to == other->to)
+		if(this->from == other->from || this->to == other->to || other->from == 0)
 			return false;
 
 		if(this->from == other->to && this->to == other->from)
@@ -53,7 +53,7 @@ public:
 	}
 
 	//Add new move to history
-	void addNext(Move *other) {
+	void operator+=(Move *other) {
 		//Check if state is valid
 		if(!tags[2])
 			return;
@@ -62,7 +62,7 @@ public:
 		if(next == NULL || !next->tags[2])
 			next = other;
 		else
-			next->addNext(other);
+			*next += other;
 	}
 
 	void undo();

@@ -64,9 +64,8 @@ public:
 			return content;
 		return content += next->flatten();
 	}
-};
 
-//Add filter to end of list
+	//Add filter to end of list
 	void operator+=(Filter *next) {
 		if(this->next == NULL)
 			this->next = next;
@@ -76,3 +75,4 @@ public:
 	void operator+=(Card *card) {
 		*this += new Filter(card, open);
 	}
+};

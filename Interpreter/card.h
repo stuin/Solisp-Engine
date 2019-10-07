@@ -86,4 +86,5 @@ public:
 	Filter *fourSuit();
 	Filter *alternating();
 	Card *alternating(bool black);
+	void operator+=(Card *next);
 };

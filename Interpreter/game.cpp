@@ -29,6 +29,8 @@ void Game::apply(Move *move, bool reverse) {
 	int count = move->getCount();
 	bool flip = move->getTag(1);
 
+	int realCount = 1;
+
 	//Swap destinations for undo
 	if(reverse) {
 		from = to;
@@ -41,17 +43,20 @@ void Game::apply(Move *move, bool reverse) {
 	stack[to].setCard(source);
 
 	//Find bottom moved card
-	while(count > 1) {
+	while(count > 1 && source->getNext() != NULL) {
 		if(flip)
 			source->flip();
 
 		count--;
+		realCount++;
 		source->setSlot(to);
 		source = source->getNext();
 	}
 
 	//Disconnect from stack
 	stack[from].setCard(source->getNext());
+	stack[from].addCount(-realCount);
+	stack[to].addCount(realCount);
 
 	//Reverse cards properly
 	if(flip) {
@@ -67,6 +72,47 @@ void Game::apply(Move *move, bool reverse) {
 //Run functions and check win
 void Game::update() {
 	apply();
+}
+
+//Deal out cards to starting positions
+void Game::deal() {
+	int remaining;
+	int lastSlot;
+	int overflowSlot = -1;
+
+	//Initial check of slots
+	for(int i = 1; i < STACKCOUNT; i++) {
+		if(stack[i].start_hidden == -1)
+			overflowSlot = i;
+		else {
+			if(stack[i].start_hidden + stack[i].start_shown > 0) {
+				lastSlot = i;
+				remaining += stack[i].start_hidden + stack[i].start_shown;
+			}
+		}
+	}
+
+	//Loop until all placed
+	while(remaining > 0) {
+		int newLastSlot;
+
+		//For each slot
+		for(int j = 1; j < lastSlot; j++) {
+			if(j != overflowSlot && stack[j].start_hidden + stack[j].start_shown > 0) {
+				newLastSlot = j;
+				remaining--;
+
+				if(stack[j].start_hidden > 0)
+					*current += Move(1, 0, j, false, false, current);
+				else
+					*current += Move(1, 0, j, false, true, current);
+			}
+		}
+		lastSlot = newLastSlot;
+	}
+
+	if(overflowSlot != -1)
+		*current += Move(100, 0, overflowSlot, false, false, current);
 }
 
 //Call all setup functions

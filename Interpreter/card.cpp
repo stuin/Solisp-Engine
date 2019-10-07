@@ -59,7 +59,7 @@ Card *Card::alternating(bool black) {
 }
 
 //Add new card to list
-void operator+=(Card *next) {
+void Card::operator+=(Card *next) {
 	if(this->next == NULL)
 		this->next = next;
 	else

@@ -29,7 +29,7 @@ private:
 
 	//Current state
 	Card *stack;
-	int count;
+	int count = 0;
 
 public:
 	Stack() {}
@@ -69,6 +69,10 @@ public:
 	//Get top card of stack
 	Card *getCard() {
 		return stack;
+	}
+
+	void addCount(int count) {
+		this->count += count; 
 	}
 
 	//Set top of stack
