@@ -1,7 +1,11 @@
+#pragma once
 namespace Solisp {
 	class Card;
 	struct cardData;
+	class Filter;
 }
+
+#include <cstddef>
 
 /*
  * Created by Stuart Irwin on 9/9/2019.
@@ -86,5 +90,5 @@ public:
 	Filter *fourSuit();
 	Filter *alternating();
 	Card *alternating(bool black);
-	void operator+=(Card *next);
+	void operator+=(Card *next);	
 };

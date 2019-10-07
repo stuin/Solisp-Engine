@@ -1,7 +1,4 @@
 #pragma once
-namespace Solisp {
-	class Filter;
-}
 
 #include "card.h"
 

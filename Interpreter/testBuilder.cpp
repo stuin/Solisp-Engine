@@ -6,10 +6,12 @@
  */
 
 using Solisp::Builder;
+using Solisp::Card;
 using std::bitset;
 
 Card *Builder::getDeck() {
-	return new Card(1, 13, 'N').fourSuit().flatten();
+	Card *output = new Card(1, 13, 'N');
+	return output->fourSuit()->flatten();
 }
 
 int Builder::setStacks(Stack *stack) {

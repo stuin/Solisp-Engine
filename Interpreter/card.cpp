@@ -1,4 +1,5 @@
 #include "Card.h"
+#include "Filter.h"
 
 /*
  * Created by Stuart Irwin on 5/10/2019.
@@ -6,6 +7,7 @@
  */
 
 using Solisp::Card;
+using Solisp::Filter;
 
 //Constructor for full list of cards
 Card::Card(char start, char end, char suit) {
@@ -16,15 +18,15 @@ Card::Card(char start, char end, char suit) {
 }
 
 //Reverse full list of cards
-Card *Card::reverse(Card *last=NULL) {
+Card *Card::reverse(Card *last) {
 	if(next == NULL) {
 		next = last;
 		return this;
-	} else {
-		Card *other = next;
-		next = last;
-		return other->reverse(this);
 	}
+
+	Card *other = next;
+	next = last;
+	return other->reverse(this);
 }
 
 //Copy entire list with different suit
@@ -35,24 +37,26 @@ Card *Card::withSuit(char suit) {
 	return output;
 }
 
+
 //Create filter with all four suits
 Filter *Card::fourSuit() {
 	Filter *output = new Filter(withSuit('D'));
-	output += withSuit('C');
-	output += withSuit('H');
-	output += withSuit('S');
+	*output += withSuit('C');
+	*output += withSuit('H');
+	*output += withSuit('S');
 	return output;
 }
 
 //Create filter with two alternating lists
 Filter *Card::alternating() {
 	Filter *output = new Filter(alternating(true));
-	output += alternating(false);
+	*output += alternating(false);
+	return output;
 }
 
 //Copy list with alternating colors
 Card *Card::alternating(bool black) {
-	Card *output = new Card(data.value, black ? 'B', 'R');
+	Card *output = new Card(data.value, black ? 'B' : 'R');
 	if(next != NULL)
 		output->setNext(next->alternating(!black));
 	return output;

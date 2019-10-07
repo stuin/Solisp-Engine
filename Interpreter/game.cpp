@@ -80,8 +80,8 @@ void Game::update() {
 
 //Deal out cards to starting positions
 void Game::deal() {
-	int remaining;
-	int lastSlot;
+	int remaining = 0;
+	int lastSlot = -1;
 	int overflowSlot = -1;
 
 	//Initial check of slots
@@ -98,7 +98,7 @@ void Game::deal() {
 
 	//Loop until all placed
 	while(remaining > 0) {
-		int newLastSlot;
+		int newLastSlot = -1;
 
 		//For each slot
 		for(int j = 1; j < lastSlot; j++) {
@@ -121,7 +121,7 @@ void Game::deal() {
 }
 
 //Call all setup functions
-Card *Game::setup(Builder *builder) {
+Solisp::Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->setStacks(stack);
 	stack[0].setCard(builder->getDeck());
 
