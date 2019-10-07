@@ -72,6 +72,9 @@ void Game::update() {
 //Call all setup functions
 Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->setStacks(stack);
+	stack[0].setCard(builder->getDeck());
+
+	apply();
 
 	return stack[0].getCard();
 }

@@ -8,7 +8,9 @@
 using Solisp::Builder;
 using std::bitset;
 
-Card *Builder::getDeck();
+Card *Builder::getDeck() {
+	return new Card(1, 13, 'N').fourSuit().flatten();
+}
 
 int Builder::setStacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
@@ -36,4 +38,6 @@ int Builder::setStacks(Stack *stack) {
 	for(int i = 6; i < 13; i++)
 		stack[i].setTags(bits, i - 6, 1);
 	bits.reset();
+
+	return 13;
 }	

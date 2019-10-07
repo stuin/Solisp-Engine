@@ -15,6 +15,10 @@ private:
 public:
 	GameData() {}
 
+	Card *setup() {
+		game->setup(new Builder());
+	}
+
 	CardData *next_card() {
 		if(initial != NULL) {
 			CardData *card = new CardData(initial);
@@ -38,6 +42,7 @@ public:
 
 protected:
 	static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("setup"), &GameData::setup);
 		ClassDB::bind_method(D_METHOD("next_card"), &GameData::next_card);
 		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &GameData::grab);
 		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
