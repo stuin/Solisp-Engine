@@ -23,15 +23,15 @@ private:
 	bitset<STACKTAGCOUNT> tags; //GOAL, INPUT, OUTPUT, SPREAD, BUTTON, T1
 	int max = -1;
 
-	//Starting count
-	int start_hidden;
-	int start_shown;
-
 	//Current state
 	Card *stack;
 	int count = 0;
 
 public:
+	//Starting count
+	int start_hidden;
+	int start_shown;
+	
 	Stack() {}
 
 	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {

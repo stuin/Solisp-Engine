@@ -15,8 +15,8 @@ private:
 public:
 	GameData() {}
 
-	Card *setup() {
-		game->setup(new Builder());
+	void setup() {
+		initial = game.setup(new Solisp::Builder());
 	}
 
 	CardData *next_card() {
@@ -32,6 +32,10 @@ public:
 		return game.grab(num, from);
 	}
 
+	bool test(int to) {
+		return game.test(to);
+	}
+
 	bool place(int to) {
 		return game.place(to);
 	}
@@ -45,6 +49,7 @@ protected:
 		ClassDB::bind_method(D_METHOD("setup"), &GameData::setup);
 		ClassDB::bind_method(D_METHOD("next_card"), &GameData::next_card);
 		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &GameData::grab);
+		ClassDB::bind_method(D_METHOD("test", "to"), &GameData::test);
 		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
 		ClassDB::bind_method(D_METHOD("cancel"), &GameData::cancel);
 	}

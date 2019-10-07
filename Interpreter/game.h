@@ -27,6 +27,7 @@ private:
 	int from = -1;
 	int to = -1;
 	int count = 0;
+	int tested = -1;
 
 	//Apply current moves to stack array
 	void apply();
@@ -46,8 +47,10 @@ public:
 	//Setup functions
 	Card *setup(Builder *builder);
 
-	//Pick up cards from stack
+	//General place method
 	bool grab(int num, int from);
+	bool test(int to);
+	bool place(int to);
 
 	//Clear hand
 	void cancel();

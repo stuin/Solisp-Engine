@@ -58,6 +58,10 @@ void Game::apply(Move *move, bool reverse) {
 	stack[from].addCount(-realCount);
 	stack[to].addCount(realCount);
 
+	//Record proper card count
+	if(count > 1)
+		move->correctCount(realCount);
+
 	//Reverse cards properly
 	if(flip) {
 		source->flip();
@@ -103,16 +107,17 @@ void Game::deal() {
 				remaining--;
 
 				if(stack[j].start_hidden > 0)
-					*current += Move(1, 0, j, false, false, current);
+					*current += new Move(1, 0, j, false, false, current);
 				else
-					*current += Move(1, 0, j, false, true, current);
+					*current += new Move(1, 0, j, false, true, current);
 			}
 		}
 		lastSlot = newLastSlot;
 	}
 
+	//Move remaining cards to overflow
 	if(overflowSlot != -1)
-		*current += Move(100, 0, overflowSlot, false, false, current);
+		*current += new Move(1000, 0, overflowSlot, false, false, current);
 }
 
 //Call all setup functions
@@ -130,6 +135,7 @@ bool Game::grab(int num, int from) {
 	this->to = -1;
 	this->from = -1;
 	this->count = -1;
+	this->tested = -1;
 
 	if(from > STACKCOUNT)
 		return false;
@@ -164,8 +170,8 @@ bool Game::grab(int num, int from) {
 	return false;
 }
 
-//Place cards from selected hand
-bool Game::place(int to) {
+//Test placement of cards from selected hand
+bool Game::test(int to) {
 	//Check if cards are in hand
 	if(this->from == -1 || this->count == -1 || this->count != -1 || to > STACKCOUNT) {
 		cancel();
@@ -174,11 +180,23 @@ bool Game::place(int to) {
 
 	//Check for proper move
 	if(stack[to].matches(count, stack[from].getCard())) {
-		current->addNext(new Move(count, from, to, true, false, current));
+		tested = to;
+		return true;
+	}
+	
+	tested = -1;
+	return true;
+}
+
+bool Game::place(int to) {
+	//Check for proper move
+	if(tested == to || test(to)) {
+		*current += new Move(count, from, to, true, false, current);
 
 		//Set hand
 		this->to = to;
 		this->count = -1;
+		tested = -1;
 
 		update();
 		return true;
@@ -193,4 +211,5 @@ void Game::cancel() {
 	to = -1;
 	from = -1;
 	count = -1;
+	tested = -1;
 }

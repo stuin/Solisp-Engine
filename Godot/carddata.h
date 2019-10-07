@@ -41,8 +41,8 @@ public:
 
 protected:
 	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("get_slot"), &CardData::getSlot);
-		ClassDB::bind_method(D_METHOD("get_frame"), &CardData::getFrame);
-		ClassDB::bind_method(D_METHOD("is_hidden"), &CardData::isHidden);
+		ClassDB::bind_method(D_METHOD("get_slot"), &CardData::get_slot);
+		ClassDB::bind_method(D_METHOD("get_frame"), &CardData::get_frame);
+		ClassDB::bind_method(D_METHOD("is_hidden"), &CardData::is_hidden);
 	}
 };

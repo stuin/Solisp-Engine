@@ -18,5 +18,5 @@ public:
 	int setStacks(Stack *stacks);
 
 	//Read all card layouts
-	Layout *getLayout();
+	//Layout *getLayout();
 };

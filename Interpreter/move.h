@@ -68,6 +68,11 @@ public:
 	void undo();
 	void redo();
 
+	void correctCount(int count) {
+		if(count < this->count)
+			this->count = count;
+	}
+
 	//Get tag value
 	bool getTag(int tag) {
 		if(tag > 0 && tag < MOVETAGCOUNT)

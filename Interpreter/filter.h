@@ -58,13 +58,6 @@ public:
 			return false;
 	}
 
-	//Flatten all filters into one deck
-	Card *flatten() {
-		if(next == NULL)
-			return content;
-		return content += next->flatten();
-	}
-
 	//Add filter to end of list
 	void operator+=(Filter *next) {
 		if(this->next == NULL)
@@ -74,5 +67,13 @@ public:
 	}
 	void operator+=(Card *card) {
 		*this += new Filter(card, open);
+	}
+
+	//Flatten all filters into one deck
+	Card *flatten() {
+		if(next == NULL)
+			return content;
+		*content += next->flatten();
+		return content;
 	}
 };
