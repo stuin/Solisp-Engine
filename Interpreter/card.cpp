@@ -18,15 +18,19 @@ Card::Card(char start, char end, char suit) {
 }
 
 //Reverse full list of cards
-Card *Card::reverse(Card *last) {
+Card *Card::reverse(int index, Card *last) {
+	this->index = index;
+
+	//If final card
 	if(next == NULL) {
 		next = last;
 		return this;
 	}
 
+	//If middle card
 	Card *other = next;
 	next = last;
-	return other->reverse(this);
+	return other->reverse(index + 1, this);
 }
 
 //Copy entire list with different suit

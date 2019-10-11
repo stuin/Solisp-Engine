@@ -13,7 +13,7 @@ module_env.Append(CXXFLAGS=['-std=c++11'])
 
 module_env.Append(CPPPATH=["./Interpreter","./Godot"])
 
-if ARGUMENTS.get('solisp_shared', 'no') == 'yes':
+if ARGUMENTS.get('solisp_shared', 'yes') == 'yes':
     # Shared lib compilation
     module_env.Append(CCFLAGS=['-fPIC'])
     module_env['LIBS'] = []

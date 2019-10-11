@@ -47,10 +47,11 @@ void Game::apply(Move *move, bool reverse) {
 		if(flip)
 			source->flip();
 
-		count--;
-		realCount++;
 		source->setSlot(to);
 		source = source->getNext();
+
+		count--;
+		realCount++;
 	}
 
 	//Disconnect from stack
@@ -66,11 +67,13 @@ void Game::apply(Move *move, bool reverse) {
 	if(flip) {
 		source->flip();
 		source->setNext(NULL);
-		stack[to].getCard()->reverse();
+		stack[to].getCard()->reverse(stack[to].getCount() - realCount);
 		stack[to].getCard()->setNext(destination);
 		stack[to].setCard(source);
-	} else
+	} else {
 		source->setNext(destination);
+		source->setIndex(realCount);
+	}
 }
 
 //Run functions and check win

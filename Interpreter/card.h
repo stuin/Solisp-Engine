@@ -24,6 +24,7 @@ private:
 
 	Card *next;
 	int slot = 0;
+	int index = 0;
 
 public:
 	//Constructors
@@ -44,6 +45,9 @@ public:
 	}
 	int getSlot() {
 		return slot;
+	}
+	int getIndex() {
+		return index;
 	}
 
 	//Check what side is up
@@ -81,14 +85,27 @@ public:
 	}
 	void setSlot(int slot) {
 		this->slot = slot;
+		index = -1;
+	}
+
+	//Make sure index value is set properly
+	int setIndex(int count) {
+		if(count == 0)
+			return index;
+		if(next == NULL) {
+			index = 0;
+			return 0;
+		}
+		index = next->setIndex(count - 1) + 1;
+		return index;
 	}
 
 	//Card setup functions
 	Card(char start, char end, char suit);
-	Card *reverse(Card *last=NULL);
+	Card *reverse(int index=0, Card *last=NULL);
 	Card *withSuit(char suit);
 	Filter *fourSuit();
 	Filter *alternating();
 	Card *alternating(bool black);
-	void operator+=(Card *next);	
+	void operator+=(Card *next);
 };
