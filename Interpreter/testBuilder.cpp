@@ -24,7 +24,7 @@ int Builder::setStacks(Stack *stack) {
 
 	//Draw pile
 	bits[4] = 1;
-	stack[1].setTags(bits);
+	stack[1].setTags(bits, -1);
 	bits.reset();
 
 	//Drawn cards
@@ -43,7 +43,7 @@ int Builder::setStacks(Stack *stack) {
 	//Field
 	bits[5] = 1;
 	for(int i = 7; i < 14; i++)
-		stack[i].setTags(bits, i - 7, 1);
+		stack[i].setTags(bits, 13 - i, 1);
 	bits.reset();
 
 	return 14;

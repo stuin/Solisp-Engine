@@ -28,6 +28,10 @@ private:
 
 public:
 	//Constructors
+	Card(Card *card) {
+		data = card->data;
+		next = card->next;
+	}
 	Card(cardData data) {
 		this->data = data;
 	}

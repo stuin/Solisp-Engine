@@ -68,9 +68,8 @@ public:
 
 	//Flatten all filters into one deck
 	Card *flatten() {
-		if(next == NULL)
-			return content;
-		*content += next->flatten();
-		return content;
+		if(next != NULL)
+			*content += next->flatten();
+		return new Card(content);
 	}
 };

@@ -24,7 +24,7 @@ private:
 	int max = -1;
 
 	//Current state
-	Card *stack;
+	Card *stack = NULL;
 	int count = 0;
 
 public:
