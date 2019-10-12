@@ -10,7 +10,9 @@ private:
 	Solisp::Card *card;
 
 public:
-	CardData() {}
+	CardData() {
+		this->card = new Solisp::Card(1, 'S');
+	}
 
 	CardData(Solisp::Card *card) {
 		this->card = card;
@@ -27,13 +29,13 @@ public:
 	int get_frame() {
 		switch(card->getData().suit) {
 			case 'H':
-				return card->getData().value;
+				return card->getData().value - 1;
 			case 'D':
-				return 13 + card->getData().value;
+				return 12 + card->getData().value;
 			case 'C':
-				return 26 + card->getData().value;
+				return 25 + card->getData().value;
 			case 'S':
-				return 39 + card->getData().value;
+				return 38 + card->getData().value;
 		}
 		return 0;
 	}

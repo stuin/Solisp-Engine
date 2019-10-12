@@ -15,8 +15,8 @@ class Solisp::Move {
 private:
 	//Card movements
 	int count;
-	char from;
-	char to;
+	int from;
+	int to;
 	bitset<MOVETAGCOUNT> tags; //player, flip, valid, loop
 
 	//List references
@@ -36,7 +36,7 @@ private:
 
 public:
 	//Build new move
-	Move(int count, char from, char to, bool player, bool flip, Move *last) {
+	Move(int count, int from, int to, bool player, bool flip, Move *last) {
 		//Set general move
 		this->count = count;
 		this->from = from;
@@ -85,11 +85,11 @@ public:
 		return count;
 	}
 
-	char getFrom() {
+	int getFrom() {
 		return from;
 	}
 
-	char getTo() {
+	int getTo() {
 		return to;
 	}
 

@@ -11,7 +11,8 @@ using Solisp::Filter;
 
 //Constructor for full list of cards
 Card::Card(char start, char end, char suit) {
-	Card(start, suit);
+	data.value = start;
+	data.suit = suit;
 
 	if(start < end)
 		next = new Card(start+1, end, suit);

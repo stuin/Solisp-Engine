@@ -1,5 +1,3 @@
-
-
 /*
  * Created by Stuart Irwin on 9/23/2019.
  * Godot interface for Interpreter Game
@@ -13,7 +11,8 @@ private:
 	Solisp::Card *initial = NULL;
 
 public:
-	GameData() {}
+	GameData() {
+	}
 
 	void setup() {
 		initial = game.setup(new Solisp::Builder());

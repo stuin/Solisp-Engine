@@ -1,5 +1,8 @@
 #include "game.h"
 
+#include <iostream>
+#include <exception>
+
 /*
  * Created by Stuart Irwin on 4/10/2019.
  * Game rules and management.
@@ -16,14 +19,19 @@ void Game::apply() {
 	}
 
 	//Apply new moves
-	while(current->getNext()->getTag(2)) {
+	while(current->getNext() != NULL && current->getNext()->getTag(2)) {
+		std::cout << "Move " << current->getNext()->getCount() << " to " << current->getNext()->getTo();
 		apply(current->getNext(), false);
 		current = current->getNext();
+		std::cout << " Flip: " << current->getNext()->getTag(1) << "\n";
 	}
+	std::cout << "Done\n";
 }
 
 //Apply single card move
 void Game::apply(Move *move, bool reverse) {
+	std::cout << " Start";
+
 	int from = move->getFrom();
 	int to = move->getTo();
 	int count = move->getCount();
@@ -42,8 +50,10 @@ void Game::apply(Move *move, bool reverse) {
 	Card *source = stack[from].getCard();
 	stack[to].setCard(source);
 
+	std::cout << " Loop";
+
 	//Find bottom moved card
-	while(count > 1 && source->getNext() != NULL) {
+	/*while(count > 1 && source->getNext() != NULL) {
 		if(flip)
 			source->flip();
 
@@ -52,7 +62,7 @@ void Game::apply(Move *move, bool reverse) {
 
 		count--;
 		realCount++;
-	}
+	}*/
 
 	//Disconnect from stack
 	stack[from].setCard(source->getNext());
@@ -60,8 +70,8 @@ void Game::apply(Move *move, bool reverse) {
 	stack[to].addCount(realCount);
 
 	//Record proper card count
-	if(count > 1)
-		move->correctCount(realCount);
+	//if(count > 1)
+	//	move->correctCount(realCount);
 
 	//Reverse cards properly
 	if(flip) {
@@ -72,7 +82,7 @@ void Game::apply(Move *move, bool reverse) {
 		stack[to].setCard(source);
 	} else {
 		source->setNext(destination);
-		source->setIndex(realCount);
+		//source->setIndex(realCount);
 	}
 }
 
@@ -100,27 +110,28 @@ void Game::deal() {
 	}
 
 	//Loop until all placed
-	while(remaining > 0) {
-		int newLastSlot = -1;
+	while(remaining > 8) {
+		std::cout << remaining << " cards left\n";
 
 		//For each slot
 		for(int j = 1; j < lastSlot; j++) {
 			if(j != overflowSlot && stack[j].start_hidden + stack[j].start_shown > 0) {
-				newLastSlot = j;
 				remaining--;
 
-				if(stack[j].start_hidden > 0)
+				if(stack[j].start_hidden > 0) {
+					stack[j].start_hidden--;
 					*current += new Move(1, 0, j, false, false, current);
-				else
+				} else if(stack[j].start_shown > 0){
+					stack[j].start_shown--;
 					*current += new Move(1, 0, j, false, true, current);
+				}
 			}
 		}
-		lastSlot = newLastSlot;
 	}
 
 	//Move remaining cards to overflow
 	if(overflowSlot != -1)
-		*current += new Move(1000, 0, overflowSlot, false, false, current);
+		*current += new Move(1, 0, 0, false, false, current);
 }
 
 //Call all setup functions
@@ -128,6 +139,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->setStacks(stack);
 	stack[0].setCard(builder->getDeck());
 
+	deal();
 	apply();
 
 	return stack[0].getCard();

@@ -17,11 +17,11 @@ class Solisp::Game {
 private:
 	//Game definition
 	//Feature functions;
-	char STACKCOUNT = 10;
+	char STACKCOUNT = MAXSTACKCOUNT;
 
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];
-	Move *current;
+	Move *current = new Move(0, 0, 0, false, false, NULL);
 
 	//Current move
 	int from = -1;
@@ -57,4 +57,10 @@ public:
 
 	void undo();
 	void redo();
+
+	Stack *getStack(int i) {
+		if(i >= STACKCOUNT)
+			return NULL;
+		return &stack[i];
+	}
 };

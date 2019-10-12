@@ -10,36 +10,41 @@ using Solisp::Card;
 using std::bitset;
 
 Card *Builder::getDeck() {
-	Card *output = new Card(1, 13, 'N');
+	Card *output = new Card(1, 13, 'S');
 	return output->fourSuit()->flatten();
 }
 
 int Builder::setStacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
 
+	//Hand
+	bits[4] = 1;
+	stack[0].setTags(bits);
+	bits.reset();
+
 	//Draw pile
 	bits[4] = 1;
-	stack[0].setTags(bits, -1);
+	stack[1].setTags(bits);
 	bits.reset();
 
 	//Drawn cards
 	bits[1] = 1;
 	bits[3] = 1;
-	stack[1].setTags(bits);
+	stack[2].setTags(bits);
 	bits.reset();
 
 	//Suits
 	bits[0] = 1;
 	bits[2] = 1;
-	for(int i = 2; i < 6; i++)
+	for(int i = 3; i < 7; i++)
 		stack[i].setTags(bits);
 	bits.reset();
 
 	//Field
 	bits[5] = 1;
-	for(int i = 6; i < 13; i++)
-		stack[i].setTags(bits, i - 6, 1);
+	for(int i = 7; i < 14; i++)
+		stack[i].setTags(bits, i - 7, 1);
 	bits.reset();
 
-	return 13;
+	return 14;
 }	
