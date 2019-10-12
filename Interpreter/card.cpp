@@ -18,6 +18,14 @@ Card::Card(char start, char end, char suit) {
 		next = new Card(start+1, end, suit);
 }
 
+//Copy list of cards
+Card *Card::clone() {
+	Card *output = new Card(data.value, data.suit);
+	if(next != NULL)
+		output->setNext(next->clone());
+	return output;
+}
+
 //Reverse full list of cards
 Card *Card::reverse(int index, Card *last) {
 	this->index = index;
@@ -36,35 +44,43 @@ Card *Card::reverse(int index, Card *last) {
 
 //Copy entire list with different suit
 Card *Card::withSuit(char suit) {
-	Card *output = new Card(data.value, suit);
+	data.suit = suit;
 	if(next != NULL)
-		output->setNext(next->withSuit(suit));
-	return output;
+		next->withSuit(suit);
+	return this;
 }
 
+//Create deck with all four suits
+Card *Card::fourSuit() {
+	withSuit('D');
+	*this += clone()->withSuit('C');
+	*this += clone()->withSuit('H');
+	*this += clone()->withSuit('S');
+	return this;
+}
 
 //Create filter with all four suits
-Filter *Card::fourSuit() {
+Filter *Card::fourSuitFilter() {
 	Filter *output = new Filter(withSuit('D'));
-	*output += withSuit('C');
-	*output += withSuit('H');
-	*output += withSuit('S');
+	*output += clone()->withSuit('C');
+	*output += clone()->withSuit('H');
+	*output += clone()->withSuit('S');
 	return output;
 }
 
 //Create filter with two alternating lists
 Filter *Card::alternating() {
 	Filter *output = new Filter(alternating(true));
-	*output += alternating(false);
+	*output += clone()->alternating(false);
 	return output;
 }
 
 //Copy list with alternating colors
 Card *Card::alternating(bool black) {
-	Card *output = new Card(data.value, black ? 'B' : 'R');
+	data.suit = black ? 'B' : 'R';
 	if(next != NULL)
-		output->setNext(next->alternating(!black));
-	return output;
+		next->alternating(!black);
+	return this;
 }
 
 //Add new card to list

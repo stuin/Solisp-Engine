@@ -33,9 +33,6 @@ private:
 	void apply();
 	void apply(Move *move, bool reverse);
 
-	//Run functions and check win
-	void update();
-
 	//Startup functions
 	void shuffle();
 	void deal();
@@ -46,6 +43,7 @@ public:
 
 	//Setup functions
 	Card *setup(Builder *builder);
+	void update();
 
 	//General place method
 	bool grab(int num, int from);

@@ -20,9 +20,9 @@ struct Solisp::cardData {
 class Solisp::Card {
 private:
 	cardData data;
-	bool hidden;
+	bool hidden = true;
 
-	Card *next;
+	Card *next = NULL;
 	int slot = 0;
 	int index = 0;
 
@@ -106,9 +106,11 @@ public:
 
 	//Card setup functions
 	Card(char start, char end, char suit);
+	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);
 	Card *withSuit(char suit);
-	Filter *fourSuit();
+	Card *fourSuit();
+	Filter *fourSuitFilter();
 	Filter *alternating();
 	Card *alternating(bool black);
 	void operator+=(Card *next);

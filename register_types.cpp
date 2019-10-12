@@ -1,5 +1,5 @@
 #include "register_types.h"
-#include "../Interpreter/game.h"
+#include "Interpreter/game.h"
 
 #include "core/class_db.h"
 #include "core/reference.h"

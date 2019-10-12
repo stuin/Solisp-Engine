@@ -24,6 +24,7 @@ public:
 			initial = initial->getNext();
 			return card;
 		}
+		game.update();
 		return NULL;
 	}
 

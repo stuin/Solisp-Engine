@@ -37,9 +37,11 @@ int main() {
 	cout << i << " found\n";
 
 	cout << "Setting up game\n";
-	game.setup(builder);
+	Solisp::Card *card = game.setup(builder);
+	printStack(card);
+	game.update();
 
-	cout << "Listing slots\n";
+	cout << " Listing slots\n";
 	i = 0;
 	while(game.getStack(i) != NULL)	{
 		cout << "Stack " << i << ": ";

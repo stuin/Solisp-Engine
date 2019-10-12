@@ -57,6 +57,7 @@ void Game::apply(Move *move, bool reverse) {
 		count--;
 		realCount++;
 	}
+	source->setSlot(to);
 
 	//Disconnect from stack
 	stack[from].setCard(source->getNext());
@@ -76,7 +77,7 @@ void Game::apply(Move *move, bool reverse) {
 		stack[to].setCard(source);
 	} else {
 		source->setNext(destination);
-		//source->setIndex(realCount);
+		source->setIndex(realCount);
 	}
 }
 
@@ -125,12 +126,14 @@ void Game::deal() {
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->setStacks(stack);
+	
 	stack[0].setCard(builder->getDeck());
+	Card *card = stack[0].getCard();
 
 	deal();
-	apply();
+	//apply();
 
-	return stack[0].getCard();
+	return card;
 }
 
 //Pick up cards from stack
