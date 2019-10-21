@@ -40,6 +40,10 @@ private:
 public:
 
 	Game() {}
+	~Game() {
+		current->clearForward();
+		delete current;
+	}
 
 	//Setup functions
 	Card *setup(Builder *builder);

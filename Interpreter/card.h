@@ -40,6 +40,11 @@ public:
 		data.suit = suit;
 	}
 
+	//Deconstructor
+	~Card() {
+		delete next;
+	}
+
 	//General getters
 	cardData getData() {
 		return data;

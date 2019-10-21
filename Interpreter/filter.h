@@ -19,6 +19,12 @@ public:
 		this->open = open;
 	}
 
+	//Deconstructor
+	~Filter() {
+		delete next;
+		delete content;
+	}
+
 	//Check if new cards can be placed on old card in filter
 	bool matches(int count, Card *newCard, Card *oldCard) {
 		Card *current = newCard;
@@ -67,9 +73,14 @@ public:
 	}
 
 	//Flatten all filters into one deck
-	Card *flatten() {
+	Card *flatten(bool deleteSafe=true) {
 		if(next != NULL)
-			*content += next->flatten();
-		return new Card(content);
+			*content += next->flatten(deleteSafe);
+
+		//Make safe for deletion
+		Card *output = new Card(content);
+		if(deleteSafe)
+			content = NULL;
+		return output;
 	}
 };

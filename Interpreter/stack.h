@@ -33,6 +33,10 @@ public:
 	int start_shown;
 	
 	Stack() {}
+	~Stack() {
+		delete filter;
+		delete stack;
+	}
 
 	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {
 		this->tags = tags;
@@ -51,7 +55,7 @@ public:
 		if(max > 0 && this->count + count > max)
 			return false;
 
-		return filter != NULL || filter->matches(count, newCard, stack);
+		return filter == NULL || filter->matches(count, newCard, stack);
 	}
 
 	//Get tag value

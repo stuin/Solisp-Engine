@@ -52,6 +52,20 @@ public:
 		//tags[3] = checkLoop(last);
 	}
 
+	//Recursizely delete backward
+	~Move() {
+		delete last;
+	}
+
+	//Recursizely delete forward
+	void clearForward() {
+		if(next != NULL) {
+			next->last = NULL;
+			next->clearForward();
+			delete next;
+		}
+	}
+
 	//Add new move to history
 	void operator+=(Move *other) {
 		//Check if state is valid
@@ -59,9 +73,10 @@ public:
 			return;
 
 		//If next move is not current
-		if(next == NULL || !next->tags[2])
+		if(next == NULL || !next->tags[2]) {
+			clearForward();
 			next = other;
-		else
+		} else
 			*next += other;
 	}
 

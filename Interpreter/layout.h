@@ -21,6 +21,12 @@ public:
 		this->horizontal = horizontal;
 	}
 
+	//Deconstructor
+	~Layout() {
+		delete inside;
+		delete next;
+	}
+
 	//Insert internal node
 	void operator<<(const Layout *child) {
 		if(inside == NULL)
