@@ -179,24 +179,24 @@ bool Game::grab(int num, int from) {
 //Test placement of cards from selected hand
 bool Game::test(int to) {
 	//Check if cards are in hand
-	if(this->from == -1 || this->count == -1 || this->count != -1 || to > STACKCOUNT) {
+	if(this->from == -1 || this->count == -1 || this->to != -1 || to > STACKCOUNT) {
 		cancel();
 		return false;
 	}
 
 	//Check for proper move
-	if(stack[to].matches(count, stack[from].getCard())) {
+	if(to == from || stack[to].matches(count, stack[from].getCard())) {
 		tested = to;
 		return true;
 	}
 	
 	tested = -1;
-	return true;
+	return false;
 }
 
 bool Game::place(int to) {
 	//Check for proper move
-	if(tested == to || test(to)) {
+	if(to != from && (tested == to || test(to))) {
 		*current += new Move(count, from, to, true, false, current);
 
 		//Set hand
