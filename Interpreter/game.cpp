@@ -146,10 +146,11 @@ bool Game::grab(int num, int from) {
 	if(from > STACKCOUNT)
 		return false;
 
-	//If button and top hidden
-	if(stack[from].getTag(4) && stack[from].getCard()->isHidden()) {
+	//If top card hidden
+	if(stack[from].getCard()->isHidden()) {
+		*current += new Move(1, from, from, true, true, current);
 		this->from = from;
-		return true;
+		return false;
 	}
 
 	//If stack is output
@@ -218,4 +219,12 @@ void Game::cancel() {
 	from = -1;
 	count = -1;
 	tested = -1;
+}
+
+//Move history manipulation
+void Game::undo() {
+	current->undo();
+}
+void Game::redo() {
+	current->redo();
 }

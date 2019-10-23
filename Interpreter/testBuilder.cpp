@@ -18,17 +18,15 @@ int Builder::setStacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
 
 	//Hand
-	bits[4] = 1;
 	stack[0].setTags(bits);
-	bits.reset();
 
 	//Draw pile
-	bits[4] = 1;
+	bits[1] = 1;
 	stack[1].setTags(bits, -1);
 	bits.reset();
 
 	//Drawn cards
-	bits[1] = 1;
+	//bits[1] = 1;
 	bits[3] = 1;
 	stack[2].setTags(bits);
 	bits.reset();

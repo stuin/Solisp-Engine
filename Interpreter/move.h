@@ -80,9 +80,25 @@ public:
 			*next += other;
 	}
 
-	void undo();
-	void redo();
+	//Set move to invalid
+	void undo() {
+		tags[2] = false;
+		if(!tags[0] && from != 0 && last != NULL)
+			last->undo();
+	}
 
+	//Revalidate next move
+	void redo(bool first=true) {
+		if(tags[2] && next != NULL)
+			next->redo(true);
+		else if(first || !tags[0]) {
+			tags[2] = true;
+			if(next != NULL)
+				next->redo(false);
+		}
+	}
+
+	//Set actual card count if move-all used
 	void correctCount(int count) {
 		if(count < this->count)
 			this->count = count;
