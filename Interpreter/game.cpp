@@ -80,7 +80,7 @@ void Game::apply(Move *move, bool reverse) {
 		stack[to].setCard(source);
 	} else {
 		source->setNext(destination);
-		source->setIndex(realCount);
+		stack[to].getCard()->setIndex(realCount);
 	}
 }
 

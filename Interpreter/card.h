@@ -101,12 +101,9 @@ public:
 	int setIndex(int count) {
 		if(count == 0)
 			return index;
-		if(next == NULL) {
-			index = 0;
-			return 0;
-		}
-		index = next->setIndex(count - 1) + 1;
-		return index;
+		if(next == NULL)
+			return index = 0;
+		return index = next->setIndex(count - 1) + 1;
 	}
 
 	//Card setup functions
