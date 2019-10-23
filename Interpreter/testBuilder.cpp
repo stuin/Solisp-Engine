@@ -18,7 +18,9 @@ int Builder::setStacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
 
 	//Hand
+	bits[3] = 1;
 	stack[0].setTags(bits);
+	bits.reset();
 
 	//Draw pile
 	bits[1] = 1;
@@ -39,6 +41,7 @@ int Builder::setStacks(Stack *stack) {
 	bits.reset();
 
 	//Field
+	bits[3] = 1;
 	bits[5] = 1;
 	for(int i = 7; i < 14; i++)
 		stack[i].setTags(bits, 13 - i, 1);

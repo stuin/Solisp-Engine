@@ -59,10 +59,13 @@ void Game::apply(Move *move, bool reverse) {
 	}
 	source->setSlot(to);
 
-	//Disconnect from stack
-	stack[from].setCard(source->getNext());
-	stack[from].addCount(-realCount);
-	stack[to].addCount(realCount);
+	if(to == from)
+		destination = source->getNext();
+	else {
+		stack[from].setCard(source->getNext());
+		stack[from].addCount(-realCount);
+		stack[to].addCount(realCount);
+	}
 
 	//Record proper card count
 	if(count > 1)
@@ -149,12 +152,13 @@ bool Game::grab(int num, int from) {
 	//If top card hidden
 	if(stack[from].getCard()->isHidden()) {
 		*current += new Move(1, from, from, true, true, current);
-		this->from = from;
+		//this->from = from;
+		update();
 		return false;
 	}
 
 	//If stack is output
-	if(stack[from].getTag(2) || (stack[from].getTag(3) && num > 1) || num < 1)
+	if(stack[from].getTag(2) || num < 1)
 		return false;
 
 	//Check for null or hidden card in stack
