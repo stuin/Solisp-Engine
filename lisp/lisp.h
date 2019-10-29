@@ -18,7 +18,6 @@ using std::string;
 using sexpr = std::vector<cell>;
 using marker = sexpr::const_iterator;
 using builtin = std::function<auto(marker, marker)->cell>;
-using book = std::map<string, builtin>::iterator;
 
 //Main data sructure
 struct cell {
@@ -30,14 +29,18 @@ struct cell {
 	cell(sexpr s) : content{std::move(s)} { type = EXPR; }
 };
 
-//Library access
+//Variable storage
+std::map<string, int> env;
+
+//Library structure
 std::map<string, builtin> library[3];
 void build_library();
 
+//Library functions
 builtin check_shelf(string name, std::vector<cell_type> type) {
 	int i = 0;
 	do {
-		book b = library[type[i]].find(name);
+		auto b = library[type[i]].find(name);
 		if(b != library[type[i]].end())
 			return b->second;
 		i++;
@@ -80,9 +83,12 @@ int num_eval(cell const &c) {
 		string s = std::get<string>(c.content);
 		if(isdigit(s[0]) || s[0] == '-')
 			return std::stoi(s);
+		auto it = env.find(s);
+		if(it != env.end())
+			return it->second;
 		if(s[0] == 't' || s[0] == 'T')
 			return 1;
-		return 0;
+		throw std::domain_error("No variable or value found for " + s);
 	}
 	return num_eval(eval(c, NUMBER));
 }
@@ -92,9 +98,8 @@ cell eval(sexpr const &s, cell_type type) {
 	if(s.begin() == s.end())
 		throw std::domain_error("Empty sexpr");
 	else {
-		string fname = str_eval(*s.begin());
-		builtin fp = search_library(fname, type);
-		return fp(++s.begin(), s.end());
+		string name = str_eval(*s.begin());
+		return search_library(name, type)(++s.begin(), s.end());
 	}
 }
 
@@ -106,9 +111,9 @@ int main() {
 		//Build test tree
 		auto const prog = sexpr{
 			"+"s,
-			sexpr{"-"s, 30, 14},
-			sexpr{"if"s,
-				sexpr{"*"s, "true"s, "true"s},
+			sexpr{"-"s, 30, sexpr{"Set"s, "x"s, 14}},
+			sexpr{"If"s,
+				sexpr{"=="s, 14, "x"s},
 				" True "s, " False "s
 			},
 			"Hello "s, "world!"s
