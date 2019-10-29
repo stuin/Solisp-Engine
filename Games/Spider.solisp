@@ -19,8 +19,8 @@ Spider, Classic
 			(* 5 (Stock (+
 				INPUT
 				BUTTON
-				(Grab-If (For-Each T1 t (> (Count t) 0))
-				(On-Grab (For-Each T1 t (Move 2 t)))
+				(Grab-If (For-Each CUSTOM t (> (Count t) 0))
+				(On-Grab (For-Each CUSTOM t (Move 2 t)))
 				(Start 10 0)
 			)))
 		)
