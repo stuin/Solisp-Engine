@@ -1,34 +1,35 @@
 Spider, Classic
 
-(Clone 4 (Add 
-	(Spades Standard) 
+(* 4 (+
+	(Spades Standard)
 	(Hearts Standard)
 ))
-(Filter-Open (Same-Suit (Reverse Standard)))
+(Filter-Open (Four-Suit (Reverse Standard)))
 
 (VLayout
 	(HLayout
 		(HLayout
-			(Clone 8 (Slot (Add 
-				Boolean
-				Goal
-				Auto-Grab
-				Output
-				(Filter (Same-Suit (Reverse Standard)))
+			(* 8 (Slot (+
+				GOAL
+				OUTPUT
+				(Filter-All (Four-Suit (Reverse Standard)))
 			)))
 		)
 		(HLayout
-			(Clone 5 (Stock (Add
-				(ID 1)
+			(* 5 (Stock (+
+				INPUT
+				BUTTON
+				(Grab-If (For-Each T1 t (> (Count t) 0))
+				(On-Grab (For-Each T1 t (Move 2 t)))
 				(Start 10 0)
 			)))
 		)
 	)
 	(Apply 
-		(Add Dest (If-Empty-Lock 1) (Filter-Open (Reverse Standard)))
+		(+ T1 (Filter-Open (Reverse Standard)))
 		(HLayout
-			(Clone 4 (VStack (Start 5 1)))
-			(Clone 6 (VStack (Start 4 1)))
+			(* 4 (VStack (Start 5 1)))
+			(* 6 (VStack (Start 4 1)))
 		)
 	)
 )

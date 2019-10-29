@@ -3,50 +3,45 @@ Klondike, Classic
 (Four-Suit Standard)
 (Filter-Open (Alternating (Reverse Standard)))
 
-(VLayout 
+(VLayout
 	(HLayout
 		(HLayout
-			(Stock (+ Start-Extra BUTTON))
+			(Stock (+ Start-Extra BUTTON (On-Grab
+				(Steps
+					(Move-All 2 3)
+					(If (== (Count 1) 0)
+						(Flip-All 3 1)
+					)
+					(Flip 1 2)
+					(Flip 1 2)
+					(Flip 1 2)
+				)
+			))
 			(HStack (+ INPUT SPREAD))
+			(Stock HIDDEN)
 		)
-		(Apply (+ GOAL OUTPUT) (HLayout
-			(Slot (Filter (Clubs Standard)))
-			(Slot (Filter (Hearts Standard)))
-			(Slot (Filter (Spades Standard)))
-			(Slot (Filter (Diamonds Standard)))
-		))
-	)
-	(Apply (+ T1 (Filter (Alternating (Reverse Standard)))) (HLayout
-		(VStack (Start 0 1))
-		(VStack (Start 1 1))
-		(VStack (Start 2 1))
-		(VStack (Start 3 1))
-		(VStack (Start 4 1))
-		(VStack (Start 5 1))
-		(VStack (Start 6 1))
-	))
-)
-
-(Steps
-	(If (= from 1)
-		(Steps
-			(Move-All 2 3)
-			(Flip 1 2)
-			(Flip 1 2)
-			(Flip 1 2)
-
-			(If 1 (Count 0)
-				(Flip-All 3 1)
+		(Apply (+ GOAL OUTPUT)
+			(HLayout
+				(Slot (Filter (Clubs Standard)))
+				(Slot (Filter (Hearts Standard)))
+				(Slot (Filter (Spades Standard)))
+				(Slot (Filter (Diamonds Standard)))
 			)
 		)
 	)
-	(If to GOAL
-		(For-Each T1 t
-			Soft-Move t to
+	(Apply 
+		(+
+			(Filter (Alternating (Reverse Standard)))
+			(On-Grab (For-Each GOAL g (Soft-Move this g))
+		)
+		(HLayout
+			(VStack (Start 0 1))
+			(VStack (Start 1 1))
+			(VStack (Start 2 1))
+			(VStack (Start 3 1))
+			(VStack (Start 4 1))
+			(VStack (Start 5 1))
+			(VStack (Start 6 1))
 		)
 	)
-	(For-Each GOAL g
-		Soft-Move from g
-	)
 )
-

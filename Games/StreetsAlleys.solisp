@@ -9,6 +9,7 @@ Streets and Alleys, Normal
 			MIRRORED
 			(Start 0 7)
 			(Filter-Open (Reverse Standard))
+			(On-Grab (For-Each GOAL g (Soft-Move this g))
 		)))
 	)
 	(Apply (+ GOAL OUTPUT) (VLayout
@@ -21,17 +22,7 @@ Streets and Alleys, Normal
 		(Clone 4 (HStack (+
 			(Start 0 6)
 			(Filter-Open (Reverse Standard))
+			(On-Grab (For-Each GOAL g (Soft-Move this g))
 		)))
-	)
-)
-
-(Steps
-	(If to GOAL
-		(For-Each T1 t
-			Soft-Move t to
-		)
-	)
-	(For-Each GOAL g
-		Soft-Move from g
 	)
 )

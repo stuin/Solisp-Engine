@@ -1,5 +1,10 @@
 #include "lisp.h"
 
+/*
+ * Created by Stuart Irwin on 29/10/2019.
+ * Library functions for lisp system.
+ */
+
 void build_library() {
 	//Add base string functions
 	library[STRING]["+"] = [](marker pos, marker end) {
