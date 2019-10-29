@@ -13,6 +13,7 @@ void build_library() {
 			value += str_eval(*pos++);
 		return cell(value);
 	};
+	library[STRING]["*"] = library[STRING]["+"];
 
 	//Add base number functions
 	library[NUMBER]["+"] = [](marker pos, marker end) {
@@ -40,11 +41,8 @@ void build_library() {
 				return cell(0);
 		return cell(1);
 	};
-	library[NUMBER]["Set"] = [](marker pos, marker end) {
-		string name = str_eval(*pos++);
-		int value = num_eval(*pos++);
-		env[name] = value;
-		return value;
+	library[NUMBER]["Num"] = [](marker pos, marker end) {
+		return num_eval(*pos);
 	};
 
 	//Add other general functions
@@ -57,5 +55,23 @@ void build_library() {
 				return *pos;
 			return cell(0);
 		}
+	};
+	library[EXPR]["For-Each"] = [](marker pos, marker end) {
+		pos++;
+		int array[] = {2, 2, 2};
+		string var = str_eval(*pos++);
+		sexpr *output = new sexpr();
+		output->push_back(cell("*"));
+
+		//Combine each value
+		for(int i : array) {
+			env[var] = i;
+			output->push_back(eval(*pos, NUMBER));
+		}
+		return cell(*output);
+	};
+	library[EXPR]["Set"] = [](marker pos, marker end) {
+		string name = str_eval(*pos++);
+		return env[name] = eval(*pos, EXPR);
 	};
 }

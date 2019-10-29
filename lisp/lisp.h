@@ -24,13 +24,14 @@ struct cell {
 	cell_type type;
 	std::variant<sexpr, string, int> content;
 
+	cell() { cell(""); }
 	cell(string s) : content{std::move(s)} { type = STRING; }
 	cell(int n) : content{std::move(n)} { type = NUMBER; }
 	cell(sexpr s) : content{std::move(s)} { type = EXPR; }
 };
 
 //Variable storage
-std::map<string, int> env;
+std::map<string, cell> env;
 
 //Library structure
 std::map<string, builtin> library[3];
@@ -50,7 +51,7 @@ builtin check_shelf(string name, std::vector<cell_type> type) {
 
 builtin search_library(string name, cell_type type) {
 	switch(type) {
-		case STRING: case EXPR: 
+		case STRING: case EXPR:
 			return check_shelf(name, {STRING, NUMBER, EXPR});
 		case NUMBER:
 			return check_shelf(name, {NUMBER, STRING, EXPR});
@@ -61,8 +62,14 @@ builtin search_library(string name, cell_type type) {
 //Base eval function
 cell eval(sexpr const &c, cell_type type);
 cell eval(cell const &c, cell_type type) {
-	if(c.type == EXPR)
-    	return std::visit([](auto const &c) { return eval(c, EXPR); }, c.content);
+	if(c.type == EXPR) switch(type) {
+		case NUMBER:
+			return std::visit([](auto const &c) { return eval(c, NUMBER); }, c.content);
+		case STRING:
+			return std::visit([](auto const &c) { return eval(c, STRING); }, c.content);
+		default:
+			return std::visit([](auto const &c) { return eval(c, EXPR); }, c.content);
+	}
     return c;
 }
 
@@ -83,9 +90,11 @@ int num_eval(cell const &c) {
 		string s = std::get<string>(c.content);
 		if(isdigit(s[0]) || s[0] == '-')
 			return std::stoi(s);
+
+		//Try accessing variable value
 		auto it = env.find(s);
 		if(it != env.end())
-			return it->second;
+			return num_eval(it->second);
 		if(s[0] == 't' || s[0] == 'T')
 			return 1;
 		throw std::domain_error("No variable or value found for " + s);
@@ -113,8 +122,9 @@ int main() {
 			"+"s,
 			sexpr{"-"s, 30, sexpr{"Set"s, "x"s, 14}},
 			sexpr{"If"s,
-				sexpr{"=="s, 14, "x"s},
-				" True "s, " False "s
+				sexpr{"=="s, 13, "x"s},
+				" True "s,
+				sexpr{"Num"s, sexpr{"For-Each"s, "i"s, "i"s, sexpr{"+"s, "i"s, 0}}}
 			},
 			"Hello "s, "world!"s
 		};
