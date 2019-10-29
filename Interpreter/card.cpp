@@ -42,7 +42,7 @@ Card *Card::reverse(int index, Card *last) {
 	return other->reverse(index + 1, this);
 }
 
-//Copy entire list with different suit
+//Set entire list to different suit
 Card *Card::withSuit(char suit) {
 	data.suit = suit;
 	if(next != NULL)
@@ -66,7 +66,7 @@ Filter *Card::alternating() {
 	return output;
 }
 
-//Copy list with alternating colors
+//Set list to alternating colors
 Card *Card::alternating(bool black) {
 	data.suit = black ? 'B' : 'R';
 	if(next != NULL)

@@ -74,13 +74,9 @@ public:
 
 	//Flatten all filters into one deck
 	Card *flatten(bool deleteSafe=true) {
+		Card *output = content->clone();
 		if(next != NULL)
-			*content += next->flatten(deleteSafe);
-
-		//Make safe for deletion
-		Card *output = new Card(content);
-		if(deleteSafe)
-			content = NULL;
+			*output += next->flatten(deleteSafe);
 		return output;
 	}
 };
