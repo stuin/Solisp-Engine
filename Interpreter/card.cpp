@@ -50,17 +50,8 @@ Card *Card::withSuit(char suit) {
 	return this;
 }
 
-//Create deck with all four suits
-Card *Card::fourSuit() {
-	withSuit('D');
-	*this += clone()->withSuit('C');
-	*this += clone()->withSuit('H');
-	*this += clone()->withSuit('S');
-	return this;
-}
-
 //Create filter with all four suits
-Filter *Card::fourSuitFilter() {
+Filter *Card::fourSuit() {
 	Filter *output = new Filter(withSuit('D'));
 	*output += clone()->withSuit('C');
 	*output += clone()->withSuit('H');

@@ -11,7 +11,7 @@ using std::bitset;
 
 Card *Builder::getDeck() {
 	Card *output = new Card(1, 13, 'S');
-	return output->fourSuit();
+	return output->fourSuit()->flatten();
 }
 
 int Builder::setStacks(Stack *stack) {

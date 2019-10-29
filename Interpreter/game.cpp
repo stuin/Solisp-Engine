@@ -170,6 +170,8 @@ bool Game::grab(int num, int from) {
 		i++;
 		card = card->getNext();
 	}
+	if(card->isHidden())
+		return false;
 
 	//Set picked cards
 	if(stack[0].matches(num, stack[from].getCard())) {

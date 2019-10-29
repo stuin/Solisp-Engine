@@ -111,8 +111,7 @@ public:
 	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);
 	Card *withSuit(char suit);
-	Card *fourSuit();
-	Filter *fourSuitFilter();
+	Filter *fourSuit();
 	Filter *alternating();
 	Card *alternating(bool black);
 	void operator+=(Card *next);
