@@ -152,13 +152,12 @@ bool Game::grab(int num, int from) {
 	//If top card hidden
 	if(stack[from].getCard()->isHidden()) {
 		*current += new Move(1, from, from, true, true, current);
-		//this->from = from;
 		update();
 		return false;
 	}
 
 	//If stack is output
-	if(stack[from].getTag(2) || num < 1)
+	if(stack[from].getTag(OUTPUT) || num < 1)
 		return false;
 
 	//Check for null or hidden card in stack

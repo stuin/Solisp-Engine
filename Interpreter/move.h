@@ -11,13 +11,15 @@ namespace Solisp {
 
 #define MOVETAGCOUNT 4
 
+enum move_tags { PLAYER, FLIP, VALID, LOOP };
+
 class Solisp::Move {
 private:
 	//Card movements
 	int count;
 	int from;
 	int to;
-	bitset<MOVETAGCOUNT> tags; //player, flip, valid, loop
+	bitset<MOVETAGCOUNT> tags;
 
 	//List references
 	Move *next = NULL;
@@ -43,13 +45,13 @@ public:
 		this->to = to;
 
 		//Set special tags
-		tags[0] = player;
-		tags[1] = flip;
-		tags[2] = true;
+		tags[PLAYER] = player;
+		tags[FLIP] = flip;
+		tags[VALID] = true;
 
 		//Link to previous
 		this->last = last;
-		//tags[3] = checkLoop(last);
+		//tags[LOOP] = checkLoop(last);
 	}
 
 	//Recursizely delete backward
@@ -69,11 +71,11 @@ public:
 	//Add new move to history
 	void operator+=(Move *other) {
 		//Check if state is valid
-		if(!tags[2])
+		if(!tags[VALID])
 			return;
 
 		//If next move is not current
-		if(next == NULL || !next->tags[2]) {
+		if(next == NULL || !next->tags[VALID]) {
 			clearForward();
 			next = other;
 		} else
@@ -82,17 +84,17 @@ public:
 
 	//Set move to invalid
 	void undo() {
-		tags[2] = false;
-		if(!tags[0] && from != 0 && last != NULL)
+		tags[VALID] = false;
+		if(!tags[PLAYER] && from != 0 && last != NULL)
 			last->undo();
 	}
 
 	//Revalidate next move
 	void redo(bool first=true) {
-		if(tags[2] && next != NULL)
+		if(tags[VALID] && next != NULL)
 			next->redo(true);
-		else if(first || !tags[0]) {
-			tags[2] = true;
+		else if(first || !tags[PLAYER]) {
+			tags[VALID] = true;
 			if(next != NULL)
 				next->redo(false);
 		}
@@ -106,7 +108,7 @@ public:
 
 	//Get tag value
 	bool getTag(int tag) {
-		if(tag > 0 && tag < MOVETAGCOUNT)
+		if(tag >= 0 && tag < MOVETAGCOUNT)
 			return tags[tag];
 		return false;
 	}
