@@ -45,6 +45,15 @@ void build_library() {
 		return num_eval(*pos);
 	};
 
+	//Add list functions
+	library[LIST]["List"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		while(pos != end) 
+			output->push_back(eval(*pos++, EXPR));
+		return cell(*output, LIST);
+	};
+	library[LIST]["Steps"] = library[LIST]["List"];
+
 	//Add other general functions
 	library[EXPR]["If"] = [](marker pos, marker end) {
 		if(num_eval(*pos++)) {
@@ -57,15 +66,14 @@ void build_library() {
 		}
 	};
 	library[EXPR]["For-Each"] = [](marker pos, marker end) {
-		pos++;
-		int array[] = {2, 2, 2};
+		sexpr array = list_eval(*pos++);
 		string var = str_eval(*pos++);
 		sexpr *output = new sexpr();
 		output->push_back(cell("*"));
 
 		//Combine each value
-		for(int i : array) {
-			env[var] = i;
+		for(cell c : array) {
+			env[var] = c;
 			output->push_back(eval(*pos, NUMBER));
 		}
 		return cell(*output);

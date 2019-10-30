@@ -12,7 +12,7 @@
  */
 
 struct cell;
-enum cell_type {EXPR, STRING, NUMBER};
+enum cell_type {EXPR, STRING, NUMBER, LIST};
 
 using std::string;
 using sexpr = std::vector<cell>;
@@ -24,20 +24,22 @@ struct cell {
 	cell_type type;
 	std::variant<sexpr, string, int> content;
 
+	//Constructors
 	cell() { cell(""); }
 	cell(string s) : content{std::move(s)} { type = STRING; }
 	cell(int n) : content{std::move(n)} { type = NUMBER; }
 	cell(sexpr s) : content{std::move(s)} { type = EXPR; }
+	cell(sexpr s, cell_type t) : content{std::move(s)} { type = t; }
 };
 
 //Variable storage
 std::map<string, cell> env;
 
 //Library structure
-std::map<string, builtin> library[3];
+std::map<string, builtin> library[4];
 void build_library();
 
-//Library functions
+//Retrieving functions from library
 builtin check_shelf(string name, std::vector<cell_type> type) {
 	int i = 0;
 	do {
@@ -48,28 +50,25 @@ builtin check_shelf(string name, std::vector<cell_type> type) {
 	} while(type[i - 1] != EXPR);
 	throw std::invalid_argument{name + " not in the library"};
 }
-
 builtin search_library(string name, cell_type type) {
 	switch(type) {
-		case STRING: case EXPR:
+		case EXPR:
+			return check_shelf(name, {STRING, NUMBER, LIST, EXPR});
+		case STRING: 
 			return check_shelf(name, {STRING, NUMBER, EXPR});
 		case NUMBER:
 			return check_shelf(name, {NUMBER, STRING, EXPR});
+		case LIST:
+			return check_shelf(name, {LIST, EXPR});
 	}
 	throw std::invalid_argument{name + " not in the library"};
 }
-
+ 
 //Base eval function
 cell eval(sexpr const &c, cell_type type);
 cell eval(cell const &c, cell_type type) {
-	if(c.type == EXPR) switch(type) {
-		case NUMBER:
-			return std::visit([](auto const &c) { return eval(c, NUMBER); }, c.content);
-		case STRING:
-			return std::visit([](auto const &c) { return eval(c, STRING); }, c.content);
-		default:
-			return std::visit([](auto const &c) { return eval(c, EXPR); }, c.content);
-	}
+	if(c.type == EXPR)
+		return std::visit([type](auto const &c) { return eval(c, type); }, c.content);
     return c;
 }
 
@@ -79,7 +78,9 @@ string str_eval(cell const &c) {
 		return std::get<string>(c.content);
 	if(c.type == NUMBER)
 		return std::to_string(std::get<int>(c.content));
-	return str_eval(eval(c, STRING));
+	if(c.type == EXPR)
+		return str_eval(eval(c, STRING));
+	throw std::domain_error("Cannot convert to string");
 }
 
 //Convert to number
@@ -88,6 +89,8 @@ int num_eval(cell const &c) {
 		return std::get<int>(c.content);
 	if(c.type == STRING) {
 		string s = std::get<string>(c.content);
+
+		//If numerical string
 		if(isdigit(s[0]) || s[0] == '-')
 			return std::stoi(s);
 
@@ -95,11 +98,35 @@ int num_eval(cell const &c) {
 		auto it = env.find(s);
 		if(it != env.end())
 			return num_eval(it->second);
+		
+		//Try boolean values
 		if(s[0] == 't' || s[0] == 'T')
 			return 1;
+		if(s[0] == 'f' || s[0] == 'F')
+			return 0;
+
 		throw std::domain_error("No variable or value found for " + s);
 	}
-	return num_eval(eval(c, NUMBER));
+	if(c.type == EXPR)
+		return num_eval(eval(c, NUMBER));
+	throw std::domain_error("Cannot convert to number");
+}
+
+//Convert to list
+sexpr list_eval(cell const &c) {
+	if(c.type == LIST)
+		return std::get<sexpr>(c.content);
+	if(c.type == STRING) {
+		//Try accessing variable value
+		string s = str_eval(c);
+		auto it = env.find(s);
+		if(it != env.end())
+			return list_eval(it->second);
+		throw std::domain_error("No variable found for " + s);
+	}
+	if(c.type == EXPR)
+		return list_eval(eval(c, LIST));
+	throw std::domain_error("Cannot convert to list");
 }
 
 //Actual expression evaluation
@@ -120,13 +147,18 @@ int main() {
 		//Build test tree
 		auto const prog = sexpr{
 			"+"s,
-			sexpr{"-"s, 30, sexpr{"Set"s, "x"s, 14}},
+			sexpr{"Set"s, "x"s, 14},
+			" "s,
 			sexpr{"If"s,
 				sexpr{"=="s, 13, "x"s},
 				" True "s,
-				sexpr{"Num"s, sexpr{"For-Each"s, "i"s, "i"s, sexpr{"+"s, "i"s, 0}}}
+				sexpr{"For-Each"s, 
+					sexpr{"List"s, 2, 3, 4},
+					"i"s,
+					sexpr{"-"s, "i"s, 1}
+				}
 			},
-			"Hello "s, "world!"s
+			" Hello "s, "world!"s
 		};
 
 		//Build library
