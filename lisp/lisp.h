@@ -249,10 +249,11 @@ void repl(const std::string &prompt, std::istream &in) {
 		}
 
 		try {
-			if(in.eof() && levels != 0 && levels != -1)
-				throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
-			if(object.length() > 0)
+			if(object.length() > 0) {
+				if(in.eof() && levels != 0)
+					throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
 				std::cout << str_eval(read(object)) << '\n';
+			}
 		} catch (std::exception &e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 		}
