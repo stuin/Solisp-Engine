@@ -238,9 +238,8 @@ void repl(const std::string &prompt, std::istream &in) {
 							comment = true;
 						} 
 					}
-					if(c == '"') {
+					if(c == '"')
 						literal = !literal;
-					}
 					if(!comment)
 						object += c;
 				}
@@ -250,8 +249,8 @@ void repl(const std::string &prompt, std::istream &in) {
 		}
 
 		try {
-			if(in.eof() && levels != 0)
-				throw std::domain_error("Non matched parenthesis");
+			if(in.eof() && levels != 0 && levels != -1)
+				throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
 			if(object.length() > 0)
 				std::cout << str_eval(read(object)) << '\n';
 		} catch (std::exception &e) {

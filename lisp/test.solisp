@@ -23,3 +23,5 @@ Passed Failed)
 
 (Str (Eval (Make-List + P a s s e "d")))
 
+(Read "(+ P a s s e d)" )
+
