@@ -53,7 +53,9 @@ builtin check_shelf(string name, std::vector<cell_type> type) {
 }
 builtin search_library(string name, cell_type type) {
 	switch(type) {
-		case STRING: case EXPR:
+		case EXPR:
+			return check_shelf(name, {NUMBER, STRING, LIST, EXPR});
+		case STRING:
 			return check_shelf(name, {STRING, NUMBER, LIST, EXPR});
 		case NUMBER:
 			return check_shelf(name, {NUMBER, STRING, EXPR});

@@ -65,14 +65,16 @@ void build_library() {
 	};
 	library[LIST]["Steps"] = library[LIST]["List"];
 
-	//Add other general functions
+	//Control flow
 	library[EXPR]["If"] = [](marker pos, marker end) {
 		cell output = cell(0);
 		if(num_eval(*pos++)) {
+			//If true
 			output = *pos++;
 			if(pos != end)
 				pos++;
 		} else {
+			//If false
 			pos++;
 			if(pos != end)
 				output = *pos++;
@@ -86,7 +88,7 @@ void build_library() {
 		sexpr *output = new sexpr();
 		output->push_back(cell("List"));
 
-		//Combine each value
+		//Re list each value
 		for(cell c : array) {
 			env[var] = c;
 			output->push_back(eval(*pos++, NUMBER));
