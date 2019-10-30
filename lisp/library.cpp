@@ -5,47 +5,58 @@
  * Library functions for lisp system.
  */
 
+#define DONE if(pos != end) throw std::domain_error("Too many arguments")
+
+template <class T> builtin comparitor(T func) {
+	return [func](marker pos, marker end) {
+		int source = num_eval(*pos++);
+		while(pos != end)
+			if(!func(source, num_eval(*pos++)))
+				return 0;
+		return 1;
+	};
+}
+template <class T> builtin arithmetic(T func) {
+	return [func](marker pos, marker end) {
+		int value = num_eval(*pos++);
+		while(pos != end) 
+			value = func(value, num_eval(*pos++));
+		return value;
+	};
+}
+
 void build_library() {
-	//Add base string functions
+	//Base string functions
 	library[STRING]["+"] = [](marker pos, marker end) {
 		string value;
 		while (pos != end) 
 			value += str_eval(*pos++);
-		return cell(value);
+		return value;
 	};
-	library[STRING]["*"] = library[STRING]["+"];
+	library[NUMBER]["Str"] = [](marker pos, marker end) {
+		cell output = str_eval(*pos++);
+		DONE;
+		return output;
+	};
 
-	//Add base number functions
-	library[NUMBER]["+"] = [](marker pos, marker end) {
-		int value = 0;
-		while(pos != end) 
-			value += num_eval(*pos++);
-		return cell(value);
-	};
-	library[NUMBER]["-"] = [](marker pos, marker end) {
-		int value = num_eval(*pos++);
-		while(pos != end) 
-			value -= num_eval(*pos++);
-		return cell(value);
-	};
-	library[NUMBER]["*"] = [](marker pos, marker end) {
-		int value = 1;
-		while(pos != end) 
-			value *= num_eval(*pos++);
-		return cell(value);
-	};
-	library[NUMBER]["=="] = [](marker pos, marker end) {
-		int source = num_eval(*pos++);
-		while(pos != end)
-			if(source != num_eval(*pos++)) 
-				return cell(0);
-		return cell(1);
-	};
+	//Basic arithmatic
+	library[NUMBER]["+"] = arithmetic(std::plus<int>());
+	library[NUMBER]["-"] = arithmetic(std::minus<int>());
+	library[NUMBER]["*"] = arithmetic(std::multiplies<int>());
+	library[NUMBER]["/"] = arithmetic(std::divides<int>());
+	library[NUMBER]["%"] = arithmetic(std::modulus<int>());
+
+	//Numerical comparisons
+	library[NUMBER]["=="] = comparitor(std::equal_to<int>());
+	library[NUMBER]["!="] = comparitor(std::not_equal_to<int>());
+	library[NUMBER][">"] = comparitor(std::greater<int>());
 	library[NUMBER]["Num"] = [](marker pos, marker end) {
-		return num_eval(*pos);
+		cell output = num_eval(*pos++);
+		DONE;
+		return output;
 	};
 
-	//Add list functions
+	//List building functions
 	library[LIST]["List"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
 		while(pos != end) 
@@ -56,30 +67,53 @@ void build_library() {
 
 	//Add other general functions
 	library[EXPR]["If"] = [](marker pos, marker end) {
+		cell output = cell(0);
 		if(num_eval(*pos++)) {
-			return *pos;
+			output = *pos++;
+			if(pos != end)
+				pos++;
 		} else {
 			pos++;
 			if(pos != end)
-				return *pos;
-			return cell(0);
+				output = *pos++;
 		}
+		DONE;
+		return output;
 	};
 	library[EXPR]["For-Each"] = [](marker pos, marker end) {
 		sexpr array = list_eval(*pos++);
 		string var = str_eval(*pos++);
 		sexpr *output = new sexpr();
-		output->push_back(cell("*"));
+		output->push_back(cell("List"));
 
 		//Combine each value
 		for(cell c : array) {
 			env[var] = c;
-			output->push_back(eval(*pos, NUMBER));
+			output->push_back(eval(*pos++, NUMBER));
 		}
+		DONE;
 		return cell(*output);
 	};
+	library[EXPR]["Combine"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		output->push_back(str_eval(*pos++));
+		sexpr array = list_eval(*pos++);
+		output->insert(output->end(), array.begin(), array.end());
+		DONE;
+		return cell(*output);
+	};
+
+	//Variable management
 	library[EXPR]["Set"] = [](marker pos, marker end) {
 		string name = str_eval(*pos++);
-		return env[name] = eval(*pos, EXPR);
+		cell output = env[name] = *pos++;
+		DONE;
+		return output;
+	};
+	library[EXPR]["Def"] = library[EXPR]["Set"];
+	library[EXPR]["Get"] = [](marker pos, marker end) {
+		string name = str_eval(*pos++);
+		DONE;
+		return env[name];
 	};
 }

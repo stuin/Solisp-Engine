@@ -4,6 +4,7 @@
 #include <functional>
 #include <map>
 #include <stdexcept>
+#include <list>
 #include <iostream>
 
 /*
@@ -52,10 +53,8 @@ builtin check_shelf(string name, std::vector<cell_type> type) {
 }
 builtin search_library(string name, cell_type type) {
 	switch(type) {
-		case EXPR:
+		case STRING: case EXPR:
 			return check_shelf(name, {STRING, NUMBER, LIST, EXPR});
-		case STRING: 
-			return check_shelf(name, {STRING, NUMBER, EXPR});
 		case NUMBER:
 			return check_shelf(name, {NUMBER, STRING, EXPR});
 		case LIST:
@@ -78,6 +77,13 @@ string str_eval(cell const &c) {
 		return std::get<string>(c.content);
 	if(c.type == NUMBER)
 		return std::to_string(std::get<int>(c.content));
+	if(c.type == LIST) {
+		string output;
+		sexpr vec = std::get<sexpr>(c.content);
+		for(cell s : vec)
+			output += str_eval(s) + " ";
+		return output;
+	}
 	if(c.type == EXPR)
 		return str_eval(eval(c, STRING));
 	throw std::domain_error("Cannot convert to string");
@@ -139,35 +145,72 @@ cell eval(sexpr const &s, cell_type type) {
 	}
 }
 
+//Convert given string to list of tokens
+std::list<std::string> tokenize(const std::string & str) {
+    std::list<std::string> tokens;
+    const char * s = str.c_str();
+    while(*s) {
+        while (*s == ' ')
+            ++s;
+        if(*s == '(' || *s == ')')
+            tokens.push_back(*s++ == '(' ? "(" : ")");
+        else {
+            const char * t = s;
+            while(*t && *t != ' ' && *t != '(' && *t != ')')
+                ++t;
+            tokens.push_back(std::string(s, t));
+            s = t;
+        }
+    }
+    return tokens;
+}
+
+//Numbers become Numbers; every other token is a String
+cell atom(const std::string & token) {
+    if(isdigit(token[0]) || (token[0] == '-' && isdigit(token[1])))
+        return cell(stoi(token));
+    return cell(token);
+}
+
+//Return the Lisp expression in the given tokens
+cell read_from(std::list<std::string> & tokens) {
+    const std::string token(tokens.front());
+    tokens.pop_front();
+    if(token == "(") {
+        sexpr *output = new sexpr();
+        while(tokens.front() != ")")
+            output->push_back(read_from(tokens));
+        tokens.pop_front();
+        return cell(*output);
+    }
+    else
+        return atom(token);
+}
+
+//Return the Lisp expression represented by the given string
+cell read(const std::string & s) {
+    std::list<std::string> tokens(tokenize(s));
+    return read_from(tokens);
+}
+
+//The default read-eval-print-loop
+void repl(const std::string & prompt) {
+	for(;;) {
+		std::cout << prompt;
+		std::string line; std::getline(std::cin, line);
+		try {
+			if(line.length() > 0)
+				std::cout << str_eval(read(line)) << '\n';
+		} catch (std::exception &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+		}
+	}
+}
+
+
 //Test main function
 int main() {
-	try {
-		using namespace std::string_literals;
-
-		//Build test tree
-		auto const prog = sexpr{
-			"+"s,
-			sexpr{"Set"s, "x"s, 14},
-			" "s,
-			sexpr{"If"s,
-				sexpr{"=="s, 13, "x"s},
-				" True "s,
-				sexpr{"For-Each"s, 
-					sexpr{"List"s, 2, 3, 4},
-					"i"s,
-					sexpr{"-"s, "i"s, 1}
-				}
-			},
-			" Hello "s, "world!"s
-		};
-
-		//Build library
-		build_library();
-		
-		//Run test code
-		std::cout << str_eval(prog) << std::endl;
-	} catch (std::exception &e) {
-		std::cerr << "Error: " << e.what() << std::endl;
-		return 1;
-	}
+	//Build library
+	build_library();
+	repl("test>");
 }

@@ -19,14 +19,14 @@ Spider, Classic
 			(* 5 (Stock (+
 				INPUT
 				BUTTON
-				(Grab-If (For-Each CUSTOM t (> (Count t) 0))
+				(Grab-If (Combine * (For-Each CUSTOM t (> (Count t) 0))))
 				(On-Grab (For-Each CUSTOM t (Move 2 t)))
 				(Start 10 0)
 			)))
 		)
 	)
 	(Apply 
-		(+ T1 (Filter-Open (Reverse Standard)))
+		(+ CUSTOM (Filter-Open (Reverse Standard)))
 		(HLayout
 			(* 4 (VStack (Start 5 1)))
 			(* 6 (VStack (Start 4 1)))
