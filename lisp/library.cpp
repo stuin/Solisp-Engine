@@ -57,7 +57,7 @@ void build_library() {
 	};
 
 	//List building functions
-	library[LIST]["List"] = [](marker pos, marker end) {
+	library[LIST]["Steps"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
 		while(pos != end) 
 			output->push_back(eval(*pos++, EXPR));
@@ -71,6 +71,11 @@ void build_library() {
 		}
 		DONE;
 		return cell(*output);
+	};
+	library[NUMBER]["List"] = [](marker pos, marker end) {
+		cell output = list_eval(*pos++);
+		DONE;
+		return output;
 	};
 
 	//Control flow

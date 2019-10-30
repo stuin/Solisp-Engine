@@ -156,13 +156,15 @@ std::list<std::string> tokenize(const std::string & str) {
     std::list<std::string> tokens;
     const char * s = str.c_str();
     while(*s) {
-        while (*s == ' ')
+        while (*s == ' ' || *s == '\t')
             ++s;
         if(*s == '(' || *s == ')')
             tokens.push_back(*s++ == '(' ? "(" : ")");
+        else if(*s == '{' || *s == '}')
+            tokens.push_back(*s++ == '{' ? "{" : "}");
         else {
             const char * t = s;
-            while(*t && *t != ' ' && *t != '(' && *t != ')')
+            while(*t && *t != ' ' && *t != '(' && *t != ')' && *t != '{' && *t != '}')
                 ++t;
             tokens.push_back(std::string(s, t));
             s = t;
@@ -181,13 +183,14 @@ cell atom(const std::string & token) {
 //Return the Lisp expression in the given tokens
 cell read_from(std::list<std::string> & tokens) {
     const std::string token(tokens.front());
+    //cell_type type = (token == "{") ? LIST : EXPR;
     tokens.pop_front();
-    if(token == "(") {
+    if(token == "(" || token == "{") {
         sexpr *output = new sexpr();
-        while(tokens.front() != ")")
+        while(tokens.front() != ")" && tokens.front() != "}")
             output->push_back(read_from(tokens));
         tokens.pop_front();
-        return cell(*output);
+        return cell(*output, EXPR);
     }
     else
         return atom(token);
@@ -203,10 +206,35 @@ cell read(const std::string & s) {
 void repl(const std::string &prompt, std::istream &in) {
 	while(!in.eof()) {
 		std::cout << prompt;
-		std::string line; std::getline(in, line);
+		std::string object;
+		int levels = -1;
+		bool string = false;
+
+		//Count parenthesis
+		while(levels != 0 && !in.eof()) {
+			std::string line;
+			std::getline(in, line);
+			if(line.length() > 0) {
+				if(levels == -1)
+					levels = 0;
+				object += line;
+				for(char c : line) {
+					if(!string && (c == '(' || c == '{')) {
+						levels++;
+					} else if(!string && (c == ')' || c == '}')) {
+						levels--;
+					} else if(c == '"') {
+						levels++;
+						if(string)
+							levels -= 2;
+						string = !string;
+					}
+				}
+			}
+		}
 		try {
-			if(line.length() > 0)
-				std::cout << str_eval(read(line)) << '\n';
+			if(object.length() > 0)
+				std::cout << str_eval(read(object)) << '\n';
 		} catch (std::exception &e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 		}
