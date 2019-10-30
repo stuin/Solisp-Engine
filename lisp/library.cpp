@@ -63,7 +63,15 @@ void build_library() {
 			output->push_back(eval(*pos++, EXPR));
 		return cell(*output, LIST);
 	};
-	library[LIST]["Steps"] = library[LIST]["List"];
+	library[LIST]["+"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		while(pos != end) {
+			sexpr array = list_eval(*pos++);
+			output->insert(output->end(), array.begin(), array.end());
+		}
+		DONE;
+		return cell(*output);
+	};
 
 	//Control flow
 	library[EXPR]["If"] = [](marker pos, marker end) {
@@ -86,7 +94,6 @@ void build_library() {
 		sexpr array = list_eval(*pos++);
 		string var = str_eval(*pos++);
 		sexpr *output = new sexpr();
-		output->push_back(cell("List"));
 
 		//Re list each value
 		for(cell c : array) {
@@ -94,15 +101,7 @@ void build_library() {
 			output->push_back(eval(*pos++, NUMBER));
 		}
 		DONE;
-		return cell(*output);
-	};
-	library[EXPR]["Combine"] = [](marker pos, marker end) {
-		sexpr *output = new sexpr();
-		output->push_back(str_eval(*pos++));
-		sexpr array = list_eval(*pos++);
-		output->insert(output->end(), array.begin(), array.end());
-		DONE;
-		return cell(*output);
+		return cell(*output, LIST);
 	};
 
 	//Variable management

@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <list>
 #include <iostream>
+#include <fstream>
 
 /*
  * Created by Stuart Irwin on 28/10/2019.
@@ -130,11 +131,14 @@ sexpr list_eval(cell const &c) {
 		auto it = env.find(s);
 		if(it != env.end())
 			return list_eval(it->second);
-		throw std::domain_error("No variable found for " + s);
 	}
 	if(c.type == EXPR)
 		return list_eval(eval(c, LIST));
-	throw std::domain_error("Cannot convert to list");
+
+	//Convert to single object list
+	sexpr *output = new sexpr();
+	output->push_back(c);
+	return *output;
 }
 
 //Actual expression evaluation
@@ -196,10 +200,10 @@ cell read(const std::string & s) {
 }
 
 //The default read-eval-print-loop
-void repl(const std::string & prompt) {
-	for(;;) {
+void repl(const std::string &prompt, std::istream &in) {
+	while(!in.eof()) {
 		std::cout << prompt;
-		std::string line; std::getline(std::cin, line);
+		std::string line; std::getline(in, line);
 		try {
 			if(line.length() > 0)
 				std::cout << str_eval(read(line)) << '\n';
@@ -211,8 +215,15 @@ void repl(const std::string & prompt) {
 
 
 //Test main function
-int main() {
+int main(int argc, char const *argv[])
+{
 	//Build library
 	build_library();
-	repl("test>");
+
+	if(argc > 1) {
+		std::ifstream infile(argv[1]);
+		if(infile.good())
+			repl("", infile);
+	} else
+		repl("test>", std::cin);
 }
