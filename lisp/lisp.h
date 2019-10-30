@@ -50,7 +50,7 @@ builtin check_shelf(string name, std::vector<cell_type> type) {
 			return b->second;
 		i++;
 	} while(type[i - 1] != EXPR);
-	throw std::invalid_argument{name + " not in the library"};
+	throw std::invalid_argument{name + " not in the library for type " + std::to_string(type[0])};
 }
 builtin search_library(string name, cell_type type) {
 	switch(type) {
@@ -63,7 +63,7 @@ builtin search_library(string name, cell_type type) {
 		case LIST:
 			return check_shelf(name, {LIST, EXPR});
 	}
-	throw std::invalid_argument{name + " not in the library"};
+	throw std::invalid_argument{name + " not a valid type"};
 }
  
 //Base eval function
@@ -89,7 +89,7 @@ string str_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return str_eval(eval(c, STRING));
-	throw std::domain_error("Cannot convert to string");
+	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
 //Convert to number
@@ -118,7 +118,7 @@ int num_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return num_eval(eval(c, NUMBER));
-	throw std::domain_error("Cannot convert to number");
+	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
 //Convert to list
@@ -183,14 +183,14 @@ cell atom(const std::string & token) {
 //Return the Lisp expression in the given tokens
 cell read_from(std::list<std::string> & tokens) {
     const std::string token(tokens.front());
-    //cell_type type = (token == "{") ? LIST : EXPR;
+    cell_type type = (token == "{") ? LIST : EXPR;
     tokens.pop_front();
     if(token == "(" || token == "{") {
         sexpr *output = new sexpr();
         while(tokens.front() != ")" && tokens.front() != "}")
             output->push_back(read_from(tokens));
         tokens.pop_front();
-        return cell(*output, EXPR);
+        return cell(*output, type);
     }
     else
         return atom(token);

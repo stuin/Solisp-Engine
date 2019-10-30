@@ -6,5 +6,6 @@
 	(% 15 10)
 ) Passed Failed)
 (+ Pass ed)
-(If (== (Str (+ 3 2)) 32) Passed Failed)
+(If (> (Str (+ 3 2)) 30) Passed Failed)
+(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) Passed Failed)
 

@@ -50,6 +50,7 @@ void build_library() {
 	library[NUMBER]["=="] = comparitor(std::equal_to<int>());
 	library[NUMBER]["!="] = comparitor(std::not_equal_to<int>());
 	library[NUMBER][">"] = comparitor(std::greater<int>());
+	library[NUMBER]["<"] = comparitor(std::less<int>());
 	library[NUMBER]["Num"] = [](marker pos, marker end) {
 		cell output = num_eval(*pos++);
 		DONE;
@@ -70,12 +71,12 @@ void build_library() {
 			output->insert(output->end(), array.begin(), array.end());
 		}
 		DONE;
-		return cell(*output);
+		return cell(*output, LIST);
 	};
-	library[NUMBER]["List"] = [](marker pos, marker end) {
-		cell output = list_eval(*pos++);
+	library[LIST]["List"] = [](marker pos, marker end) {
+		sexpr output = list_eval(*pos++);
 		DONE;
-		return output;
+		return cell(output, LIST);
 	};
 
 	//Control flow
@@ -107,6 +108,9 @@ void build_library() {
 		}
 		DONE;
 		return cell(*output, LIST);
+	};
+	library[EXPR]["Eval"] = [](marker pos, marker end) {
+		return eval(list_eval(*pos++), EXPR);
 	};
 
 	//Variable management
