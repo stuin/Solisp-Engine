@@ -154,7 +154,7 @@ cell eval(sexpr const &s, cell_type type) {
 //Convert given string to list of tokens
 std::list<std::string> tokenize(const std::string & str) {
     std::list<std::string> tokens;
-    const char * s = str.c_str();
+    const char *s = str.c_str();
     while(*s) {
         while (*s == ' ' || *s == '\t')
             ++s;
@@ -162,9 +162,15 @@ std::list<std::string> tokenize(const std::string & str) {
             tokens.push_back(*s++ == '(' ? "(" : ")");
         else if(*s == '{' || *s == '}')
             tokens.push_back(*s++ == '{' ? "{" : "}");
-        else {
+        else if(*s == '"') {
+        	const char *t = ++s;
+            while(*t && *t != '"')
+                ++t;
+            tokens.push_back(std::string(s, t));
+            s = ++t;
+        } else {
             const char * t = s;
-            while(*t && *t != ' ' && *t != '(' && *t != ')' && *t != '{' && *t != '}')
+            while(*t && *t != ' ' && *t != '\t' && *t != '(' && *t != ')' && *t != '{' && *t != '}')
                 ++t;
             tokens.push_back(std::string(s, t));
             s = t;
@@ -208,31 +214,44 @@ void repl(const std::string &prompt, std::istream &in) {
 		std::cout << prompt;
 		std::string object;
 		int levels = -1;
-		bool string = false;
+		bool literal = false;
 
 		//Count parenthesis
 		while(levels != 0 && !in.eof()) {
+			bool comment = false;
 			std::string line;
 			std::getline(in, line);
 			if(line.length() > 0) {
 				if(levels == -1)
 					levels = 0;
-				object += line;
+
+				//Each letter
 				for(char c : line) {
-					if(!string && (c == '(' || c == '{')) {
-						levels++;
-					} else if(!string && (c == ')' || c == '}')) {
-						levels--;
-					} else if(c == '"') {
-						levels++;
-						if(string)
-							levels -= 2;
-						string = !string;
+					if(!literal && !comment) {
+						if(c == '(' || c == '{') {
+							levels++;
+						} else if(c == ')' || c == '}') {
+							levels--;
+						} else if(c == '#') {
+							if(object.length() > 0)
+								object += ' ';
+							comment = true;
+						} 
 					}
+					if(c == '"') {
+						literal = !literal;
+					}
+					if(!comment)
+						object += c;
 				}
+				if(!comment)
+					object += ' ';
 			}
 		}
+
 		try {
+			if(in.eof() && levels != 0)
+				throw std::domain_error("Non matched parenthesis");
 			if(object.length() > 0)
 				std::cout << str_eval(read(object)) << '\n';
 		} catch (std::exception &e) {

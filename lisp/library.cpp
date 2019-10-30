@@ -58,7 +58,7 @@ void build_library() {
 	};
 
 	//List building functions
-	library[LIST]["Steps"] = [](marker pos, marker end) {
+	library[LIST]["Make-List"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
 		while(pos != end) 
 			output->push_back(eval(*pos++, EXPR));
@@ -104,13 +104,24 @@ void build_library() {
 		//Re list each value
 		for(cell c : array) {
 			env[var] = c;
-			output->push_back(eval(*pos++, NUMBER));
+			output->push_back(eval(*pos, EXPR));
 		}
+		pos++;
 		DONE;
 		return cell(*output, LIST);
 	};
+	library[EXPR]["Map"] = library[EXPR]["For-Each"];
+
+	//Run data as code
 	library[EXPR]["Eval"] = [](marker pos, marker end) {
-		return eval(list_eval(*pos++), EXPR);
+		cell c = cell(list_eval(*pos++), EXPR);
+		DONE;
+		return c;
+	};
+	library[EXPR]["Read"] = [](marker pos, marker end) {
+		cell c = read(str_eval(*pos++));
+		DONE;
+		return c;
 	};
 
 	//Variable management

@@ -1,11 +1,25 @@
+#General system test
+"Every line should return Passed"
+
+(If#Formatting check
+1	  Passed Failed)
+
 (If (== 
-	(Num (+ 3 2)) 
+	(Num (+ 3 2)) # Each of these lines returns 5
 	(- 10 5) 
 	(* 5 1) 
 	(/ 20 4) 
 	(% 15 10)
 ) Passed Failed)
-(+ Pass ed)
-(If (> (Str (+ 3 2)) 30) Passed Failed)
-(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) Passed Failed)
+
+(If (> (Str (+ 3 2)) 30) #32 > 30
+Passed Failed)
+
+(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) 
+Passed Failed)
+
+(If (Eval (+ * (For-Each (Get list) i (!= i 0)))) 
+Passed Failed)
+
+(Str (Eval (Make-List + P a s s e "d")))
 
