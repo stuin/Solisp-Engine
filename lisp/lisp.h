@@ -23,9 +23,9 @@ using builtin = std::function<auto(marker, marker)->cell>;
 
 //Allow for simulated additional types
 #ifndef type_count
+#define type_count 4
 
 //Base type lists
-#define type_count 4
 enum cell_type {EXPR, STRING, NUMBER, LIST};
 cell_type type_conversions[type_count][type_count] = {
 	{NUMBER, STRING, LIST, EXPR},
@@ -34,13 +34,13 @@ cell_type type_conversions[type_count][type_count] = {
 	{LIST, STRING, EXPR}
 };
 
-//Additional type conversions
+#endif
+
+//Allow additional type conversions
 #define addons false
 string str_eval_cont(cell const &c);
 int num_eval_cont(cell const &c);
 sexpr list_eval_cont(cell const &c);
-
-#endif
 
 //Main data sructure
 struct cell {
@@ -274,7 +274,7 @@ void repl(const std::string &prompt, std::istream &in) {
 }
 
 
-//Test main function
+//Base main function
 int main(int argc, char const *argv[])
 {
 	//Build library
