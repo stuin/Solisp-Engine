@@ -10,16 +10,37 @@
 
 /*
  * Created by Stuart Irwin on 28/10/2019.
- * Based on https://kirit.com/Build%20me%20a%20LISP and https://gist.github.com/ofan/721464
+ * Base list structures and systems
+ * Based on https://gist.github.com/KayEss/45a2e88675832228f57e2d598afc02ae and https://gist.github.com/ofan/721464
  */
 
+//Main data types
 struct cell;
-enum cell_type {EXPR, STRING, NUMBER, LIST};
-
 using std::string;
 using sexpr = std::vector<cell>;
 using marker = sexpr::const_iterator;
 using builtin = std::function<auto(marker, marker)->cell>;
+
+//Allow for simulated additional types
+#ifndef type_count
+
+//Base type lists
+#define type_count 4
+enum cell_type {EXPR, STRING, NUMBER, LIST};
+cell_type type_conversions[type_count][type_count] = {
+	{NUMBER, STRING, LIST, EXPR},
+	{STRING, NUMBER, LIST, EXPR},
+	{NUMBER, STRING, EXPR},
+	{LIST, STRING, EXPR}
+};
+
+//Additional type conversions
+#define addons false
+string str_eval_cont(cell const &c);
+int num_eval_cont(cell const &c);
+sexpr list_eval_cont(cell const &c);
+
+#endif
 
 //Main data sructure
 struct cell {
@@ -28,42 +49,28 @@ struct cell {
 
 	//Constructors
 	cell() { cell(""); }
-	cell(string s) : content{std::move(s)} { type = STRING; }
-	cell(int n) : content{std::move(n)} { type = NUMBER; }
-	cell(sexpr s) : content{std::move(s)} { type = EXPR; }
-	cell(sexpr s, cell_type t) : content{std::move(s)} { type = t; }
+	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
+	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
+	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
 };
 
 //Variable storage
 std::map<string, cell> env;
 
 //Library structure
-std::map<string, builtin> library[4];
+std::map<string, builtin> library[type_count];
 void build_library();
 
 //Retrieving functions from library
-builtin check_shelf(string name, std::vector<cell_type> type) {
+builtin search_library(string name, cell_type type) {
 	int i = 0;
 	do {
-		auto b = library[type[i]].find(name);
-		if(b != library[type[i]].end())
+		auto b = library[type_conversions[type][i]].find(name);
+		if(b != library[type_conversions[type][i]].end())
 			return b->second;
 		i++;
-	} while(type[i - 1] != EXPR);
-	throw std::invalid_argument{name + " not in the library for type " + std::to_string(type[0])};
-}
-builtin search_library(string name, cell_type type) {
-	switch(type) {
-		case EXPR:
-			return check_shelf(name, {NUMBER, STRING, LIST, EXPR});
-		case STRING:
-			return check_shelf(name, {STRING, NUMBER, LIST, EXPR});
-		case NUMBER:
-			return check_shelf(name, {NUMBER, STRING, EXPR});
-		case LIST:
-			return check_shelf(name, {LIST, EXPR});
-	}
-	throw std::invalid_argument{name + " not a valid type"};
+	} while(type_conversions[type][i - 1] != EXPR);
+	throw std::invalid_argument{name + " not in the library for type " + std::to_string(type)};
 }
  
 //Base eval function
@@ -89,6 +96,8 @@ string str_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return str_eval(eval(c, STRING));
+	if(addons)
+		return str_eval_cont(c);
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
@@ -118,6 +127,8 @@ int num_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return num_eval(eval(c, NUMBER));
+	if(addons)
+		return num_eval_cont(c);
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
@@ -134,6 +145,8 @@ sexpr list_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return list_eval(eval(c, LIST));
+	if(addons)
+		return list_eval_cont(c);
 
 	//Convert to single object list
 	sexpr *output = new sexpr();
