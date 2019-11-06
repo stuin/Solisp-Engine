@@ -73,6 +73,12 @@ void build_library() {
 		DONE;
 		return cell(*output, LIST);
 	};
+	library[LIST]["Reverse"] = [](marker pos, marker end) {
+		sexpr output = list_eval(*pos++);
+		std::reverse(output.begin(),output.end());
+		DONE;
+		return cell(output, LIST);
+	};
 	library[LIST]["List"] = [](marker pos, marker end) {
 		sexpr output = list_eval(*pos++);
 		DONE;
@@ -137,4 +143,7 @@ void build_library() {
 		DONE;
 		return env[name];
 	};
+
+	if(addons)
+		build_library_cont();
 }

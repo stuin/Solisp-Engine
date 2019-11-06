@@ -1,6 +1,8 @@
 #include "Card.h"
 #include "Filter.h"
 
+#include <iostream>
+
 /*
  * Created by Stuart Irwin on 5/10/2019.
  * Card setup functions
@@ -80,4 +82,28 @@ void Card::operator+=(Card *next) {
 		this->next = next;
 	else
 		*(this->next) += next;
+}
+
+//Print full stack of cards
+void Card::printStack() {
+	std::cout << "{" << cardFace(data) << "," << data.suit << "}, ";
+	if(next != NULL)
+		next->printStack();
+}
+
+//Get face character from cardData
+char cardFace(Solisp::cardData card) {
+	switch(card.value) {
+		case 1:
+			return 'A';
+		case 10:
+			return 'T';
+		case 11:
+			return 'J';
+		case 12:
+			return 'Q';
+		case 13:
+			return 'K';
+	}
+	return '0' + card.value;
 }

@@ -1,57 +1,109 @@
-#include "../Interpreter/card.h"
+#include "card_lisp.h"
 
 /*
- * Created by Stuart Irwin on 1/11/2019.
- * Solitaire lisp types and additional functions
+ * Created by Stuart Irwin on 4/11/2019.
+ * Library functions for Solitaire lisp system.
  */
 
-//Added type lists
-#define type_count 6
-enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, FILTER};
-cell_type type_conversions[type_count][type_count] = {
-	{NUMBER, STRING, LIST, CARD, FILTER, EXPR},
-	{STRING, NUMBER, LIST, CARD, EXPR},
-	{NUMBER, STRING, CARD, EXPR},
-	{LIST, FILTER, NUMBER, STRING, CARD, EXPR}
-};
+builtin setSuit(char suit) {
+	return [suit](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		sexpr array = deck_eval(*pos++);
 
-//Import lisp system
-#define addons true
-#include "lisp.h"
+		//Add all cards to new deck
+		for(cell c : array) {
+			card d = card_eval(c);
+			d.suit = suit;
+			output->push_back(d);
+		}
 
-string str_eval_cont(cell const &c) {
-	//Card is stored as string
-	if(type == CARD)
-		return std::get<string>(c.content); 
+		DONE;
+		return cell(*output, DECK);
+	};
 }
 
-int num_eval_cont(cell const &c) {
-	if(type == CARD) {
-		string s = std::get<string>(c.content);
-		return std::stoi(s.substr(0, s.length() - 1));
-	}
+void build_variables() {
+	sexpr *standard = new sexpr();
+	standard->reserve(13);
+	for(int i = 1; i <= 13; i++)
+		standard->push_back(to_card("N" + std::to_string(i)));
+	env["Standard"] = cell(*standard, DECK);
 }
 
-sexpr list_eval_cont(cell const &c) {
-	if(c.type == FILTER)
-		return std::get<sexpr>(c.content);
-}
+void build_library_cont() {
+	build_variables();
 
-cardData to_card(string s) {
-	cardData data;
-	data.value = std::stoi(s.substr(0, s.length() - 1));
-	data.face = s.back();
-	return data;
-}
+	//Set up special filters
+	library[FILTER]["Four-Suit"] = [](marker pos, marker end) {
+		sexpr array = deck_eval(*pos++);
+		sexpr *output = new sexpr();
 
-cardData card_eval(cell const &c) {
-	if(c.type == CARD)
-		return to_card(std::get<string>(c.content));
-	if(c.type == STRING) {
-		string s = std::get<string>(c.content);
-		if(s.length() >= 2 && s.length() <= 3)
-			return to_card(std::get<string>(c.content));
-	}
-	if(c.type == NUMBER)
-		return { 'N',  (char)std::get<int>(c.content) };
+		sexpr *deck = new sexpr();
+		deck->push_back(cell("Hearts"));
+		deck->push_back(cell(array, DECK));
+		output->push_back(cell(*deck, EXPR));
+
+		deck = new sexpr();
+		deck->push_back(cell("Spades"));
+		deck->push_back(cell(array, DECK));
+		output->push_back(cell(*deck, EXPR));
+
+		deck = new sexpr();
+		deck->push_back(cell("Diamonds"));
+		deck->push_back(cell(array, DECK));
+		output->push_back(cell(*deck, EXPR));
+
+		deck = new sexpr();
+		deck->push_back(cell("Clubs"));
+		deck->push_back(cell(array, DECK));
+		output->push_back(cell(*deck, EXPR));
+
+		return cell(*output, FILTER);
+	};
+	library[FILTER]["Alternating"] = [](marker pos, marker end) {
+		sexpr array = deck_eval(*pos++);
+		sexpr *output = new sexpr();
+
+		bool red = false;
+		sexpr *deck = new sexpr();
+		for(cell c : array) {
+			card d = card_eval(c);
+			d.suit = red ? 'R' : 'B';
+			red = !red;
+			deck->push_back(d);
+		}
+		output->push_back(cell(*deck, DECK));
+
+		red = true;
+		deck = new sexpr();
+		for(cell c : array) {
+			card d = card_eval(c);
+			d.suit = red ? 'R' : 'B';
+			red = !red;
+			deck->push_back(d);
+		}
+		output->push_back(cell(*deck, DECK));
+
+		return cell(*output, FILTER);
+	};
+	library[FILTER]["Filter"] = [](marker pos, marker end) {
+		sexpr output = filter_eval(*pos++);
+		DONE;
+		return cell(output, FILTER);
+	};
+	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
+
+	//Change suit of deck
+	library[DECK]["Hearts"] = setSuit('H');
+	library[DECK]["Spades"] = setSuit('S');
+	library[DECK]["Diamonds"] = setSuit('D');
+	library[DECK]["Clubs"] = setSuit('C');
+	library[DECK]["Red"] = setSuit('R');
+	library[DECK]["Black"] = setSuit('B');
+
+	library[DECK]["Deck"] = [](marker pos, marker end) {
+		sexpr output = deck_eval(*pos++);
+		DONE;
+		return cell(output, DECK);
+	};
 }

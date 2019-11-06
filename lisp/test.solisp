@@ -25,3 +25,5 @@ Passed Failed)
 
 (Read "(+ P a s s e d)" )
 
+(Str (Eval (Reverse {d e s s a P +})))
+

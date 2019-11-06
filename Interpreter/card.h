@@ -115,4 +115,7 @@ public:
 	Filter *alternating();
 	Card *alternating(bool black);
 	void operator+=(Card *next);
+	void printStack();
 };
+
+char cardFace(Solisp::cardData card);

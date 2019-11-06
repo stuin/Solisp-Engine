@@ -3,28 +3,6 @@
 #include <iostream>
 using std::cout;
 
-char cardFace(Solisp::Card *card) {
-	switch(card->getData().value) {
-		case 1:
-			return 'A';
-		case 10:
-			return 'T';
-		case 11:
-			return 'J';
-		case 12:
-			return 'Q';
-		case 13:
-			return 'K';
-	}
-	return '0' + card->getData().value;
-}
-
-void printStack(Solisp::Card *card) {
-	cout << "{" << cardFace(card) << "," << card->getData().suit << "}, ";
-	if(card->getNext() != NULL)
-		printStack(card->getNext());
-}
-
 int main() {
 	cout << "Initializing variables\n";
 	Solisp::Game game;
@@ -38,7 +16,7 @@ int main() {
 
 	cout << "Setting up game\n";
 	Solisp::Card *card = game.setup(builder);
-	printStack(card);
+	card->printStack();
 	game.update();
 
 	cout << " Listing slots\n";
@@ -46,7 +24,7 @@ int main() {
 	while(game.getStack(i) != NULL)	{
 		cout << "Stack " << i << ": ";
 		if(game.getStack(i)->getCard() != NULL)
-			printStack(game.getStack(i)->getCard());
+			game.getStack(i)->getCard()->printStack();
 		cout << "\n";
 		i++;
 	}

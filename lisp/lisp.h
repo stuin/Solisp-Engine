@@ -24,6 +24,7 @@ using builtin = std::function<auto(marker, marker)->cell>;
 //Allow for simulated additional types
 #ifndef type_count
 #define type_count 4
+#define addons false
 
 //Base type lists
 enum cell_type {EXPR, STRING, NUMBER, LIST};
@@ -33,14 +34,6 @@ cell_type type_conversions[type_count][type_count] = {
 	{NUMBER, STRING, EXPR},
 	{LIST, STRING, EXPR}
 };
-
-#endif
-
-//Allow additional type conversions
-#define addons false
-string str_eval_cont(cell const &c);
-int num_eval_cont(cell const &c);
-sexpr list_eval_cont(cell const &c);
 
 //Main data sructure
 struct cell {
@@ -53,6 +46,14 @@ struct cell {
 	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
 };
+
+#endif
+
+//Allow additional type conversions
+string str_eval_cont(cell const &c);
+int num_eval_cont(cell const &c);
+sexpr list_eval_cont(cell const &c);
+void build_library_cont();
 
 //Variable storage
 std::map<string, cell> env;
@@ -271,19 +272,4 @@ void repl(const std::string &prompt, std::istream &in) {
 			std::cerr << "Error: " << e.what() << std::endl;
 		}
 	}
-}
-
-
-//Base main function
-int main(int argc, char const *argv[])
-{
-	//Build library
-	build_library();
-
-	if(argc > 1) {
-		std::ifstream infile(argv[1]);
-		if(infile.good())
-			repl("", infile);
-	} else
-		repl("test>", std::cin);
 }
