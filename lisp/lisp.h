@@ -20,6 +20,7 @@ using std::string;
 using sexpr = std::vector<cell>;
 using marker = sexpr::const_iterator;
 using builtin = std::function<auto(marker, marker)->cell>;
+using force_builtin = std::function<cell(const cell&)>;
 
 //Allow for simulated additional types
 #ifndef type_count
@@ -45,6 +46,11 @@ struct cell {
 	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
 	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
+
+	//Equality
+	friend bool operator==(const cell &first, const cell &second) {
+		return first.content == second.content;
+	}
 };
 
 #endif
@@ -153,6 +159,13 @@ sexpr list_eval(cell const &c) {
 	sexpr *output = new sexpr();
 	output->push_back(c);
 	return *output;
+}
+
+force_builtin force_eval[type_count];
+template <class T> void set_force_eval(T func, cell_type type) {
+	force_eval[type] = [func, type](cell const &c) {
+		return cell(func(c), type);
+	};
 }
 
 //Actual expression evaluation

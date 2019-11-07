@@ -91,7 +91,7 @@ void Card::printStack() {
 		next->printStack();
 }
 
-//Get face character from cardData
+//Get card face from card data
 char cardFace(Solisp::cardData card) {
 	switch(card.value) {
 		case 1:

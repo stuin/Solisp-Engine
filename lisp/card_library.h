@@ -33,6 +33,17 @@ void build_variables() {
 void build_library_cont() {
 	build_variables();
 
+	//Set force evaluators
+	set_force_eval(&card_eval, CARD);
+	set_force_eval(&deck_eval, DECK);
+	set_force_eval(&filter_eval, FILTER);
+
+	//Link force evaluators
+	library[CARD]["Card"] = forcer(CARD);
+	library[DECK]["Deck"] = forcer(DECK);
+	library[FILTER]["Filter"] = forcer(FILTER);
+	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
+
 	//Set up special filters
 	library[FILTER]["Four-Suit"] = [](marker pos, marker end) {
 		sexpr array = deck_eval(*pos++);
@@ -86,12 +97,6 @@ void build_library_cont() {
 
 		return cell(*output, FILTER);
 	};
-	library[FILTER]["Filter"] = [](marker pos, marker end) {
-		sexpr output = filter_eval(*pos++);
-		DONE;
-		return cell(output, FILTER);
-	};
-	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
 
 	//Change suit of deck
 	library[DECK]["Hearts"] = setSuit('H');
@@ -100,10 +105,4 @@ void build_library_cont() {
 	library[DECK]["Clubs"] = setSuit('C');
 	library[DECK]["Red"] = setSuit('R');
 	library[DECK]["Black"] = setSuit('B');
-
-	library[DECK]["Deck"] = [](marker pos, marker end) {
-		sexpr output = deck_eval(*pos++);
-		DONE;
-		return cell(output, DECK);
-	};
 }

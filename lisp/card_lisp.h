@@ -38,6 +38,11 @@ struct cell {
 	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
 	cell(card c, cell_type t = CARD) : content{std::move(c)} { type = t; }
+
+	//Equality
+	friend bool operator==(const cell &first, const cell &second) {
+		return first.content == second.content;
+	}
 };
 
 //Import lisp system

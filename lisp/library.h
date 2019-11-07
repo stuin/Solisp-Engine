@@ -24,19 +24,31 @@ template <class T> builtin arithmetic(T func) {
 		return value;
 	};
 }
+builtin forcer(cell_type type) {
+	return [type](marker pos, marker end) {
+		cell output = force_eval[type](*pos++);
+		DONE;
+		return output;
+	};
+}
 
 void build_library() {
-	//Base string functions
+	//Set force evaluators
+	set_force_eval(&str_eval, STRING); 
+	set_force_eval(&num_eval, NUMBER);
+	set_force_eval(&list_eval, LIST);
+
+	//Link force evaluators
+	library[STRING]["Str"] = forcer(STRING);
+	library[NUMBER]["Num"] = forcer(NUMBER);
+	library[LIST]["List"] = forcer(LIST);
+
+	//String concatanation
 	library[STRING]["+"] = [](marker pos, marker end) {
 		string value;
 		while (pos != end) 
 			value += str_eval(*pos++);
 		return value;
-	};
-	library[NUMBER]["Str"] = [](marker pos, marker end) {
-		cell output = str_eval(*pos++);
-		DONE;
-		return output;
 	};
 
 	//Basic arithmatic
@@ -47,15 +59,8 @@ void build_library() {
 	library[NUMBER]["%"] = arithmetic(std::modulus<int>());
 
 	//Numerical comparisons
-	library[NUMBER]["=="] = comparitor(std::equal_to<int>());
-	library[NUMBER]["!="] = comparitor(std::not_equal_to<int>());
 	library[NUMBER][">"] = comparitor(std::greater<int>());
 	library[NUMBER]["<"] = comparitor(std::less<int>());
-	library[NUMBER]["Num"] = [](marker pos, marker end) {
-		cell output = num_eval(*pos++);
-		DONE;
-		return output;
-	};
 
 	//List building functions
 	library[LIST]["Make-List"] = [](marker pos, marker end) {
@@ -73,14 +78,23 @@ void build_library() {
 		DONE;
 		return cell(*output, LIST);
 	};
+	library[LIST]["-"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		cell arraycell = *pos;
+		sexpr array = list_eval(*pos++);
+		cell remove = eval(*pos++, EXPR);
+		
+		//Copy all non-matching cells
+		for(cell c : array) {
+			if(!(remove == force_eval[remove.type](c)))
+				output->push_back(c);
+		}
+		DONE;
+		return cell(*output, LIST);
+	};
 	library[LIST]["Reverse"] = [](marker pos, marker end) {
 		sexpr output = list_eval(*pos++);
 		std::reverse(output.begin(),output.end());
-		DONE;
-		return cell(output, LIST);
-	};
-	library[LIST]["List"] = [](marker pos, marker end) {
-		sexpr output = list_eval(*pos++);
 		DONE;
 		return cell(output, LIST);
 	};
@@ -142,6 +156,23 @@ void build_library() {
 		string name = str_eval(*pos++);
 		DONE;
 		return env[name];
+	};
+
+	//Universal comparison
+	library[EXPR]["=="] = [](marker pos, marker end) {
+		cell c = eval(*pos++, EXPR);
+		while(pos != end) {
+			if(!(c.content == force_eval[c.type](*pos++).content))
+				return 0;
+		}
+		return 1;
+	};
+	library[EXPR]["!="] = [](marker pos, marker end) {
+		cell c = eval(*pos++, EXPR);
+		while(pos != end)
+			if(c.content == force_eval[c.type](*pos++).content)
+				return 0;
+		return 1;
 	};
 
 	if(addons)
