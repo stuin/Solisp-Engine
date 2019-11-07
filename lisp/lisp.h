@@ -4,9 +4,6 @@
 #include <functional>
 #include <map>
 #include <stdexcept>
-#include <list>
-#include <iostream>
-#include <fstream>
 
 /*
  * Created by Stuart Irwin on 28/10/2019.
@@ -14,7 +11,7 @@
  * Based on https://gist.github.com/KayEss/45a2e88675832228f57e2d598afc02ae and https://gist.github.com/ofan/721464
  */
 
-//Main data types
+//Main simple data types
 struct cell;
 using std::string;
 using sexpr = std::vector<cell>;
@@ -22,7 +19,7 @@ using marker = sexpr::const_iterator;
 using builtin = std::function<auto(marker, marker)->cell>;
 using force_builtin = std::function<cell(const cell&)>;
 
-//Allow for simulated additional types
+//Allow for adding specialized types
 #ifndef type_count
 #define type_count 4
 #define addons false
@@ -72,11 +69,13 @@ void build_library();
 builtin search_library(string name, cell_type type) {
 	int i = 0;
 	do {
+		//Check every function in a convertable type
 		auto b = library[type_conversions[type][i]].find(name);
 		if(b != library[type_conversions[type][i]].end())
 			return b->second;
 		i++;
 	} while(type_conversions[type][i - 1] != EXPR);
+
 	throw std::invalid_argument{name + " not in the library for type " + std::to_string(type)};
 }
  

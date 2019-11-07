@@ -8,6 +8,7 @@
 
 #define DONE if(pos != end) throw std::domain_error("Too many arguments")
 
+//Build a number comparison function
 template <class T> builtin comparitor(T func) {
 	return [func](marker pos, marker end) {
 		int source = num_eval(*pos++);
@@ -17,6 +18,8 @@ template <class T> builtin comparitor(T func) {
 		return 1;
 	};
 }
+
+//Build a number arithmatic function
 template <class T> builtin arithmetic(T func) {
 	return [func](marker pos, marker end) {
 		int value = num_eval(*pos++);
@@ -25,6 +28,8 @@ template <class T> builtin arithmetic(T func) {
 		return value;
 	};
 }
+
+//Build a function to force set the type of a structure
 builtin forcer(cell_type type) {
 	return [type](marker pos, marker end) {
 		cell output = force_eval[type](*pos++);
@@ -34,7 +39,7 @@ builtin forcer(cell_type type) {
 }
 
 void build_library() {
-	//Set force evaluators
+	//Build force evaluators
 	set_force_eval(&str_eval, STRING); 
 	set_force_eval(&num_eval, NUMBER);
 	set_force_eval(&list_eval, LIST);
@@ -159,7 +164,7 @@ void build_library() {
 		return env[name];
 	};
 
-	//Universal comparison
+	//Universal comparisons
 	library[EXPR]["=="] = [](marker pos, marker end) {
 		cell c = eval(*pos++, EXPR);
 		while(pos != end) {

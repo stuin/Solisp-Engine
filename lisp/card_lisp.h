@@ -9,12 +9,13 @@
  * Solitaire lisp types and convertions
  */
 
+//Required early type definitions
 struct cell;
 using std::string;
 using sexpr = std::vector<cell>;
 using card = Solisp::cardData;
 
-//Added type lists
+//Expanded type lists
 #define type_count 7
 enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER};
 cell_type type_conversions[type_count][type_count] = {
@@ -45,7 +46,7 @@ struct cell {
 	}
 };
 
-//Import lisp system
+//Import main lisp system
 #define addons true
 #include "library.h"
 
@@ -68,6 +69,7 @@ string str_eval_cont(cell const &c) {
 	if(c.type == CARD)
 		return to_string(std::get<card>(c.content));
 	if(c.type == DECK || c.type == FILTER) {
+		//Treat as normal list
 		string output;
 		sexpr vec = std::get<sexpr>(c.content);
 		for(cell s : vec)
@@ -119,6 +121,7 @@ card card_eval(cell const &c) {
 	throw std::domain_error("Cannot convert to card from type " + std::to_string(c.type));
 }
 
+//Convert cell to deck
 sexpr deck_eval(cell const &c) {
 	if(c.type == DECK)
 		return std::get<sexpr>(c.content);
@@ -135,7 +138,7 @@ sexpr deck_eval(cell const &c) {
 		sexpr array = std::get<sexpr>(c.content);
 		sexpr *output = new sexpr();
 
-		//Convert all contents to cards
+		//Flatten contained decks into one
 		for(cell value : array) {
 			sexpr deck = deck_eval(value);
 			output->insert(output->end(), deck.begin(), deck.end());
@@ -147,6 +150,7 @@ sexpr deck_eval(cell const &c) {
 	return list_eval(c);
 }
 
+//Convert cell to filter
 sexpr filter_eval(cell const &c) {
 	if(c.type == FILTER)
 		return std::get<sexpr>(c.content);
