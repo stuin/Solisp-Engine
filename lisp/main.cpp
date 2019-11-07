@@ -8,8 +8,15 @@ int main(int argc, char const *argv[])
 
 	if(argc > 1) {
 		std::ifstream infile(argv[1]);
-		if(infile.good())
-			repl("", infile);
-	} else
-		repl("test>", std::cin);
+		if(infile.good()) {
+			while(!infile.eof())
+				std::cout << str_eval(read_stream(infile, STRING)) + "\n";
+		}
+	} else {
+		while(true) {
+			std::cout << "test>";
+			std::cout << str_eval(read_stream(std::cin, STRING)) + "\n";
+		}	
+	}
+	
 }

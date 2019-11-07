@@ -1,4 +1,5 @@
 #include "lisp.h"
+#include "reader.h"
 
 /*
  * Created by Stuart Irwin on 29/10/2019.
