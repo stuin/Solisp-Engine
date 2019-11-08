@@ -1,24 +1,22 @@
 Devil's Grip, Challenge
 
-(Clone 2 (Four-Suit (- Standard 1)))
+(* 2 (Four-Suit (- Standard 1)))
 (Max 1)
 
 (VLayout
 	(GLayout 8
-		(Clone 24 (VStack (+ 
+		(* 24 (VStack { 
 			Goal
 			(Start 0 1)
-			(Filter (+
-				(Same-Suit (Add 2 5 8 11))
-				(Same-Suit (Add 3 6 9 12))
-				(Same-Suit (Add 4 7 10 13))
-			))
-		)))
+			(Filter {
+				(Same-Suit {2 5 8 11})
+				(Same-Suit {3 6 9 12})
+				(Same-Suit {4 7 10 13})
+			})
+		}))
 	)
 	(HLayout
 		(Stock Start-Extra)
-		(HStack (+ 
-			INPUT
-		))
+		(HStack INPUT)
 	)
 )

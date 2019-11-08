@@ -6,8 +6,8 @@ Klondike, Classic
 (VLayout
 	(HLayout
 		(HLayout
-			(Stock (+ Start-Extra BUTTON (On-Grab
-				(Steps
+			(Stock { Start-Extra BUTTON (On-Grab
+				{
 					(Move-All 2 3)
 					(If (== (Count 1) 0)
 						(Flip-All 3 1)
@@ -15,12 +15,12 @@ Klondike, Classic
 					(Flip 1 2)
 					(Flip 1 2)
 					(Flip 1 2)
-				)
-			))
-			(HStack (+ INPUT SPREAD))
+				}
+			)}
+			(HStack {INPUT SPREAD})
 			(Stock HIDDEN)
 		)
-		(Apply (+ GOAL OUTPUT)
+		(Apply {GOAL OUTPUT}
 			(HLayout
 				(Slot (Filter (Clubs Standard)))
 				(Slot (Filter (Hearts Standard)))
@@ -30,10 +30,10 @@ Klondike, Classic
 		)
 	)
 	(Apply 
-		(+
+		{
 			(Filter (Alternating (Reverse Standard)))
 			(On-Grab (For-Each GOAL g (Soft-Move this g))
-		)
+		}
 		(HLayout
 			(VStack (Start 0 1))
 			(VStack (Start 1 1))

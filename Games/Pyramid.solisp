@@ -5,33 +5,29 @@ Pyramid, Classic
 
 (VLayout
 	(Apply 
-		(Filter (Any 
+		(Filter { 
 			(+ 12 1)	(+ 1 12)
 			(+ 11 2)	(+ 2 11)
 			(+ 10 3) 	(+ 3 10)
 			(+ 9 4) 	(+ 4 9)
 			(+ 8 5)		(+ 5 8)
 			(+ 7 6)		(+ 6 7)
-		))
+		})
 		(HLayout 
 			(PStack (Start 0 28))
-			(HStack (+ 
+			(HStack { 
 				GOAL
 				HIDDEN
-			))
+			})
 		)
 	)
 	(HLayout
-		(Slot (Start-Extra))
-		(Slot (+
-			INPUT
-		))
-		(Slot (+
-			INPUT
-		))
+		(Slot Start-Extra)
+		(Slot INPUT)
+		(Slot INPUT)
 	)
-	(Slot (+
+	(Slot {
 		GOAL
 		HIDDEN
-	))
+	})
 )
