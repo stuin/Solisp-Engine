@@ -65,17 +65,25 @@ cell read(const std::string & s) {
     return read_from(tokens);
 }
 
+int start_line = 0;
+
 //Read objects spanning multiple lines into one string
-cell read_stream(std::istream &in, cell_type type) {
+cell read_stream(std::istream &in, cell_type type, int new_line = -1) {
 	std::string object;
 	int levels = -1;
 	bool literal = false;
+
+	if(new_line != -1)
+		start_line = new_line;
+	int end_line = new_line = start_line;
 
 	//For each incomplete line
 	while((levels != 0 || object.length() < 1) && !in.eof()) {
 		bool comment = false;
 		std::string line;
 		std::getline(in, line);
+		end_line++;
+
 		if(line.length() > 0) {
 			if(levels == -1)
 				levels = 0;
@@ -94,26 +102,40 @@ cell read_stream(std::istream &in, cell_type type) {
 						comment = true;
 					} 
 				}
+
 				if(c == '"')
 					literal = !literal;
-				if(!comment)
+
+				//Add other character
+				if(c == '\t')
+					object += ' ';
+				else if(!comment)
 					object += c;
 			}
 			if(!comment)
 				object += ' ';
-		}
+
+			if(new_line == end_line - 1 && comment)
+				new_line++;
+		} else if(new_line == end_line - 1)
+			new_line++;
 	}
+	
 
 	//Run actual evaluation with error checking
 	try {
 		if(object.length() > 0) {
 			if(in.eof() && levels != 0)
 				throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
-			
+ 
+			start_line = end_line;
 			return force_eval[type](read(object));
 		}
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << "Within lines " << new_line << " to " << end_line;
 	}
+
+	start_line = end_line;
 	return cell("");
 }

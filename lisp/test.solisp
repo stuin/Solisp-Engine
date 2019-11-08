@@ -2,7 +2,7 @@
 "Every line should return Passed"
 
 #Math test
-(If (== 
+(If (==
 	(Num (+ 3 2)) # Each of these lines returns 5
 	(- 10 5) 
 	(* 5 1) 
