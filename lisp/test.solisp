@@ -1,9 +1,7 @@
 #General system test
 "Every line should return Passed"
 
-(If#Formatting check
-1	  Passed Failed)
-
+#Math test
 (If (== 
 	(Num (+ 3 2)) # Each of these lines returns 5
 	(- 10 5) 
@@ -12,18 +10,33 @@
 	(% 15 10)
 ) Passed Failed)
 
+#Basic type setting + string concat
 (If (> (Str (+ 3 2)) 30) #32 > 30
 Passed Failed)
 
+#Summing up lists
 (If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) 
 Passed Failed)
 
+#For each loops and multipling together lists
 (If (Eval (+ * (For-Each (Get list) i (!= i 0)))) 
 Passed Failed)
 
+#Alternate list building
 (Str (Eval (Make-List + P a s s e "d")))
 
+#Run full string as code
 (Read "(+ P a s s e d)" )
 
+#Reverse list
 (Str (Eval (Reverse {d e s s a P +})))
+
+#Duplicating list
+(If (== (Num (Eval (+ + (* 4 {1 1})))) 8)
+Passed Failed)
+
+#Weird formatting test
+(If#Testing
+1(Str 		 Passed)"Failed"
+)
 

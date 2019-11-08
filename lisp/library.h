@@ -40,6 +40,9 @@ builtin forcer(cell_type type) {
 
 void build_library() {
 	//Build force evaluators
+	force_eval[EXPR] = [](cell const &c) {
+		return c;
+	};
 	set_force_eval(&str_eval, STRING); 
 	set_force_eval(&num_eval, NUMBER);
 	set_force_eval(&list_eval, LIST);
@@ -95,6 +98,17 @@ void build_library() {
 			if(!(remove == force_eval[remove.type](c)))
 				output->push_back(c);
 		}
+		DONE;
+		return cell(*output, LIST);
+	};
+	library[LIST]["*"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		int count = num_eval(*pos++);
+		sexpr array = list_eval(*pos++);
+
+		for(int i = 0; i < count; i++)
+			output->insert(output->end(), array.begin(), array.end());
+		
 		DONE;
 		return cell(*output, LIST);
 	};
