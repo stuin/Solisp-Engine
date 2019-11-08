@@ -12,7 +12,7 @@ std::list<std::string> tokenize(const std::string & str) {
     std::list<std::string> tokens;
     const char *s = str.c_str();
     while(*s) {
-        while(*s == ' ' || *s == '\t')
+        while(*s == ' ')
             ++s;
         if(*s == '(' || *s == ')')
             tokens.push_back(*s++ == '(' ? "(" : ")");
@@ -27,7 +27,7 @@ std::list<std::string> tokenize(const std::string & str) {
             s = ++t;
         } else {
             const char * t = s;
-            while(*t && *t != ' ' && *t != '\t' && *t != '(' && *t != ')' && *t != '{' && *t != '}')
+            while(*t && *t != ' ' && *t != '(' && *t != ')' && *t != '{' && *t != '}')
                 ++t;
             tokens.push_back(std::string(s, t));
             s = t;
@@ -133,7 +133,8 @@ cell read_stream(std::istream &in, cell_type type, int new_line = -1) {
 		}
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
-		std::cerr << "Within lines " << new_line << " to " << end_line;
+		std::cerr << "Within lines " << new_line << " to " << end_line << "\n";
+		std::cerr << object << "\n";
 	}
 
 	start_line = end_line;
