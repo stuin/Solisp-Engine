@@ -23,6 +23,16 @@ builtin setSuit(char suit) {
 	};
 }
 
+builtin buildLayout(int index) {
+	return [index](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		output->push_back(index);
+		output->push_back(list_eval(*pos++));
+		DONE;
+		return cell(*output, LAYOUT);
+	};
+}
+
 //Set global lisp variables
 void build_variables() {
 	sexpr *standard = new sexpr();
@@ -39,12 +49,12 @@ void build_library_cont() {
 	set_force_eval(&card_eval, CARD);
 	set_force_eval(&deck_eval, DECK);
 	set_force_eval(&filter_eval, FILTER);
+	set_force_eval(&layout_eval, LAYOUT);
 
 	//Link force evaluators
 	library[CARD]["Card"] = forcer(CARD);
 	library[DECK]["Deck"] = forcer(DECK);
 	library[FILTER]["Filter"] = forcer(FILTER);
-	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
 
 	//Set up special filters
 	library[FILTER]["Four-Suit"] = [](marker pos, marker end) {
@@ -91,4 +101,33 @@ void build_library_cont() {
 	library[DECK]["Clubs"] = setSuit('C');
 	library[DECK]["Red"] = setSuit('R');
 	library[DECK]["Black"] = setSuit('B');
+
+	//Create layout to hold slots
+	library[LAYOUT]["VLayout"] = buildLayout(-1);
+	library[LAYOUT]["HLayout"] = buildLayout(-2);
+	library[LAYOUT]["VStack"] = buildLayout(1);
+	library[LAYOUT]["HStack"] = buildLayout(2);
+	library[LAYOUT]["PStack"] = buildLayout(3);
+	library[LAYOUT]["Slot"] = buildLayout(4);
+
+	//Grid layout of specific width
+	library[LAYOUT]["GLayout"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		output->push_back(-3);
+		output->push_back(num_eval(*pos++));
+		output->push_back(list_eval(*pos++));
+		DONE;
+		return cell(*output, LAYOUT);
+	};
+
+	//Apply tags to all contained slots
+	library[LAYOUT]["Apply"] = [](marker pos, marker end) {
+		sexpr *output = new sexpr();
+		output->push_back(-4);
+		output->push_back(list_eval(*pos++));
+		output->push_back(list_eval(*pos++));
+
+		DONE;
+		return cell(*output, LAYOUT);
+	};
 }

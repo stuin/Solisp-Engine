@@ -16,7 +16,7 @@ Devil's Grip, Challenge
 		}))
 	)
 	(HLayout
-		(Stock Start-Extra)
+		(Slot Start-Extra)
 		(HStack INPUT)
 	)
 )

@@ -16,16 +16,17 @@ using sexpr = std::vector<cell>;
 using card = Solisp::cardData;
 
 //Expanded type lists
-#define type_count 7
-enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER};
+#define type_count 8
+enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT};
 cell_type type_conversions[type_count][type_count] = {
-	{NUMBER, STRING, LIST, CARD, DECK, FILTER, EXPR},
-	{STRING, NUMBER, LIST, CARD, DECK, FILTER, EXPR},
+	{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
+	{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
 	{NUMBER, STRING, CARD, EXPR},
 	{LIST, DECK, FILTER, NUMBER, STRING, CARD, EXPR},
 	{CARD, NUMBER, STRING, EXPR},
 	{DECK, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
-	{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR}
+	{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
+	{LAYOUT, LIST, STRING, EXPR}
 };
 
 //Main data sructure
@@ -115,6 +116,12 @@ card card_eval(cell const &c) {
 	}
 	if(c.type == NUMBER)
 		return to_card("N" + std::to_string(std::get<int>(c.content)));
+	if(c.type == STRING) {
+		//Try locating variable
+		auto it = env.find(std::get<string>(c.content));
+		if(it != env.end())
+			return card_eval(it->second);
+	}
 	if(c.type == EXPR)
 		return card_eval(eval(c, CARD));
 
@@ -145,6 +152,12 @@ sexpr deck_eval(cell const &c) {
 		}
 		return *output;
 	}
+	if(c.type == STRING) {
+		//Try locating variable
+		auto it = env.find(std::get<string>(c.content));
+		if(it != env.end())
+			return card_eval(it->second);
+	}
 	if(c.type == EXPR)
 		return deck_eval(eval(c, DECK));
 	return list_eval(c);
@@ -168,7 +181,27 @@ sexpr filter_eval(cell const &c) {
 		output->push_back(c);
 		return *output;
 	}
+	if(c.type == STRING) {
+		//Try locating variable
+		auto it = env.find(std::get<string>(c.content));
+		if(it != env.end())
+			return card_eval(it->second);
+	}
 	if(c.type == EXPR)
 		return filter_eval(eval(c, FILTER));
 	return list_eval(c);
+}
+
+//Convert cell to layout
+sexpr layout_eval(cell const &c) {
+	if(c.type == LAYOUT || c.type == LIST)
+		return std::get<sexpr>(c.content);
+	if(c.type == STRING) {
+		//Try locating variable
+		auto it = env.find(std::get<string>(c.content));
+		if(it != env.end())
+			return card_eval(it->second);
+	}
+	if(c.type == EXPR)
+		return layout_eval(cell const &c);
 }

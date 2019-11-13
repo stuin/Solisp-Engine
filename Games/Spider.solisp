@@ -16,7 +16,7 @@ Spider, Classic
 			}))
 		)
 		(HLayout
-			(* 5 (Stock {
+			(* 5 (Slot {
 				INPUT
 				BUTTON
 				(Grab-If (Eval (+ * (For-Each CUSTOM t (> (Count t) 0)))))

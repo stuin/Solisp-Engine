@@ -6,7 +6,7 @@ Klondike, Classic
 (VLayout
 	(HLayout
 		(HLayout
-			(Stock { Start-Extra BUTTON (On-Grab
+			(Slot { Start-Extra BUTTON (On-Grab
 				{
 					(Move-All 2 3)
 					(If (== (Count 1) 0)
@@ -18,7 +18,7 @@ Klondike, Classic
 				}
 			)}
 			(HStack {INPUT SPREAD})
-			(Stock HIDDEN)
+			(Slot {INPUT OUTPUT})
 		)
 		(Apply {GOAL OUTPUT}
 			(HLayout
