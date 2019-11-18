@@ -1,4 +1,4 @@
-#include "../Interpreter/card.h"
+#include "card.h"
 
 #include <vector>
 #include <string>
@@ -13,7 +13,7 @@
 struct cell;
 using std::string;
 using sexpr = std::vector<cell>;
-using card = Solisp::cardData;
+using Solisp::cardData;
 
 //Expanded type lists
 #define type_count 8
@@ -32,14 +32,14 @@ cell_type type_conversions[type_count][type_count] = {
 //Main data sructure
 struct cell {
 	cell_type type;
-	std::variant<sexpr, string, int, card> content;
+	std::variant<sexpr, string, int, cardData> content;
 
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
 	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
-	cell(card c, cell_type t = CARD) : content{std::move(c)} { type = t; }
+	cell(cardData c, cell_type t = CARD) : content{std::move(c)} { type = t; }
 
 	//Equality
 	friend bool operator==(const cell &first, const cell &second) {
@@ -52,15 +52,15 @@ struct cell {
 #include "library.h"
 
 //Convert stored string to card
-card to_card(string s) {
-	card data;
+cardData to_card(string s) {
+	cardData data;
 	data.value = std::stoi(s.substr(1));
 	data.suit = s.front();
 	return data;
 }
 
 //Convert card to string
-string to_string(card card) {
+string to_string(cardData card) {
 	return card.suit + std::to_string(card.value);
 }
 
@@ -68,7 +68,7 @@ string to_string(card card) {
 string str_eval_cont(cell const &c) {
 	//Card is stored as string
 	if(c.type == CARD)
-		return to_string(std::get<card>(c.content));
+		return to_string(std::get<cardData>(c.content));
 	if(c.type == DECK || c.type == FILTER) {
 		//Treat as normal list
 		string output;
@@ -83,7 +83,7 @@ string str_eval_cont(cell const &c) {
 //Convert special types to numbers
 int num_eval_cont(cell const &c) {
 	if(c.type == CARD)
-		return std::get<card>(c.content).value;
+		return std::get<cardData>(c.content).value;
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
@@ -99,9 +99,9 @@ sexpr list_eval_cont(cell const &c) {
 }
 
 //Convert to card
-card card_eval(cell const &c) {
+cardData card_eval(cell const &c) {
 	if(c.type == CARD)
-		return std::get<card>(c.content);
+		return std::get<cardData>(c.content);
 	if(c.type == STRING) {
 		string s = std::get<string>(c.content);
 
@@ -156,7 +156,7 @@ sexpr deck_eval(cell const &c) {
 		//Try locating variable
 		auto it = env.find(std::get<string>(c.content));
 		if(it != env.end())
-			return card_eval(it->second);
+			return deck_eval(it->second);
 	}
 	if(c.type == EXPR)
 		return deck_eval(eval(c, DECK));
@@ -185,7 +185,7 @@ sexpr filter_eval(cell const &c) {
 		//Try locating variable
 		auto it = env.find(std::get<string>(c.content));
 		if(it != env.end())
-			return card_eval(it->second);
+			return filter_eval(it->second);
 	}
 	if(c.type == EXPR)
 		return filter_eval(eval(c, FILTER));
@@ -200,8 +200,9 @@ sexpr layout_eval(cell const &c) {
 		//Try locating variable
 		auto it = env.find(std::get<string>(c.content));
 		if(it != env.end())
-			return card_eval(it->second);
+			return layout_eval(it->second);
 	}
 	if(c.type == EXPR)
-		return layout_eval(cell const &c);
+		return layout_eval(eval(c, LAYOUT));
+	return list_eval(c);
 }

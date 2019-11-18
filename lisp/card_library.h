@@ -13,7 +13,7 @@ builtin setSuit(char suit) {
 
 		//Add all cards to new deck
 		for(cell c : array) {
-			card d = card_eval(c);
+			cardData d = card_eval(c);
 			d.suit = suit;
 			output->push_back(d);
 		}
@@ -82,7 +82,7 @@ void build_library_cont() {
 			sexpr *deck = new sexpr();
 			for(cell c : array) {
 				//Set each card color
-				card d = card_eval(c);
+				cardData d = card_eval(c);
 				d.suit = red ? 'R' : 'B';
 				red = !red;
 				deck->push_back(d);

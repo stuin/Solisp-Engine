@@ -10,8 +10,9 @@ using Solisp::Card;
 using std::bitset;
 
 Card *Builder::getDeck() {
-	Card *output = new Card(1, 13, 'S');
-	return output->fourSuit()->flatten();
+	std::string tree = "(Four-Suit Standard)";
+	Card *c = new Card(tree);
+	return c;
 }
 
 int Builder::setStacks(Stack *stack) {
