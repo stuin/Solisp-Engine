@@ -128,10 +128,10 @@ void Game::deal() {
 
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
-	STACKCOUNT = builder->setStacks(stack);
-	
 	stack[0].setCard(builder->getDeck());
 	Card *card = stack[0].getCard();
+
+	STACKCOUNT = builder->setStacks(stack);
 
 	deal();
 	//apply();

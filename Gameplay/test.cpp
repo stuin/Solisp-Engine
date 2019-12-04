@@ -21,7 +21,7 @@ int main() {
 
 	cout << " Listing slots\n";
 	i = 0;
-	while(game.getStack(i) != NULL)	{
+	while(game.getStack(i) != NULL && i < 20)	{
 		cout << "Stack " << i << ": ";
 		if(game.getStack(i)->getCard() != NULL)
 			game.getStack(i)->getCard()->printStack();

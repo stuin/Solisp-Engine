@@ -1,5 +1,4 @@
 #include "Filter.h"
-#include "../lisp/card_library.h"
 
 #include <iostream>
 
@@ -10,25 +9,6 @@
 
 using Solisp::Card;
 using Solisp::Filter;
-
-//Create card from lisp cell
-Card::Card(std::string &s) {
-	build_library();
-	Card *current = NULL;
-	sexpr deck = deck_eval(read(s));
-	for(cell card : deck) {
-		//Initial card
-		if(current == NULL) {
-			data = card_eval(card);
-			current = this;
-		} else {
-			//Add to list
-			Card *value = new Card(card_eval(card));
-			current->next = value;
-			current = value;
-		}
-	}
-}
 
 //Constructor for full list of cards
 Card::Card(char start, char end, char suit) {

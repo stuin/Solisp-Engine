@@ -53,7 +53,7 @@ struct cell {
 #endif
 
 //Allow additional type conversions
-string str_eval_cont(cell const &c);
+string str_eval_cont(cell const &c, bool literal=false);
 int num_eval_cont(cell const &c);
 sexpr list_eval_cont(cell const &c);
 void build_library_cont();
@@ -88,22 +88,23 @@ cell eval(cell const &c, cell_type type) {
 }
 
 //Convert to string
-string str_eval(cell const &c) {
+string str_eval(cell const &c, bool literal=false) {
 	if(c.type == STRING)
 		return std::get<string>(c.content);
 	if(c.type == NUMBER)
 		return std::to_string(std::get<int>(c.content));
-	if(c.type == LIST) {
+	if(c.type == EXPR && !literal)
+		return str_eval(eval(c, STRING));
+	if(c.type == LIST || c.type == EXPR) {
 		string output;
 		sexpr vec = std::get<sexpr>(c.content);
 		for(cell s : vec)
-			output += str_eval(s) + " ";
+			output += str_eval(s, literal) + " ";
 		return output;
 	}
-	if(c.type == EXPR)
-		return str_eval(eval(c, STRING));
+	
 	if(addons)
-		return str_eval_cont(c);
+		return str_eval_cont(c, literal);
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
@@ -160,14 +161,6 @@ sexpr list_eval(cell const &c) {
 	return *output;
 }
 
-//List conversion functions
-force_builtin force_eval[type_count];
-template <class T> void set_force_eval(T func, cell_type type) {
-	force_eval[type] = [func, type](cell const &c) {
-		return cell(func(c), type);
-	};
-}
-
 //Actual expression evaluation
 cell eval(sexpr const &s, cell_type type) {
 	if(s.begin() == s.end())
@@ -176,4 +169,12 @@ cell eval(sexpr const &s, cell_type type) {
 		string name = str_eval(*s.begin());
 		return search_library(name, type)(++s.begin(), s.end());
 	}
+}
+
+//List conversion functions
+force_builtin force_eval[type_count];
+template <class T> void set_force_eval(T func, cell_type type) {
+	force_eval[type] = [func, type](cell const &c) {
+		return cell(func(c), type);
+	};
 }

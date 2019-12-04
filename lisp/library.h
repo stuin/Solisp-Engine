@@ -6,7 +6,7 @@
  * Library functions for lisp system.
  */
 
-#define DONE if(pos != end) throw std::domain_error("Too many arguments")
+#define DONE if(pos != end) throw std::domain_error("Too many arguments: " + str_eval(*pos, true));
 
 //Build a number comparison function
 template <class T> builtin comparitor(T func) {
@@ -43,7 +43,9 @@ void build_library() {
 	force_eval[EXPR] = [](cell const &c) {
 		return c;
 	};
-	set_force_eval(&str_eval, STRING); 
+	force_eval[STRING] = [](cell const &c) {
+		return cell(str_eval(c, false), STRING);
+	};
 	set_force_eval(&num_eval, NUMBER);
 	set_force_eval(&list_eval, LIST);
 

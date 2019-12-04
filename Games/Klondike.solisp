@@ -1,4 +1,4 @@
-Klondike, Classic
+#Klondike, Classic
 
 (Four-Suit Standard)
 (Filter-Open (Alternating (Reverse Standard)))
@@ -16,8 +16,8 @@ Klondike, Classic
 					(Flip 1 2)
 					(Flip 1 2)
 				}
-			)}
-			(HStack {INPUT SPREAD})
+			)})
+			(HStack INPUT)
 			(Slot {INPUT OUTPUT})
 		)
 		(Apply {GOAL OUTPUT}
@@ -32,16 +32,16 @@ Klondike, Classic
 	(Apply 
 		{
 			(Filter (Alternating (Reverse Standard)))
-			(On-Grab (For-Each GOAL g (Soft-Move this g))
+			(On-Grab (For-Each GOAL g (Soft-Move this g)))
 		}
 		(HLayout
-			(VStack (Start 0 1))
-			(VStack (Start 1 1))
-			(VStack (Start 2 1))
-			(VStack (Start 3 1))
-			(VStack (Start 4 1))
-			(VStack (Start 5 1))
-			(VStack (Start 6 1))
+			(VStack {(Start 0 1)})
+			(VStack {(Start 1 1)})
+			(VStack {(Start 2 1)})
+			(VStack {(Start 3 1)})
+			(VStack {(Start 4 1)})
+			(VStack {(Start 5 1)})
+			(VStack {(Start 6 1)})
 		)
 	)
 )

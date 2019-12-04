@@ -23,12 +23,14 @@ builtin setSuit(char suit) {
 	};
 }
 
-builtin buildLayout(int index) {
+enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply};
+
+builtin buildLayout(layout_type index) {
 	return [index](marker pos, marker end) {
 		sexpr *output = new sexpr();
 		output->push_back(index);
-		output->push_back(list_eval(*pos++));
-		DONE;
+		while(pos != end)
+			output->push_back(*pos++);
 		return cell(*output, LAYOUT);
 	};
 }
@@ -55,6 +57,7 @@ void build_library_cont() {
 	library[CARD]["Card"] = forcer(CARD);
 	library[DECK]["Deck"] = forcer(DECK);
 	library[FILTER]["Filter"] = forcer(FILTER);
+	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
 
 	//Set up special filters
 	library[FILTER]["Four-Suit"] = [](marker pos, marker end) {
@@ -103,19 +106,19 @@ void build_library_cont() {
 	library[DECK]["Black"] = setSuit('B');
 
 	//Create layout to hold slots
-	library[LAYOUT]["VLayout"] = buildLayout(-1);
-	library[LAYOUT]["HLayout"] = buildLayout(-2);
-	library[LAYOUT]["VStack"] = buildLayout(1);
-	library[LAYOUT]["HStack"] = buildLayout(2);
-	library[LAYOUT]["PStack"] = buildLayout(3);
-	library[LAYOUT]["Slot"] = buildLayout(4);
+	library[LAYOUT]["VLayout"] = buildLayout(VLayout);
+	library[LAYOUT]["HLayout"] = buildLayout(HLayout);
+	library[LAYOUT]["VStack"] = buildLayout(VStack);
+	library[LAYOUT]["HStack"] = buildLayout(HStack);
+	library[LAYOUT]["PStack"] = buildLayout(PStack);
+	library[LAYOUT]["Slot"] = buildLayout(Slot);
 
 	//Grid layout of specific width
 	library[LAYOUT]["GLayout"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
-		output->push_back(-3);
+		output->push_back(GLayout);
 		output->push_back(num_eval(*pos++));
-		output->push_back(list_eval(*pos++));
+		output->push_back(*pos++);
 		DONE;
 		return cell(*output, LAYOUT);
 	};
@@ -123,9 +126,9 @@ void build_library_cont() {
 	//Apply tags to all contained slots
 	library[LAYOUT]["Apply"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
-		output->push_back(-4);
-		output->push_back(list_eval(*pos++));
-		output->push_back(list_eval(*pos++));
+		output->push_back(Apply);
+		output->push_back(*pos++);
+		output->push_back(*pos++);
 
 		DONE;
 		return cell(*output, LAYOUT);

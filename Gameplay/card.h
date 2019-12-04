@@ -8,8 +8,6 @@ namespace Solisp {
 #include <cstddef>
 #include <string>
 
-struct cell;
-
 /*
  * Created by Stuart Irwin on 9/9/2019.
  * Individual card data
@@ -91,7 +89,6 @@ public:
 	}
 
 	//Card setup functions
-	Card(std::string &s);
 	Card(char start, char end, char suit);
 	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);

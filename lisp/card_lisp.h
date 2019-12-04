@@ -22,7 +22,7 @@ cell_type type_conversions[type_count][type_count] = {
 	{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
 	{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
 	{NUMBER, STRING, CARD, EXPR},
-	{LIST, DECK, FILTER, NUMBER, STRING, CARD, EXPR},
+	{LIST, DECK, FILTER, NUMBER, STRING, CARD, LAYOUT, EXPR},
 	{CARD, NUMBER, STRING, EXPR},
 	{DECK, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
 	{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
@@ -65,16 +65,16 @@ string to_string(cardData card) {
 }
 
 //Convert special types to strings
-string str_eval_cont(cell const &c) {
+string str_eval_cont(cell const &c, bool literal) {
 	//Card is stored as string
 	if(c.type == CARD)
 		return to_string(std::get<cardData>(c.content));
-	if(c.type == DECK || c.type == FILTER) {
+	if(c.type == DECK || c.type == FILTER || c.type == LAYOUT) {
 		//Treat as normal list
 		string output;
 		sexpr vec = std::get<sexpr>(c.content);
 		for(cell s : vec)
-			output += str_eval(s) + " ";
+			output += str_eval(s, literal) + " ";
 		return output;
 	}
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
