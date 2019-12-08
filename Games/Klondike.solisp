@@ -31,7 +31,7 @@
 	)
 	(Apply 
 		{
-			(Filter (Alternating (Reverse Standard)))
+			(Filter-Open (Alternating (Reverse Standard)))
 			(On-Grab (For-Each GOAL g (Soft-Move this g)))
 		}
 		(HLayout

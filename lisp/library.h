@@ -74,7 +74,7 @@ void build_library() {
 	library[NUMBER]["<"] = comparitor(std::less<int>());
 
 	//List building functions
-	library[LIST]["Make-List"] = [](marker pos, marker end) {
+	library[LIST]["Quote"] = [](marker pos, marker end) {
 		sexpr *output = new sexpr();
 		while(pos != end) 
 			output->push_back(eval(*pos++, EXPR));

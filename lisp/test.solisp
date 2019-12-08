@@ -15,7 +15,7 @@
 Passed Failed)
 
 #Summing up lists
-(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) 
+(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
 #For each loops and multipling together lists
@@ -23,7 +23,7 @@ Passed Failed)
 Passed Failed)
 
 #Alternate list building
-(Str (Eval (Make-List + P a s s e "d")))
+(Str (Eval (Quote + P a s s e "d")))
 
 #Run full string as code
 (Read "(+ P a s s e d)" )

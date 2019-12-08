@@ -8,7 +8,7 @@
 /*
  * Created by Stuart Irwin on 28/10/2019.
  * Base list structures and systems
- * Based on https://gist.github.com/KayEss/45a2e88675832228f57e2d598afc02ae and https://gist.github.com/ofan/721464
+ * Loosely based on https://gist.github.com/KayEss/45a2e88675832228f57e2d598afc02ae and https://gist.github.com/ofan/721464
  */
 
 //Main simple data types

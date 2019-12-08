@@ -2,17 +2,17 @@ Import('env')
 
 sources = [
     "register_types.cpp",
-    "Interpreter/game.cpp",
-    "Interpreter/card.cpp",
-    "Interpreter/testBuilder.cpp"
+    "Gameplay/game.cpp",
+    "Gameplay/card.cpp",
+    "Gameplay/builder.cpp"
 ]
 
 module_env = env.Clone()
 module_env.Append(CCFLAGS=['-O2'])
-module_env.Append(CXXFLAGS=['-std=c++11'])
+module_env.Append(CXXFLAGS=['-std=c++17'])
 
-module_env.Append(CPPPATH=["./Interpreter","./Godot"])
-module_env.Append(LIBPATH=["./Interpreter"])
+module_env.Append(CPPPATH=["./Gameplay","./Godot"])
+module_env.Append(LIBPATH=["./Gameplay"])
 
 if ARGUMENTS.get('solisp_shared', 'yes') == 'yes':
     # Shared lib compilation
