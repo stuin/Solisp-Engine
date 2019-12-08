@@ -13,74 +13,74 @@ using Solisp::Game;
 //Apply current moves to stack array
 void Game::apply() {
 	//Recall invalid moves
-	while(!current->getTag(2)) {
+	while(!current->get_tag(VALID)) {
 		apply(current, true);
-		current = current->getLast();
+		current = current->get_last();
 	}
 
 	//Apply new moves
-	while(current->getNext() != NULL && current->getNext()->getTag(2)) {
-		apply(current->getNext(), false);
-		current = current->getNext();
+	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
+		apply(current->get_next(), false);
+		current = current->get_next();
 	}
 	std::cout << "Done\n";
 }
 
 //Apply single card move
 void Game::apply(Move *move, bool reverse) {
-	int from = move->getFrom();
-	int to = move->getTo();
-	int count = move->getCount();
-	bool flip = move->getTag(1);
+	int from = move->get_from();
+	int to = move->get_to();
+	int count = move->get_count();
+	bool flip = move->get_tag(FLIP);
 
 	int realCount = 1;
 
 	//Swap destinations for undo
 	if(reverse) {
 		from = to;
-		to = move->getFrom();
+		to = move->get_from();
 	}
 
 	//Get card stacks
-	Card *destination = stack[to].getCard();
-	Card *source = stack[from].getCard();
-	stack[to].setCard(source);
+	Card *destination = stack[to].get_card();
+	Card *source = stack[from].get_card();
+	stack[to].set_card(source);
 
 	//Find bottom moved card
-	while(count > 1 && source->getNext() != NULL) {
+	while(count > 1 && source->get_next() != NULL) {
 		if(flip)
 			source->flip();
 
-		source->setSlot(to);
-		source = source->getNext();
+		source->set_slot(to);
+		source = source->get_next();
 
 		count--;
 		realCount++;
 	}
-	source->setSlot(to);
+	source->set_slot(to);
 
 	if(to == from)
-		destination = source->getNext();
+		destination = source->get_next();
 	else {
-		stack[from].setCard(source->getNext());
-		stack[from].addCount(-realCount);
-		stack[to].addCount(realCount);
+		stack[from].set_card(source->get_next());
+		stack[from].add_count(-realCount);
+		stack[to].add_count(realCount);
 	}
 
 	//Record proper card count
 	if(count > 1)
-		move->correctCount(realCount);
+		move->correct_count(realCount);
 
 	//Reverse cards properly
 	if(flip) {
 		source->flip();
-		source->setNext(NULL);
-		stack[to].getCard()->reverse(stack[to].getCount() - realCount);
-		stack[to].getCard()->setNext(destination);
-		stack[to].setCard(source);
+		source->set_next(NULL);
+		stack[to].get_card()->reverse(stack[to].get_count() - realCount);
+		stack[to].get_card()->set_next(destination);
+		stack[to].set_card(source);
 	} else {
-		source->setNext(destination);
-		stack[to].getCard()->setIndex(realCount);
+		source->set_next(destination);
+		stack[to].get_card()->set_index(realCount);
 	}
 }
 
@@ -128,10 +128,10 @@ void Game::deal() {
 
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
-	stack[0].setCard(builder->getDeck());
-	Card *card = stack[0].getCard();
+	stack[0].set_card(builder->get_deck());
+	Card *card = stack[0].get_card();
 
-	STACKCOUNT = builder->setStacks(stack);
+	STACKCOUNT = builder->set_stacks(stack);
 
 	deal();
 	//apply();
@@ -150,30 +150,30 @@ bool Game::grab(int num, int from) {
 		return false;
 
 	//If top card hidden
-	if(stack[from].getCard()->isHidden()) {
+	if(stack[from].get_card()->is_hidden()) {
 		*current += new Move(1, from, from, true, true, current);
 		update();
 		return false;
 	}
 
 	//If stack is output
-	if(stack[from].getTag(OUTPUT) || num < 1)
+	if(stack[from].get_tag(OUTPUT) || num < 1)
 		return false;
 
 	//Check for null or hidden card in stack
 	int i = 0;
-	Card *card = stack[from].getCard();
+	Card *card = stack[from].get_card();
 	while(i < count) {
-		if(card == NULL || card->isHidden())
+		if(card == NULL || card->is_hidden())
 			return false;
 		i++;
-		card = card->getNext();
+		card = card->get_next();
 	}
-	if(card->isHidden())
+	if(card->is_hidden())
 		return false;
 
 	//Set picked cards
-	if(stack[0].matches(num, stack[from].getCard())) {
+	if(stack[0].matches(num, stack[from].get_card())) {
 		this->from = from;
 		this->count = num;
 		return true;
@@ -191,7 +191,7 @@ bool Game::test(int to) {
 	}
 
 	//Check for proper move
-	if(to == from || stack[to].matches(count, stack[from].getCard())) {
+	if(to == from || stack[to].matches(count, stack[from].get_card())) {
 		tested = to;
 		return true;
 	}

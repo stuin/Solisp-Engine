@@ -28,4 +28,4 @@ struct Solisp::cardData {
 	}
 };
 
-char cardFace(Solisp::cardData card);
+char card_face(Solisp::cardData card);

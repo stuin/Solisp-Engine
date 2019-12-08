@@ -41,18 +41,18 @@ public:
 		delete stack;
 	}
 
-	void setTags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {
+	void set_tags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {
 		this->tags = tags;
 		this->max = max;
 		start_hidden = hidden;
 		start_shown = shown;
 	}
 
-	void setTag(int tag, bool value=true) {
+	void set_tag(int tag, bool value=true) {
 		tags[tag] = value;
 	}
 
-	void setStart(int hidden=0, int shown=0) {
+	void set_start(int hidden=0, int shown=0) {
 		start_hidden = hidden;
 		start_shown = shown;
 	}
@@ -71,28 +71,28 @@ public:
 	}
 
 	//Get tag value
-	bool getTag(int tag) {
+	bool get_tag(int tag) {
 		if(tag >= 0 && tag < STACKTAGCOUNT)
 			return tags[tag];
 		return false;
 	}
 
 	//Get number of cards in stack
-	int getCount() {
+	int get_count() {
 		return count;
 	}
 
 	//Get top card of stack
-	Card *getCard() {
+	Card *get_card() {
 		return stack;
 	}
 
-	void addCount(int count) {
+	void add_count(int count) {
 		this->count += count; 
 	}
 
 	//Set top of stack
-	void setCard(Card *card) {
+	void set_card(Card *card) {
 		stack = card;
 	}
 };

@@ -26,14 +26,14 @@ private:
 	Move *last;
 
 	//Check for circular card movement
-	bool checkLoop(Move *other) {
+	bool check_loop(Move *other) {
 		if(this->from == other->from || this->to == other->to || other->from == 0)
 			return false;
 
 		if(this->from == other->to && this->to == other->from)
 			return this->count == other->count;
 
-		return checkLoop(other->last);
+		return check_loop(other->last);
 	}
 
 public:
@@ -51,7 +51,7 @@ public:
 
 		//Link to previous
 		this->last = last;
-		//tags[LOOP] = checkLoop(last);
+		//tags[LOOP] = check_loop(last);
 	}
 
 	//Recursizely delete backward
@@ -60,10 +60,10 @@ public:
 	}
 
 	//Recursizely delete forward
-	void clearForward() {
+	void clear_forward() {
 		if(next != NULL) {
 			next->last = NULL;
-			next->clearForward();
+			next->clear_forward();
 			delete next;
 		}
 	}
@@ -76,7 +76,7 @@ public:
 
 		//If next move is not current
 		if(next == NULL || !next->tags[VALID]) {
-			clearForward();
+			clear_forward();
 			next = other;
 		} else
 			*next += other;
@@ -101,36 +101,36 @@ public:
 	}
 
 	//Set actual card count if move-all used
-	void correctCount(int count) {
+	void correct_count(int count) {
 		if(count < this->count)
 			this->count = count;
 	}
 
 	//Get tag value
-	bool getTag(int tag) {
+	bool get_tag(int tag) {
 		if(tag >= 0 && tag < MOVETAGCOUNT)
 			return tags[tag];
 		return false;
 	}
 
 	//Normal getters
-	int getCount() {
+	int get_count() {
 		return count;
 	}
 
-	int getFrom() {
+	int get_from() {
 		return from;
 	}
 
-	int getTo() {
+	int get_to() {
 		return to;
 	}
 
-	Move *getNext() {
+	Move *get_next() {
 		return next;
 	}
 
-	Move *getLast() {
+	Move *get_last() {
 		return last;
 	}
 };

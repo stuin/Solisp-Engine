@@ -31,14 +31,14 @@ public:
 		Card *filter = content;
 
 		//Check if top card matches any card in filter
-		while(filter != NULL && !filter->matches(current->getData())) {
-			filter = filter->getNext();
+		while(filter != NULL && !filter->matches(current->get_data())) {
+			filter = filter->get_next();
 		}
 
 		//Move through new cards alongside filter
-		while(current != NULL && filter != NULL && filter->matches(current->getData())) {
-			current = current->getNext();
-			filter = filter->getNext();
+		while(current != NULL && filter != NULL && filter->matches(current->get_data())) {
+			current = current->get_next();
+			filter = filter->get_next();
 			count--;
 
 			//Mark end of new stack
@@ -51,7 +51,7 @@ public:
 			return true;
 
 		//Check if new card lines up with old card
-		if(current == NULL && filter != NULL && filter->matches(oldCard->getData()))
+		if(current == NULL && filter != NULL && filter->matches(oldCard->get_data()))
 			return true;
 
 		//If match not found, move to next filter

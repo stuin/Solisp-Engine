@@ -12,11 +12,8 @@ namespace Solisp {
 class Solisp::Builder {
 public:
 	//Get full list of cards at start
-	Card *getDeck();
+	Card *get_deck();
 
 	//Initialize stacks and return stack count
-	int setStacks(Stack *stacks);
-
-	//Read all card layouts
-	//Layout *getLayout();
+	int set_stacks(Stack *stacks);
 };

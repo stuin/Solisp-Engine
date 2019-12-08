@@ -21,7 +21,7 @@ public:
 	CardData *next_card() {
 		if(initial != NULL) {
 			CardData *card = new CardData(initial);
-			initial = initial->getNext();
+			initial = initial->get_next();
 			return card;
 		}
 		game.update();

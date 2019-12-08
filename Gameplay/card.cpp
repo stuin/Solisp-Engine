@@ -23,7 +23,7 @@ Card::Card(char start, char end, char suit) {
 Card *Card::clone() {
 	Card *output = new Card(data.value, data.suit);
 	if(next != NULL)
-		output->setNext(next->clone());
+		output->set_next(next->clone());
 	return output;
 }
 
@@ -43,38 +43,6 @@ Card *Card::reverse(int index, Card *last) {
 	return other->reverse(index + 1, this);
 }
 
-//Set entire list to different suit
-Card *Card::withSuit(char suit) {
-	data.suit = suit;
-	if(next != NULL)
-		next->withSuit(suit);
-	return this;
-}
-
-//Create filter with all four suits
-Filter *Card::fourSuit() {
-	Filter *output = new Filter(withSuit('D'));
-	*output += clone()->withSuit('C');
-	*output += clone()->withSuit('H');
-	*output += clone()->withSuit('S');
-	return output;
-}
-
-//Create filter with two alternating lists
-Filter *Card::alternating() {
-	Filter *output = new Filter(alternating(true));
-	*output += clone()->alternating(false);
-	return output;
-}
-
-//Set list to alternating colors
-Card *Card::alternating(bool black) {
-	data.suit = black ? 'B' : 'R';
-	if(next != NULL)
-		next->alternating(!black);
-	return this;
-}
-
 //Add new card to list
 void Card::operator+=(Card *next) {
 	if(this->next == NULL)
@@ -84,14 +52,14 @@ void Card::operator+=(Card *next) {
 }
 
 //Print full stack of cards
-void Card::printStack() {
-	std::cout << "{" << cardFace(data) << "," << data.suit << "}, ";
+void Card::print_stack() {
+	std::cout << "{" << card_face(data) << "," << data.suit << "}, ";
 	if(next != NULL)
-		next->printStack();
+		next->print_stack();
 }
 
 //Get card face from card data
-char cardFace(Solisp::cardData card) {
+char card_face(Solisp::cardData card) {
 	switch(card.value) {
 		case 1:
 			return 'A';

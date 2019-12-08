@@ -41,7 +41,7 @@ public:
 
 	Game() {}
 	~Game() {
-		current->clearForward();
+		current->clear_forward();
 		delete current;
 	}
 
@@ -60,7 +60,7 @@ public:
 	void undo();
 	void redo();
 
-	Stack *getStack(int i) {
+	Stack *get_stack(int i) {
 		if(i >= STACKCOUNT)
 			return NULL;
 		return &stack[i];

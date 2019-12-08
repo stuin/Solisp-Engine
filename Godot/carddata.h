@@ -19,29 +19,29 @@ public:
 	}
 
 	int get_slot() {
-		return card->getSlot();
+		return card->get_slot();
 	}
 
 	int get_index() {
-		return card->getIndex();
+		return card->get_index();
 	}
 
 	int get_frame() {
-		switch(card->getData().suit) {
+		switch(card->get_data().suit) {
 			case 'H':
-				return card->getData().value - 1;
+				return card->get_data().value - 1;
 			case 'D':
-				return 12 + card->getData().value;
+				return 12 + card->get_data().value;
 			case 'C':
-				return 25 + card->getData().value;
+				return 25 + card->get_data().value;
 			case 'S':
-				return 38 + card->getData().value;
+				return 38 + card->get_data().value;
 		}
 		return 0;
 	}
 
 	bool is_hidden() {
-		return card->isHidden();
+		return card->is_hidden();
 	}
 	
 

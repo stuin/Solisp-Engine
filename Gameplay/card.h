@@ -42,21 +42,21 @@ public:
 	}
 
 	//General getters
-	cardData getData() {
+	cardData get_data() {
 		return data;
 	}
-	Card *getNext() {
+	Card *get_next() {
 		return next;
 	}
-	int getSlot() {
+	int get_slot() {
 		return slot;
 	}
-	int getIndex() {
+	int get_index() {
 		return index;
 	}
 
 	//Check what side is up
-	bool isHidden() {
+	bool is_hidden() {
 		return hidden;
 	}
 
@@ -71,32 +71,28 @@ public:
 	}
 
 	//General setters
-	void setNext(Card *next) {
+	void set_next(Card *next) {
 		this->next = next;
 	}
-	void setSlot(int slot) {
+	void set_slot(int slot) {
 		this->slot = slot;
 		index = -1;
 	}
 
 	//Make sure index value is set properly
-	int setIndex(int count) {
+	int set_index(int count) {
 		if(count == 0)
 			return index;
 		if(next == NULL)
 			return index = 0;
-		return index = next->setIndex(count - 1) + 1;
+		return index = next->set_index(count - 1) + 1;
 	}
 
 	//Card setup functions
 	Card(char start, char end, char suit);
 	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);
-	Card *withSuit(char suit);
-	Filter *fourSuit();
-	Filter *alternating();
-	Card *alternating(bool black);
 	void operator+=(Card *next);
-	void printStack();
+	void print_stack();
 };
 
