@@ -9,6 +9,7 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include <initializer_list>
 
 /*
  * Created by Stuart Irwin on 28/10/2019.
@@ -58,30 +59,11 @@ struct cell {
 //Enviroment of system variables
 class Enviroment {
 private:
-	cell_type type_conversions[type_count][type_count] = {
-		{NUMBER, STRING, LIST, EXPR},
-		{STRING, NUMBER, LIST, EXPR},
-		{NUMBER, STRING, EXPR},
-		{LIST, STRING, EXPR}
-	};
-
-	std::map<string, builtin> library[type_count];
-	std::map<string, cell> vars;
 	int start_line = 0;
-
-	//Allow additional type conversions
-	string str_eval_cont(cell const &c, bool literal=false);
-	int num_eval_cont(cell const &c);
-	sexpr list_eval_cont(cell const &c);
-	void build_library_cont();
 
 	//Library structure
 	void build_library();
 	builtin search_library(string name, cell_type type);
-
-	//List conversion functions
-	template <class T> void set_force_eval(T func, cell_type type);
-	builtin forcer(cell_type type);
 
 	//Reader functions
 	std::list<std::string> tokenize(const std::string & str);
@@ -93,7 +75,26 @@ private:
 	template <class T> builtin arithmetic(T func);
 
 public:
+	cell_type type_conversions[type_count][type_count] = {
+		{NUMBER, STRING, LIST, EXPR},
+		{STRING, NUMBER, LIST, EXPR},
+		{NUMBER, STRING, EXPR},
+		{LIST, STRING, EXPR}
+	};
+
 	force_builtin force_eval[type_count];
+	std::map<string, builtin> library[type_count];
+	std::map<string, cell> vars;
+
+	//Type forcing conversions
+	builtin forcer(cell_type type);
+	void merge_convertors(std::initializer_list<std::initializer_list<cell_type>> added);
+
+	//Allow additional type conversions
+	string str_eval_cont(cell const &c, bool literal=false);
+	int num_eval_cont(cell const &c);
+	sexpr list_eval_cont(cell const &c);
+	void build_library_cont() {}
 
 	//Base eval function
 	cell eval(sexpr const &c, cell_type type);

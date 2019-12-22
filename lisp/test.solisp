@@ -15,11 +15,11 @@
 Passed Failed)
 
 #Summing up lists
-(If (< (Eval (+ + (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
+(If (< (Eval (+ {+} (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
 #For each loops and multipling together lists
-(If (Eval (+ * (For-Each (Get list) i (!= i 0)))) 
+(If (Eval (+ {*} (For-Each (Get list) i (!= i 0)))) 
 Passed Failed)
 
 #Alternate list building
@@ -32,7 +32,7 @@ Passed Failed)
 (Str (Eval (Reverse {d e s s a P +})))
 
 #Duplicating list
-(If (== (Num (Eval (+ + (* 4 {1 1})))) 8)
+(If (== (Num (Eval (+ {+} (* 4 {1 1})))) 8)
 Passed Failed)
 
 #Weird formatting test

@@ -15,19 +15,11 @@ using std::string;
 using sexpr = std::vector<cell>;
 using Solisp::cardData;
 
+enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply};
+
 //Expanded type lists
 #define type_count 8
 enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT};
-cell_type type_conversions[type_count][type_count] = {
-	{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
-	{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
-	{NUMBER, STRING, CARD, EXPR},
-	{LIST, DECK, FILTER, NUMBER, STRING, CARD, LAYOUT, EXPR},
-	{CARD, NUMBER, STRING, EXPR},
-	{DECK, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
-	{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
-	{LAYOUT, LIST, STRING, EXPR}
-};
 
 //Main data sructure
 struct cell {
@@ -57,10 +49,33 @@ private:
 	cardData to_card(string s);
 	string to_string(cardData card);
 
+	//Card builtin generators
+	builtin setSuit(char suit);
+	builtin buildLayout(layout_type index);
+
 public:
+	//Allow additional type conversions
+	string str_eval_cont(cell const &c, bool literal=false);
+	int num_eval_cont(cell const &c);
+	sexpr list_eval_cont(cell const &c);
+	void build_library_cont();
+
 	//Convert cell types
 	cardData card_eval(cell const &c);
 	sexpr deck_eval(cell const &c);
 	sexpr filter_eval(cell const &c);
 	sexpr layout_eval(cell const &c);
-}
+
+	CardEnviroment() {
+		merge_convertors({
+			{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
+			{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
+			{NUMBER, STRING, CARD, EXPR},
+			{LIST, DECK, FILTER, NUMBER, STRING, CARD, LAYOUT, EXPR},
+			{CARD, NUMBER, STRING, EXPR},
+			{DECK, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
+			{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
+			{LAYOUT, LIST, STRING, EXPR}
+		});
+	}
+};

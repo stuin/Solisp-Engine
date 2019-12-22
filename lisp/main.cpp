@@ -1,9 +1,10 @@
-#include "lisp.h"
+#include "card_lisp.h"
 
 //Base main function
 int main(int argc, char const *argv[])
 {
-	Enviroment env;
+	CardEnviroment env;
+	std::cout << "Solisp initialized\n";
 
 	if(argc > 1) {
 		std::ifstream infile(argv[1]);
