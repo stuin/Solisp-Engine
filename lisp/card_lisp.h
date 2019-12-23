@@ -40,26 +40,21 @@ struct cell {
 };
 
 //Import main lisp system
-#define addons true
 #include "lisp.h"
 
 class CardEnviroment : public Enviroment {
 private:
-	//Convert stored string to card
-	cardData to_card(string s);
-	string to_string(cardData card);
-
 	//Card builtin generators
 	builtin setSuit(char suit);
 	builtin buildLayout(layout_type index);
 
-public:
-	//Allow additional type conversions
-	string str_eval_cont(cell const &c, bool literal=false);
-	int num_eval_cont(cell const &c);
-	sexpr list_eval_cont(cell const &c);
 	void build_library_cont();
 
+public:
+	//Convert stored string to card
+	cardData to_card(string s);
+	string to_string(cardData card);
+	
 	//Convert cell types
 	cardData card_eval(cell const &c);
 	sexpr deck_eval(cell const &c);
@@ -67,6 +62,7 @@ public:
 	sexpr layout_eval(cell const &c);
 
 	CardEnviroment() {
+		addons = true;
 		merge_convertors({
 			{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
 			{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
@@ -77,5 +73,6 @@ public:
 			{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
 			{LAYOUT, LIST, STRING, EXPR}
 		});
+		build_library_cont();
 	}
 };

@@ -82,6 +82,7 @@ public:
 		{LIST, STRING, EXPR}
 	};
 
+	bool addons = false;
 	force_builtin force_eval[type_count];
 	std::map<string, builtin> library[type_count];
 	std::map<string, cell> vars;
@@ -94,7 +95,6 @@ public:
 	string str_eval_cont(cell const &c, bool literal=false);
 	int num_eval_cont(cell const &c);
 	sexpr list_eval_cont(cell const &c);
-	void build_library_cont() {}
 
 	//Base eval function
 	cell eval(sexpr const &c, cell_type type);

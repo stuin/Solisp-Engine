@@ -15,6 +15,7 @@ public:
 	}
 
 	void setup() {
+		std::cout << "Starting game setup \n";
 		initial = game.setup(new Solisp::Builder());
 	}
 

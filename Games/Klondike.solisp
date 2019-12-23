@@ -5,21 +5,6 @@
 
 (VLayout
 	(HLayout
-		(HLayout
-			(Slot { Start-Extra BUTTON (On-Grab
-				{
-					(Move-All 2 3)
-					(If (== (Count 1) 0)
-						(Flip-All 3 1)
-					)
-					(Flip 1 2)
-					(Flip 1 2)
-					(Flip 1 2)
-				}
-			)})
-			(HStack INPUT)
-			(Slot {INPUT OUTPUT})
-		)
 		(Apply {GOAL OUTPUT}
 			(HLayout
 				(Slot (Filter (Clubs Standard)))
@@ -27,6 +12,21 @@
 				(Slot (Filter (Spades Standard)))
 				(Slot (Filter (Diamonds Standard)))
 			)
+		)
+		(HLayout
+			(Slot { Start-Extra BUTTON (On-Grab
+				{
+					(Move-All 5 6)
+					(If (== (Count 5) 0)
+						(Flip-All 7 5)
+					)
+					(Flip 5 6)
+					(Flip 5 6)
+					(Flip 5 6)
+				}
+			)})
+			(HStack INPUT)
+			(Slot {INPUT OUTPUT})
 		)
 	)
 	(Apply 

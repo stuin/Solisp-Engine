@@ -4,7 +4,12 @@ sources = [
     "register_types.cpp",
     "Gameplay/game.cpp",
     "Gameplay/card.cpp",
-    "Gameplay/builder.cpp"
+    "Gameplay/builder.cpp",
+    "lisp/card_lisp.cpp",
+    "lisp/card_library.cpp",
+    "lisp/lisp.cpp",
+    "lisp/library.cpp",
+    "lisp/reader.cpp"
 ]
 
 module_env = env.Clone()
