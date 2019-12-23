@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "Godot/carddata.h"
+#include "Godot/slotdata.h"
 #include "Godot/gamedata.h"
 
 /*
@@ -16,6 +17,7 @@
 
 void register_solisp_types() {
     ClassDB::register_class<CardData>();
+    ClassDB::register_class<SlotData>();
     ClassDB::register_class<GameData>();
 }
 

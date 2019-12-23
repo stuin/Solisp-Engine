@@ -34,6 +34,9 @@ public:
 	//Starting count
 	int start_hidden = 0;
 	int start_shown = 0;
+
+	int x = -1;
+	int y = -1;
 	
 	Stack() {}
 	~Stack() {
@@ -41,11 +44,9 @@ public:
 		delete stack;
 	}
 
-	void set_tags(bitset<STACKTAGCOUNT> tags, int hidden=0, int shown=0, int max=-1) {
-		this->tags = tags;
-		this->max = max;
-		start_hidden = hidden;
-		start_shown = shown;
+	void set_cords(int x, int y) {
+		this->x = x;
+		this->y = y;
 	}
 
 	void set_tag(int tag, bool value=true) {

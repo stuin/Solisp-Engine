@@ -69,6 +69,9 @@ cell Enviroment::read_stream(std::istream &in, cell_type type, int new_line) {
 	int levels = -1;
 	bool literal = false;
 
+	if(!in.good())
+		throw std::domain_error("File not found.");
+
 	if(new_line != -1)
 		start_line = new_line;
 	int end_line = new_line = start_line;

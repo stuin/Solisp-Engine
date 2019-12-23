@@ -10,6 +10,12 @@ namespace Solisp {
  * Definitions for reading solisp file
  */
 
+struct layout {
+	int x = 1;
+	int y = 1;
+	int count = 1;
+};
+
 class Solisp::Builder {
 private:
 	std::ifstream rule_file;
@@ -26,8 +32,8 @@ private:
 	sexpr tag_eval(cell const &c);
 
 	Card *make_card(const cell &source);
-	void make_slot(Solisp::Stack &stack, sexpr data, int type);
-	int make_layout(Solisp::Stack *stack, cell layout, int index=1, sexpr tags={});
+	layout make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y);
+	layout make_layout(Solisp::Stack *stack, cell layout, sexpr tags={}, struct layout current={0,0,1});
 
 
 public:

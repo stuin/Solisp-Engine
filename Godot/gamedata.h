@@ -1,6 +1,6 @@
 /*
  * Created by Stuart Irwin on 9/23/2019.
- * Godot interface for Interpreter Game
+ * Godot interface for Gameplay Game
  */
 
 class GameData : public Reference {
@@ -9,6 +9,7 @@ class GameData : public Reference {
 private:
 	Solisp::Game game;
 	Solisp::Card *initial = NULL;
+	int next_index = 1;
 
 public:
 	GameData() {
@@ -26,6 +27,14 @@ public:
 			return card;
 		}
 		game.update();
+		return NULL;
+	}
+
+	SlotData *next_slot() {
+		if(game.get_stack(next_index) != NULL) {
+			next_index++;
+			return new SlotData(game.get_stack(next_index - 1));
+		}
 		return NULL;
 	}
 
@@ -49,6 +58,7 @@ protected:
 	static void _bind_methods() {
 		ClassDB::bind_method(D_METHOD("setup"), &GameData::setup);
 		ClassDB::bind_method(D_METHOD("next_card"), &GameData::next_card);
+		ClassDB::bind_method(D_METHOD("next_slot"), &GameData::next_slot);
 		ClassDB::bind_method(D_METHOD("grab", "num", "from"), &GameData::grab);
 		ClassDB::bind_method(D_METHOD("test", "to"), &GameData::test);
 		ClassDB::bind_method(D_METHOD("place", "to"), &GameData::place);
