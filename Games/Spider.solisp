@@ -7,7 +7,7 @@ Spider, Classic
 (Filter-Open (Four-Suit (Reverse Standard)))
 
 (VLayout
-	(HLayout
+	(VLayout
 		(HLayout
 			(* 8 (Slot {
 				GOAL

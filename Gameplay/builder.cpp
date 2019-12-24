@@ -45,9 +45,82 @@ Card *Builder::make_card(const cell &source) {
 	return start;
 }
 
+//Recursively build stack objects from lisp structure
+layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, layout current) {
+	//std::cout << "Next layer = " << str_eval(layout, true) << "\n";
+	sexpr list = env.layout_eval(layout_c);
+	sexpr array;
+	layout added;
+	layout final;
+
+	int type = env.num_eval(list[0]);
+	switch(type) {
+		//General linear layouts
+		case VLayout: case HLayout:
+			for(int i = 1; i < list.size(); i++) {
+				do {
+					added = make_layout(stack, list[i], tags, current);
+
+					//Keep track of position and count
+					current.count = added.count;
+					if(type == VLayout) {
+						//Sum y and max x
+						current.y += added.y;
+						final.y = current.y;
+
+						if(final.x < added.x + current.x)
+							final.x = added.x + current.x;
+					} else {
+						//Sum x and max y
+						current.x += added.x;
+						final.x = current.x;
+						if(final.y < added.y + current.y) {
+							final.y = added.y + current.y;
+						}
+					}
+					//std::cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
+
+					//Check if current layout contains multiplier
+					if(added.recurse != -1)
+						current.recurse = added.recurse - 1;
+				} while(current.recurse > 0);
+				current.recurse = -1;
+			}
+
+			//Correct for VLayout inside VLayout or HLayout inside HLayout
+			if(type == VLayout)
+				final.y--;
+			else
+				final.x--;
+			final.count = current.count;
+			return final;
+		//Basic card slots
+		case Slot: case HStack: case VStack:
+			array = tag_eval(list[1]);
+			tags.insert(tags.end(), array.begin(), array.end());
+
+			std::cout << "Slot " << current.count << ":\n";
+
+			added = make_slot(stack[current.count], tags, env.num_eval(list[0]), current.x, current.y);
+			added.count += current.count;
+			added.recurse = current.recurse;
+			return added;
+		//Apply tags to all slots in layout
+		case Apply:
+			array = tag_eval(list[1]);
+			tags.insert(tags.end(), array.begin(), array.end());
+			return make_layout(stack, list[2], tags, current);
+		case Multiply:
+			if(current.recurse < 0)
+				current.recurse = env.num_eval(list[1]);
+			return make_layout(stack, list[2], tags, current);
+	}
+	return current;
+}
+
 //Set internal values of stack
 layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y) {
-	layout dim = {1, 1, 1};
+	layout dim = {1, 1, 1, -1};
 	stack.set_cords(x, y);
 
 	//Set base type tags
@@ -90,70 +163,6 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 		}
 	}
 	return dim;
-}
-
-//Recursively build stack objects from lisp structure
-layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, layout current) {
-	//std::cout << "Next layer = " << str_eval(layout, true) << "\n";
-	sexpr list = env.layout_eval(layout_c);
-	sexpr array;
-	layout added;
-	layout final;
-
-	int type = env.num_eval(list[0]);
-	switch(type) {
-		//General linear layouts
-		case VLayout: case HLayout:
-			for(int i = 1; i < list.size(); i++) {
-				do {
-					added = make_layout(stack, list[i], tags, current);
-
-					//Keep track of position and count
-					current.count = added.count;
-					if(type == VLayout) {
-						//Sum y and max x
-						current.y += added.y;
-						final.y = current.y;
-
-						if(final.x - current.x < added.x)
-							final.x = added.x + current.x;
-					} else {
-						//Sum x and max y
-						current.x += added.x;
-						final.x = current.x;
-						if(final.y - current.y < added.y)
-							final.y = added.y + current.y;
-					}
-
-					if(added.recurse != -1)
-						current.recurse = added.recurse - 1;
-				} while(current.recurse > 0);
-				current.recurse = -1;
-			}
-			final.count = current.count;
-			return final;
-		//Basic card slots
-		case Slot: case HStack: case VStack:
-			array = tag_eval(list[1]);
-			tags.insert(tags.end(), array.begin(), array.end());
-
-			std::cout << "Slot " << current.count << ":\n";
-
-			added = make_slot(stack[current.count], tags, env.num_eval(list[0]), current.x, current.y);
-			added.count += current.count;
-			added.recurse = current.recurse;
-			return added;
-		//Apply tags to all slots in layout
-		case Apply:
-			array = tag_eval(list[1]);
-			tags.insert(tags.end(), array.begin(), array.end());
-			return make_layout(stack, list[2], tags, current);
-		case Multiply:
-			if(current.recurse < 0)
-				current.recurse = env.num_eval(list[1]);
-			return make_layout(stack, list[2], tags, current);
-	}
-	return current;
 }
 
 //Get the overall deck to play with

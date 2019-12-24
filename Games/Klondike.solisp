@@ -5,6 +5,14 @@ Klondike, Classic
 
 (VLayout
 	(HLayout
+		(Apply {GOAL OUTPUT}
+			(HLayout
+				(Slot (Filter (Clubs Standard)))
+				(Slot (Filter (Hearts Standard)))
+				(Slot (Filter (Spades Standard)))
+				(Slot (Filter (Diamonds Standard)))
+			)
+		)
 		(HLayout
 			(Slot { Start-Extra BUTTON (On-Grab
 				{
@@ -19,14 +27,6 @@ Klondike, Classic
 			)})
 			(HStack INPUT)
 			(Slot {INPUT OUTPUT})
-		)
-		(Apply {GOAL OUTPUT}
-			(HLayout
-				(Slot (Filter (Clubs Standard)))
-				(Slot (Filter (Hearts Standard)))
-				(Slot (Filter (Spades Standard)))
-				(Slot (Filter (Diamonds Standard)))
-			)
 		)
 	)
 	(Apply 
