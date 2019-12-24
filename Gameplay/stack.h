@@ -13,7 +13,7 @@ namespace Solisp {
 
 using std::bitset;
 
-#define MAXSTACKCOUNT 20
+#define MAXSTACKCOUNT 24
 #define STACKTAGCOUNT 8
 
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD, 

@@ -15,9 +15,9 @@ public:
 	GameData() {
 	}
 
-	void setup() {
+	void setup(int file) {
 		std::cout << "Starting game setup \n";
-		initial = game.setup(new Solisp::Builder());
+		initial = game.setup(new Solisp::Builder(rule_files[file]));
 	}
 
 	CardData *next_card() {

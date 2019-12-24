@@ -19,7 +19,7 @@ string CardEnviroment::to_string(cardData card) {
 }
 
 //Build a function to set the suit of a list of cards
-builtin CardEnviroment::setSuit(char suit) {
+builtin CardEnviroment::setSuits(char suit) {
 	return [suit](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		sexpr array = ((CardEnviroment*)env)->deck_eval(*pos++);
@@ -33,6 +33,15 @@ builtin CardEnviroment::setSuit(char suit) {
 
 		DONE;
 		return cell(*output, DECK);
+	};
+}
+
+builtin CardEnviroment::setSuit(char suit) {
+	return [suit](Enviroment *env, marker pos, marker end) {
+		cardData c = ((CardEnviroment*)env)->card_eval(*pos++);
+		c.suit = suit;
+		DONE;
+		return cell(c, CARD);
 	};
 }
 
@@ -59,14 +68,14 @@ string Enviroment::str_eval_cont(cell const &c, bool literal) {
 			output += str_eval(s, literal) + " ";
 		return output;
 	}
-	throw std::domain_error("C: Cannot convert to string from type " + std::to_string(c.type));
+	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
 //Convert special types to numbers
 int Enviroment::num_eval_cont(cell const &c) {
 	if(c.type == CARD)
 		return std::get<cardData>(c.content).value;
-	throw std::domain_error("C: Cannot convert to number from type " + std::to_string(c.type));
+	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
 //Convert special types to lists
@@ -95,6 +104,8 @@ cardData CardEnviroment::card_eval(cell const &c) {
 		auto it = vars.find(s);
 		if(it != vars.end())
 			return card_eval(it->second);
+
+		throw std::domain_error("Cannot convert to card from string " + s);
 	}
 	if(c.type == NUMBER)
 		return to_card("N" + std::to_string(std::get<int>(c.content)));
@@ -103,6 +114,12 @@ cardData CardEnviroment::card_eval(cell const &c) {
 		auto it = vars.find(std::get<string>(c.content));
 		if(it != vars.end())
 			return card_eval(it->second);
+	}
+	if(c.type == DECK) {
+		sexpr list = std::get<sexpr>(c.content);
+		if(list.size() > 1)
+			throw std::domain_error("Deck with multiple items to single card.");
+		return card_eval(list[0]);
 	}
 	if(c.type == EXPR)
 		return card_eval(eval(c, CARD));

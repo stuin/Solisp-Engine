@@ -1,6 +1,6 @@
 Devil's Grip, Challenge
 
-(* 2 (Four-Suit (- Standard 1)))
+(* 2 (Deck (Four-Suit (- Standard 1))))
 (Max 1)
 
 (VLayout

@@ -28,13 +28,13 @@ public:
 
 	int get_offset_x() {
 		if(stack->get_tag(SPREAD) && stack->get_tag(SPREAD_HORIZONTAL))
-			return 1;
+			return stack->get_tag(SPREAD_REVERSE) ? -1 : 1;
 		return 0;
 	}
 
 	int get_offset_y() {
 		if(stack->get_tag(SPREAD) && !stack->get_tag(SPREAD_HORIZONTAL))
-			return 1;
+			return stack->get_tag(SPREAD_REVERSE) ? -1 : 1;
 		return 0;
 	}
 	

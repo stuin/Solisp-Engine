@@ -1,6 +1,8 @@
 (== (Card N13) 13)
 (== (Deck (- Standard 13)) (- {1 2 3 4 5 6 7 8 9 10 11 12 13} 13))
 (!= (Hearts {1 2 3 4 5}) (Spades {1 2 3 4 5}))
+(Deck (* 4 {1 2 3}))
+(Deck (* 2 (Deck (Four-Suit (- Standard 1)))))
 (Four-Suit Standard)
 (Alternating (Reverse Standard))
 (Filter (Alternating (Reverse Standard)))

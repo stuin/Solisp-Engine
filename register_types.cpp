@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 
+#include "Godot/filelist.h"
 #include "Godot/carddata.h"
 #include "Godot/slotdata.h"
 #include "Godot/gamedata.h"

@@ -105,24 +105,30 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 		//General linear layouts
 		case VLayout: case HLayout:
 			for(int i = 1; i < list.size(); i++) {
-				added = make_layout(stack, list[i], tags, current);
+				do {
+					added = make_layout(stack, list[i], tags, current);
 
-				//Keep track of position and count
-				current.count = added.count;
-				if(type == VLayout) {
-					//Sum y and max x
-					current.y += added.y;
-					final.y = current.y;
+					//Keep track of position and count
+					current.count = added.count;
+					if(type == VLayout) {
+						//Sum y and max x
+						current.y += added.y;
+						final.y = current.y;
 
-					if(final.x - current.x < added.x)
-						final.x = added.x + current.x;
-				} else {
-					//Sum x and max y
-					current.x += added.x;
-					final.x = current.x;
-					if(final.y - current.y < added.y)
-						final.y = added.y + current.y;
-				}
+						if(final.x - current.x < added.x)
+							final.x = added.x + current.x;
+					} else {
+						//Sum x and max y
+						current.x += added.x;
+						final.x = current.x;
+						if(final.y - current.y < added.y)
+							final.y = added.y + current.y;
+					}
+
+					if(added.recurse != -1)
+						current.recurse = added.recurse - 1;
+				} while(current.recurse > 0);
+				current.recurse = -1;
 			}
 			final.count = current.count;
 			return final;
@@ -135,11 +141,16 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 
 			added = make_slot(stack[current.count], tags, env.num_eval(list[0]), current.x, current.y);
 			added.count += current.count;
+			added.recurse = current.recurse;
 			return added;
 		//Apply tags to all slots in layout
 		case Apply:
 			array = tag_eval(list[1]);
 			tags.insert(tags.end(), array.begin(), array.end());
+			return make_layout(stack, list[2], tags, current);
+		case Multiply:
+			if(current.recurse < 0)
+				current.recurse = env.num_eval(list[1]);
 			return make_layout(stack, list[2], tags, current);
 	}
 	return current;
@@ -148,6 +159,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 //Get the overall deck to play with
 Card *Builder::get_deck() {
 	Card *c = make_card(env.read_stream(rule_file, DECK));
+	std::cout << "Deck loaded\n";
 	return c;
 }
 
@@ -155,7 +167,7 @@ Card *Builder::get_deck() {
 int Builder::set_stacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
 
-	std::cout << "Stack 0: \n";
+	std::cout << "Slot 0: \n";
 	make_slot(stack[0], tag_eval(env.read_stream(rule_file, LIST)), VStack, -1, -1);
 	return make_layout(stack, env.read_stream(rule_file, LAYOUT)).count;
 }	

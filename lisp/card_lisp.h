@@ -15,7 +15,7 @@ using std::string;
 using sexpr = std::vector<cell>;
 using Solisp::cardData;
 
-enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply};
+enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
 
 //Expanded type lists
 #define type_count 8
@@ -45,6 +45,7 @@ struct cell {
 class CardEnviroment : public Enviroment {
 private:
 	//Card builtin generators
+	builtin setSuits(char suit);
 	builtin setSuit(char suit);
 	builtin buildLayout(layout_type index);
 

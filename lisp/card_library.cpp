@@ -32,6 +32,7 @@ void CardEnviroment::build_library_cont() {
 	library[DECK]["Deck"] = forcer(DECK);
 	library[FILTER]["Filter"] = forcer(FILTER);
 	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
+	library[FILTER]["Filter-All"] = library[FILTER]["Filter"];
 
 	//Set up special filters
 	library[FILTER]["Four-Suit"] = [](Enviroment *env, marker pos, marker end) {
@@ -71,13 +72,21 @@ void CardEnviroment::build_library_cont() {
 		return cell(*output, FILTER);
 	};
 
-	//Change suit of single deck
-	library[DECK]["Hearts"] = setSuit('H');
-	library[DECK]["Spades"] = setSuit('S');
-	library[DECK]["Diamonds"] = setSuit('D');
-	library[DECK]["Clubs"] = setSuit('C');
-	library[DECK]["Red"] = setSuit('R');
-	library[DECK]["Black"] = setSuit('B');
+	//Change suit of full deck
+	library[DECK]["Hearts"] = setSuits('H');
+	library[DECK]["Spades"] = setSuits('S');
+	library[DECK]["Diamonds"] = setSuits('D');
+	library[DECK]["Clubs"] = setSuits('C');
+	library[DECK]["Red"] = setSuits('R');
+	library[DECK]["Black"] = setSuits('B');
+
+	//Change suit of single card
+	/*library[CARD]["Hearts"] = setSuit('H');
+	library[CARD]["Spades"] = setSuit('S');
+	library[CARD]["Diamonds"] = setSuit('D');
+	library[CARD]["Clubs"] = setSuit('C');
+	library[CARD]["Red"] = setSuit('R');
+	library[CARD]["Black"] = setSuit('B');*/
 
 	//Create layout to hold slots
 	library[LAYOUT]["VLayout"] = buildLayout(VLayout);
@@ -104,6 +113,16 @@ void CardEnviroment::build_library_cont() {
 		output->push_back(*pos++);
 		output->push_back(*pos++);
 
+		DONE;
+		return cell(*output, LAYOUT);
+	};
+	//Duplicate layout multiple times
+	library[LAYOUT]["*"] = [](Enviroment *env, marker pos, marker end) {
+		sexpr *output = new sexpr();
+		output->push_back(Multiply);
+		output->push_back(*pos++);
+		output->push_back(*pos++);
+		
 		DONE;
 		return cell(*output, LAYOUT);
 	};
