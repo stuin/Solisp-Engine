@@ -73,7 +73,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
 			if(env.str_eval(list[0]) == "Start") {
-				stack.set_start(env.num_eval(list[1]), env.num_eval(2));
+				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
 			}
 		} else {
 			//Boolean tag evaluation
@@ -147,7 +147,6 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 
 //Get the overall deck to play with
 Card *Builder::get_deck() {
-	std::cout << "Loading deck\n";
 	Card *c = make_card(env.read_stream(rule_file, DECK));
 	return c;
 }
@@ -156,7 +155,7 @@ Card *Builder::get_deck() {
 int Builder::set_stacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
 
-	std::cout << "Loading stacks \n";
-	make_slot(stack[0], tag_eval(env.read_stream(rule_file, LIST)), VStack, 0, 0);
+	std::cout << "Stack 0: \n";
+	make_slot(stack[0], tag_eval(env.read_stream(rule_file, LIST)), VStack, -1, -1);
 	return make_layout(stack, env.read_stream(rule_file, LAYOUT)).count;
 }	

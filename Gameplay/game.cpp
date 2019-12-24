@@ -23,7 +23,6 @@ void Game::apply() {
 		apply(current->get_next(), false);
 		current = current->get_next();
 	}
-	std::cout << "Done\n";
 }
 
 //Apply single card move
@@ -118,7 +117,7 @@ void Game::deal() {
 				}
 			}
 		}
-		std::cout << remaining << " cards left\n";
+		//std::cout << remaining << " cards left\n";
 	}
 
 	//Move remaining cards to overflow
