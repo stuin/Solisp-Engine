@@ -4,16 +4,18 @@ Devil's Grip, Challenge
 (Max 1)
 
 (VLayout
-	(GLayout 8
-		(* 24 (VStack { 
-			Goal
-			(Start 0 1)
-			(Filter {
-				(Same-Suit {2 5 8 11})
-				(Same-Suit {3 6 9 12})
-				(Same-Suit {4 7 10 13})
-			})
-		}))
+	(VLayout 
+		(* 3 (HLayout
+			(* 8 (VStack { 
+				Goal
+				(Start 0 1)
+				(Filter {
+					(Same-Suit {2 5 8 11})
+					(Same-Suit {3 6 9 12})
+					(Same-Suit {4 7 10 13})
+				})
+			}))
+		))
 	)
 	(HLayout
 		(Slot Start-Extra)

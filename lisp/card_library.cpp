@@ -96,16 +96,6 @@ void CardEnviroment::build_library_cont() {
 	library[LAYOUT]["PStack"] = buildLayout(PStack);
 	library[LAYOUT]["Slot"] = buildLayout(Slot);
 
-	//Grid layout of specific width
-	library[LAYOUT]["GLayout"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
-		output->push_back(GLayout);
-		output->push_back(env->num_eval(*pos++));
-		output->push_back(*pos++);
-		DONE;
-		return cell(*output, LAYOUT);
-	};
-
 	//Apply tags to all contained slots
 	library[LAYOUT]["Apply"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
@@ -124,6 +114,24 @@ void CardEnviroment::build_library_cont() {
 		output->push_back(*pos++);
 		
 		DONE;
+		return cell(*output, LAYOUT);
+	};
+
+	//Grid layout of specific width
+	library[LAYOUT]["GLayout"] = [](Enviroment *env, marker pos, marker end) {
+		int row_length = env->num_eval(*pos++);
+		sexpr *output = new sexpr();
+		output->push_back(VLayout);
+
+		//Loop through all rows
+		while(pos != end) {
+			sexpr *array = new sexpr();
+			array->push_back(cell("HLayout"));
+			for(int i = 0; i < row_length && pos != end; i++)
+				array->push_back(*pos++);
+			output->push_back(cell(*array, EXPR));
+		}
+
 		return cell(*output, LAYOUT);
 	};
 }

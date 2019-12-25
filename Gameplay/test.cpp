@@ -5,7 +5,7 @@
 using std::cout;
 
 int main() {
-	int game_number = 2;
+	int game_number = 3;
 	Solisp::Game game;
 	Solisp::Builder *builder = new Solisp::Builder(rule_files[game_number]);
 

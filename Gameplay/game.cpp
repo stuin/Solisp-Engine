@@ -100,6 +100,7 @@ void Game::deal() {
 		else
 			remaining += stack[i].start_hidden + stack[i].start_shown;
 	}
+	//std::cout << "Overflow slot: " << overflowSlot << "\n";
 
 	//Loop until all placed
 	while(remaining > 0) {
@@ -122,7 +123,7 @@ void Game::deal() {
 
 	//Move remaining cards to overflow
 	if(overflowSlot != -1)
-		*current += new Move(1000, 0, 1, false, false, current);
+		*current += new Move(1000, 0, overflowSlot, false, false, current);
 }
 
 //Call all setup functions

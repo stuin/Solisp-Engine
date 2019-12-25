@@ -110,10 +110,18 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 			array = tag_eval(list[1]);
 			tags.insert(tags.end(), array.begin(), array.end());
 			return make_layout(stack, list[2], tags, current);
+		//Tell parent to duplicate internal layout
 		case Multiply:
-			if(current.recurse < 0)
-				current.recurse = env.num_eval(list[1]);
-			return make_layout(stack, list[2], tags, current);
+			if(current.recurse < 0) {
+				added = make_layout(stack, list[2], tags, current);
+				added.recurse = env.num_eval(list[1]);
+			} else {
+				int transfer = current.recurse;
+				current.recurse = -1;
+				added = make_layout(stack, list[2], tags, current);
+				added.recurse = transfer;
+			}
+			return added;
 	}
 	return current;
 }
