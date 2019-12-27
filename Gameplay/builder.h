@@ -34,7 +34,11 @@ private:
 	};
 	sexpr tag_eval(cell const &c);
 
+	//Solisp to gameplay convertions
 	Card *make_card(const cell &source);
+	Filter *make_filter(const cell &source);
+
+	//Layout interpreting functions
 	layout make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y);
 	layout make_layout(Solisp::Stack *stack, cell layout, sexpr tags={}, struct layout current={0,0,1,-1});
 

@@ -14,6 +14,11 @@ private:
 	bool open;
 
 public:
+	Filter(bool open) {
+		this->content = NULL;
+		this->open = open;
+	}
+
 	Filter(Card *card, bool open=false) {
 		this->content = card;
 		this->open = open;
@@ -69,7 +74,10 @@ public:
 			*(this->next) += next;
 	}
 	void operator+=(Card *card) {
-		*this += new Filter(card, open);
+		if(content == NULL)
+			content = card;
+		else
+			*this += new Filter(card, open);
 	}
 
 	//Flatten all filters into one deck

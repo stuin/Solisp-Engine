@@ -7,14 +7,16 @@
 
 using Solisp::Builder;
 using Solisp::Card;
+using Solisp::Filter;
 using std::bitset;
+using std::cout;
 
 //Ensure consistant tag data structure
 sexpr Builder::tag_eval(cell const &c) {
 	sexpr list = env.list_eval(c);
-	if(list[0].type == DECK) {
+	if(list[0].type == FILTER) {
 		sexpr *output = new sexpr();
-		output->push_back(cell(env.filter_eval(c), FILTER));
+		output->push_back(env.force_eval[TAGFILTER](&env, c));
 		return *output;
 	}
 	if(c.type == EXPR) {
@@ -30,7 +32,10 @@ Card *Builder::make_card(const cell &source) {
 	Card *current = NULL;
 	Card *start = NULL;
 	sexpr deck = env.deck_eval(source);
-	for(cell card : deck) {
+
+	for(int i = deck.size(); i > 0; i--) {
+		cell card = deck[i - 1];
+
 		//Initial card
 		if(current == NULL) {
 			current = new Card(env.card_eval(card));
@@ -45,9 +50,25 @@ Card *Builder::make_card(const cell &source) {
 	return start;
 }
 
+//Create filter from lisp cell
+Filter *Builder::make_filter(const cell &source) {
+
+	//Retrieve cell values
+	sexpr array = env.tagfilter_eval(source);
+	bool open = env.num_eval(array[1]);
+	array = env.filter_eval(array[0]);
+	Filter *output = new Filter(open);
+
+	//Pass each deck to filter
+	for(cell deck : array)
+		*output += make_card(deck);
+	
+	return output;
+}
+
 //Recursively build stack objects from lisp structure
 layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, layout current) {
-	//std::cout << "Next layer = " << str_eval(layout, true) << "\n";
+	//cout << "Next layer = " << str_eval(layout, true) << "\n";
 	sexpr list = env.layout_eval(layout_c);
 	sexpr array;
 	layout added;
@@ -85,7 +106,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 				} while(current.recurse > 0);
 				current.recurse = -1;
 
-				//std::cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
+				//cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
 			}
 
 			final.count = current.count;
@@ -95,7 +116,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 			array = tag_eval(list[1]);
 			tags.insert(tags.end(), array.begin(), array.end());
 
-			std::cout << "Slot " << current.count << ":\n";
+			cout << "Slot " << current.count << ":\n";
 
 			added = make_slot(stack[current.count], tags, env.num_eval(list[0]), current.x, current.y);
 			added.count += current.count;
@@ -129,8 +150,9 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 
 	//Read connected tags
 	for(cell c : data) {
-		if(c.type == FILTER) {
-			std::cout << "\tFilter by: " << env.str_eval(c, true) << "\n";
+		if(c.type == TAGFILTER || c.type == FILTER) {
+			cout << "\tFilter by: " << env.str_eval(c, true) << "\n";
+			stack.set_filter(make_filter(c));
 		} else if(c.type == EXPR) {
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
@@ -145,10 +167,10 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 				//Base boolean tag
 				stack.set_tag(tag->second);
 			} else if(env.str_eval(c, false) == "Start-Extra") {
-				std::cout << "\tStart-Extra\n";
+				cout << "\tStart-Extra\n";
 				stack.set_start(-1, 0);
 			} else {
-				std::cout << "Not regular tag: " << env.str_eval(c, true) << " type: " << c.type << "\n";
+				cout << "Not regular tag: " << env.str_eval(c, true) << " type: " << c.type << "\n";
 			}
 		}
 	}
@@ -184,7 +206,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 //Get the overall deck to play with
 Card *Builder::get_deck() {
 	Card *c = make_card(env.read_stream(rule_file, DECK));
-	std::cout << "Deck loaded\n";
+	cout << "Deck loaded\n";
 	return c;
 }
 

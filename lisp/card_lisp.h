@@ -15,11 +15,13 @@ using std::string;
 using sexpr = std::vector<cell>;
 using Solisp::cardData;
 
+#define cenv ((CardEnviroment*)env)
+
 enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
 
 //Expanded type lists
-#define type_count 8
-enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT};
+#define type_count 9
+enum cell_type {EXPR, STRING, NUMBER, LIST, CARD, DECK, FILTER, TAGFILTER, LAYOUT};
 
 //Main data sructure
 struct cell {
@@ -60,18 +62,20 @@ public:
 	cardData card_eval(cell const &c);
 	sexpr deck_eval(cell const &c);
 	sexpr filter_eval(cell const &c);
+	sexpr tagfilter_eval(cell const &c, bool open=false);
 	sexpr layout_eval(cell const &c);
 
 	CardEnviroment() {
 		addons = true;
 		merge_convertors({
-			{NUMBER, STRING, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
-			{STRING, NUMBER, LIST, CARD, DECK, FILTER, LAYOUT, EXPR},
+			{NUMBER, STRING, LIST, CARD, DECK, TAGFILTER, FILTER, LAYOUT, EXPR},
+			{STRING, NUMBER, LIST, CARD, DECK, TAGFILTER, FILTER, LAYOUT, EXPR},
 			{NUMBER, STRING, CARD, EXPR},
-			{LIST, DECK, FILTER, NUMBER, STRING, CARD, LAYOUT, EXPR},
+			{LIST, DECK, TAGFILTER, FILTER, NUMBER, STRING, CARD, LAYOUT, EXPR},
 			{CARD, NUMBER, STRING, EXPR},
-			{DECK, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
-			{FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
+			{DECK, TAGFILTER, FILTER, LIST, CARD, NUMBER, STRING, EXPR},
+			{TAGFILTER, FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
+			{TAGFILTER, FILTER, DECK, LIST, CARD, NUMBER, STRING, EXPR},
 			{LAYOUT, LIST, STRING, EXPR}
 		});
 		build_library_cont();

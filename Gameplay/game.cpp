@@ -161,16 +161,14 @@ bool Game::grab(int num, int from) {
 		return false;
 
 	//Check for null or hidden card in stack
-	int i = 0;
+	int i = 1;
 	Card *card = stack[from].get_card();
-	while(i < count) {
+	while(i < num && card != NULL) {
+	 	card = card->get_next();
 		if(card == NULL || card->is_hidden())
 			return false;
 		i++;
-		card = card->get_next();
 	}
-	if(card->is_hidden())
-		return false;
 
 	//Set picked cards
 	if(stack[0].matches(num, stack[from].get_card())) {

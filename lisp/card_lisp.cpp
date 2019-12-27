@@ -22,11 +22,11 @@ string CardEnviroment::to_string(cardData card) {
 builtin CardEnviroment::setSuits(char suit) {
 	return [suit](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
-		sexpr array = ((CardEnviroment*)env)->deck_eval(*pos++);
+		sexpr array = cenv->deck_eval(*pos++);
 
 		//Add all cards to new deck
 		for(cell c : array) {
-			cardData d = ((CardEnviroment*)env)->card_eval(c);
+			cardData d = cenv->card_eval(c);
 			d.suit = suit;
 			output->push_back(d);
 		}
@@ -51,7 +51,7 @@ string Enviroment::str_eval_cont(cell const &c, bool literal) {
 	//Card is stored as string
 	if(c.type == CARD)
 		return ((CardEnviroment*)this)->to_string(std::get<cardData>(c.content));
-	if(c.type == DECK || c.type == FILTER || c.type == LAYOUT) {
+	if(c.type == DECK || c.type == FILTER || c.type == LAYOUT || c.type == TAGFILTER) {
 		//Treat as normal list
 		string output;
 		sexpr vec = std::get<sexpr>(c.content);
@@ -71,7 +71,7 @@ int Enviroment::num_eval_cont(cell const &c) {
 
 //Convert special types to lists
 sexpr Enviroment::list_eval_cont(cell const &c) {
-	if(c.type == DECK || c.type == FILTER)
+	if(c.type == DECK || c.type == FILTER || c.type == TAGFILTER)
 		return std::get<sexpr>(c.content);
 
 	//Convert to single object list
@@ -142,6 +142,8 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 		}
 		return *output;
 	}
+	if(c.type == TAGFILTER)
+		return deck_eval(cell(filter_eval(c), FILTER));
 	if(c.type == STRING) {
 		//Try locating variable
 		auto it = vars.find(std::get<string>(c.content));
@@ -157,6 +159,8 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 sexpr CardEnviroment::filter_eval(cell const &c) {
 	if(c.type == FILTER)
 		return std::get<sexpr>(c.content);
+	if(c.type == TAGFILTER)
+		return filter_eval(std::get<sexpr>(c.content)[0]);
 	if(c.type == LIST) {
 		sexpr array = std::get<sexpr>(c.content);
 		sexpr *output = new sexpr();
@@ -180,6 +184,20 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 	if(c.type == EXPR)
 		return filter_eval(eval(c, FILTER));
 	return list_eval(c);
+}
+
+//Convert cell to filter with tag
+sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
+	if(c.type == TAGFILTER || c.type == LIST)
+		return std::get<sexpr>(c.content);
+	if(c.type == EXPR)
+		return tagfilter_eval(eval(c, TAGFILTER), open);
+
+	//Add tag to filter
+	sexpr *output = new sexpr();
+	output->push_back(force_eval[FILTER](this, c));
+	output->push_back(open);
+	return *output;
 }
 
 //Convert cell to layout

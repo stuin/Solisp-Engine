@@ -72,6 +72,10 @@ public:
 		stack = card;
 	}
 
+	void set_filter(Filter *filter) {
+		this->filter = filter;
+	}
+
 	//Check if new cards can be placed on stack
 	bool matches(int count, Card *newCard) {
 		//Check if INPUT or if inserting multiple into single stack

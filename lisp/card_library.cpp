@@ -15,28 +15,36 @@ void CardEnviroment::build_library_cont() {
 
 	//Build force evaluators
 	force_eval[CARD] = [](Enviroment *env, cell const &c) {
-		return cell(((CardEnviroment*)env)->card_eval(c), CARD);
+		return cell(cenv->card_eval(c), CARD);
 	};
 	force_eval[DECK] = [](Enviroment *env, cell const &c) {
-		return cell(((CardEnviroment*)env)->deck_eval(c), DECK);
+		return cell(cenv->deck_eval(c), DECK);
 	};
 	force_eval[FILTER] = [](Enviroment *env, cell const &c) {
-		return cell(((CardEnviroment*)env)->filter_eval(c), FILTER);
+		return cell(cenv->filter_eval(c), FILTER);
+	};
+	force_eval[TAGFILTER] = [](Enviroment *env, cell const &c) {
+		return cell(cenv->tagfilter_eval(c, false), TAGFILTER);
 	};
 	force_eval[LAYOUT] = [](Enviroment *env, cell const &c) {
-		return cell(((CardEnviroment*)env)->layout_eval(c), LAYOUT);
+		return cell(cenv->layout_eval(c), LAYOUT);
 	};
 
 	//Link force evaluators
 	library[CARD]["Card"] = forcer(CARD);
 	library[DECK]["Deck"] = forcer(DECK);
-	library[FILTER]["Filter"] = forcer(FILTER);
-	library[FILTER]["Filter-Open"] = library[FILTER]["Filter"];
-	library[FILTER]["Filter-All"] = library[FILTER]["Filter"];
+	library[TAGFILTER]["Filter"] = forcer(TAGFILTER);
+	library[TAGFILTER]["Filter-All"] = library[TAGFILTER]["Filter"];
+
+	library[TAGFILTER]["Filter-Open"] = [](Enviroment* env, marker pos, marker end) {
+		cell output = cell(cenv->tagfilter_eval(*pos++, true), TAGFILTER);
+		DONE;
+		return output;
+	};
 
 	//Set up special filters
 	library[FILTER]["Four-Suit"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr array = ((CardEnviroment*)env)->deck_eval(*pos++);
+		sexpr array = cenv->deck_eval(*pos++);
 		sexpr *output = new sexpr();
 		string suits[4] = {"Hearts", "Spades", "Diamonds", "Clubs"};
 
@@ -51,7 +59,7 @@ void CardEnviroment::build_library_cont() {
 		return cell(*output, FILTER);
 	};
 	library[FILTER]["Alternating"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr array = ((CardEnviroment*)env)->deck_eval(*pos++);
+		sexpr array = cenv->deck_eval(*pos++);
 		sexpr *output = new sexpr();
 
 		//Copy all cards into alternating colors
@@ -60,7 +68,7 @@ void CardEnviroment::build_library_cont() {
 			sexpr *deck = new sexpr();
 			for(cell c : array) {
 				//Set each card color
-				cardData d = ((CardEnviroment*)env)->card_eval(c);
+				cardData d = cenv->card_eval(c);
 				d.suit = red ? 'R' : 'B';
 				red = !red;
 				deck->push_back(d);
