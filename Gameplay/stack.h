@@ -53,9 +53,23 @@ public:
 		tags[tag] = value;
 	}
 
+	//Set maximum card count
+	void set_max(int max) {
+		this->max = max;
+	}
+
 	void set_start(int hidden=0, int shown=0) {
 		start_hidden = hidden;
 		start_shown = shown;
+	}
+
+	void add_count(int count) {
+		this->count += count; 
+	}
+
+	//Set top of stack
+	void set_card(Card *card) {
+		stack = card;
 	}
 
 	//Check if new cards can be placed on stack
@@ -78,6 +92,10 @@ public:
 		return false;
 	}
 
+	int get_max() {
+		return max;
+	}
+
 	//Get number of cards in stack
 	int get_count() {
 		return count;
@@ -86,14 +104,5 @@ public:
 	//Get top card of stack
 	Card *get_card() {
 		return stack;
-	}
-
-	void add_count(int count) {
-		this->count += count; 
-	}
-
-	//Set top of stack
-	void set_card(Card *card) {
-		stack = card;
 	}
 };

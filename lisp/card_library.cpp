@@ -80,14 +80,6 @@ void CardEnviroment::build_library_cont() {
 	library[DECK]["Red"] = setSuits('R');
 	library[DECK]["Black"] = setSuits('B');
 
-	//Change suit of single card
-	/*library[CARD]["Hearts"] = setSuit('H');
-	library[CARD]["Spades"] = setSuit('S');
-	library[CARD]["Diamonds"] = setSuit('D');
-	library[CARD]["Clubs"] = setSuit('C');
-	library[CARD]["Red"] = setSuit('R');
-	library[CARD]["Black"] = setSuit('B');*/
-
 	//Create layout to hold slots
 	library[LAYOUT]["VLayout"] = buildLayout(VLayout);
 	library[LAYOUT]["HLayout"] = buildLayout(HLayout);

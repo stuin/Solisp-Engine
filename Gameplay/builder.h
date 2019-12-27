@@ -29,7 +29,7 @@ private:
 		{"INPUT", INPUT},
 		{"OUTPUT", OUTPUT},
 		{"BUTTON", BUTTON},
-		//{"MIRRORED", SPREAD_REVERSE},
+		{"MIRRORED", SPREAD_REVERSE},
 		{"CUSTOM", CUSTOM}
 	};
 	sexpr tag_eval(cell const &c);

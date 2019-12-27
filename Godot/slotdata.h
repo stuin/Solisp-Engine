@@ -19,6 +19,11 @@ public:
 	}
 
 	int get_x() {
+		if(get_offset_x() < 0) {
+			if(stack->get_max() != -1)
+				return stack->x + stack->get_max() - 2;
+			return stack->x + 6;
+		}
 		return stack->x;
 	}
 

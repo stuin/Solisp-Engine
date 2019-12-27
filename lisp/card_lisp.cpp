@@ -36,15 +36,6 @@ builtin CardEnviroment::setSuits(char suit) {
 	};
 }
 
-builtin CardEnviroment::setSuit(char suit) {
-	return [suit](Enviroment *env, marker pos, marker end) {
-		cardData c = ((CardEnviroment*)env)->card_eval(*pos++);
-		c.suit = suit;
-		DONE;
-		return cell(c, CARD);
-	};
-}
-
 builtin CardEnviroment::buildLayout(layout_type index) {
 	return [index](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();

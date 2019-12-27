@@ -25,7 +25,7 @@ Klondike, Classic
 					(Flip 5 6)
 				}
 			)})
-			(HStack INPUT)
+			(HStack {INPUT (Max 3)})
 			(Slot {INPUT OUTPUT})
 		)
 	)

@@ -68,30 +68,26 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 						current.y += added.y;
 						final.y = current.y;
 
-						if(final.x < added.x + current.x)
-							final.x = added.x + current.x;
+						if(final.x < added.x)
+							final.x = added.x;
 					} else {
 						//Sum x and max y
 						current.x += added.x;
 						final.x = current.x;
-						if(final.y < added.y + current.y) {
-							final.y = added.y + current.y;
+						if(final.y < added.y) {
+							final.y = added.y;
 						}
 					}
-					//std::cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
 
 					//Check if current layout contains multiplier
 					if(added.recurse != -1)
 						current.recurse = added.recurse - 1;
 				} while(current.recurse > 0);
 				current.recurse = -1;
+
+				//std::cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
 			}
 
-			//Correct for VLayout inside VLayout or HLayout inside HLayout
-			if(type == VLayout)
-				final.y--;
-			else
-				final.x--;
 			final.count = current.count;
 			return final;
 		//Basic card slots
@@ -131,21 +127,6 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 	layout dim = {1, 1, 1, -1};
 	stack.set_cords(x, y);
 
-	//Set base type tags
-	switch(type) {
-		case HStack:
-			stack.set_tag(SPREAD);
-			stack.set_tag(SPREAD_HORIZONTAL);
-			dim.x = 3;
-			break;
-		case VStack:
-			stack.set_tag(SPREAD);
-			dim.y = 5;
-			break;
-		default:
-			break;
-	}
-
 	//Read connected tags
 	for(cell c : data) {
 		if(c.type == FILTER) {
@@ -153,9 +134,10 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 		} else if(c.type == EXPR) {
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
-			if(env.str_eval(list[0]) == "Start") {
+			if(env.str_eval(list[0]) == "Start")
 				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
-			}
+			else if(env.str_eval(list[0]) == "Max")
+				stack.set_max(env.num_eval(list[1]));
 		} else {
 			//Boolean tag evaluation
 			auto tag = tag_map.find(env.str_eval(c));
@@ -170,6 +152,32 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 			}
 		}
 	}
+
+	//Set base type tags
+	switch(type) {
+		case HStack:
+			stack.set_tag(SPREAD);
+			stack.set_tag(SPREAD_HORIZONTAL);
+			dim.x = 7;
+
+			//Adjust for maximum
+			if(stack.get_max() != -1)
+				dim.x = stack.get_max();
+			break;
+		case VStack:
+			stack.set_tag(SPREAD);
+			dim.y = 7;
+
+			//Adjust for maximum
+			if(stack.get_max() != -1)
+				dim.y = stack.get_max();
+			break;
+		default:
+			break;
+	}
+
+	dim.x += 1;
+	dim.y += 3;
 	return dim;
 }
 
