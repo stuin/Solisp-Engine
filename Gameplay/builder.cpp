@@ -114,11 +114,11 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 		//Basic card slots
 		case Slot: case HStack: case VStack:
 			array = tag_eval(list[1]);
-			tags.insert(tags.end(), array.begin(), array.end());
+			array.insert(array.end(), tags.begin(), tags.end());
 
 			cout << "Slot " << current.count << ":\n";
 
-			added = make_slot(stack[current.count], tags, env.num_eval(list[0]), current.x, current.y);
+			added = make_slot(stack[current.count], array, env.num_eval(list[0]), current.x, current.y);
 			added.count += current.count;
 			added.recurse = current.recurse;
 			return added;
@@ -160,6 +160,11 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
 			else if(env.str_eval(list[0]) == "Max")
 				stack.set_max(env.num_eval(list[1]));
+			else if(env.str_eval(list[0]).find("Filter") == 0) {
+				cout << "\tFilter by: " << env.str_eval(c, true) << "\n";
+				stack.set_filter(make_filter(c));
+			} //else
+				//cout << "\tUnhandled expression: " << env.str_eval(c, true) << "\n";
 		} else {
 			//Boolean tag evaluation
 			auto tag = tag_map.find(env.str_eval(c));
@@ -169,9 +174,8 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 			} else if(env.str_eval(c, false) == "Start-Extra") {
 				cout << "\tStart-Extra\n";
 				stack.set_start(-1, 0);
-			} else {
-				cout << "Not regular tag: " << env.str_eval(c, true) << " type: " << c.type << "\n";
-			}
+			} else
+				cout << "Unhandled tag: " << env.str_eval(c, true) << "\n";
 		}
 	}
 

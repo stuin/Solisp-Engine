@@ -185,15 +185,20 @@ bool Game::test(int to) {
 	//Check if cards are in hand
 	if(this->from == -1 || this->count == -1 || this->to != -1 || to > STACKCOUNT) {
 		cancel();
+		std::cout << "Initial test failed.\n";
 		return false;
 	}
+
+	std::cout << "Initial test done, ";
 
 	//Check for proper move
 	if(to == from || stack[to].matches(count, stack[from].get_card())) {
 		tested = to;
+		std::cout << "Success.\n";
 		return true;
 	}
-	
+
+	std::cout << "Filter test failed.\n";
 	tested = -1;
 	return false;
 }

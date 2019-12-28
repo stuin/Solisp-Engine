@@ -4,6 +4,7 @@ namespace Solisp {
 
 #include <vector>
 #include <queue>
+#include <stdexcept>
 
 #include "builder.h"
 #include "move.h"
@@ -59,6 +60,10 @@ public:
 
 	void undo();
 	void redo();
+
+	int get_stack_count() {
+		return STACKCOUNT;
+	}
 
 	Stack *get_stack(int i) {
 		if(i >= STACKCOUNT)

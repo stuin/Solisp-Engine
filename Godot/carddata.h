@@ -28,11 +28,11 @@ public:
 
 	int get_frame() {
 		switch(card->get_data().suit) {
-			case 'H':
+			case 'C':
 				return card->get_data().value - 1;
 			case 'D':
 				return 12 + card->get_data().value;
-			case 'C':
+			case 'H':
 				return 25 + card->get_data().value;
 			case 'S':
 				return 38 + card->get_data().value;

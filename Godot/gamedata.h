@@ -43,7 +43,14 @@ public:
 	}
 
 	bool test(int to) {
-		return game.test(to);
+		try {
+			std::cout << "Testing... ";
+			if(to > 0 && to < game.get_stack_count())
+				return game.test(to);
+		} catch (std::exception &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+		}
+		return false;
 	}
 
 	bool place(int to) {
