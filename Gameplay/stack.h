@@ -16,7 +16,7 @@ using std::bitset;
 #define MAXSTACKCOUNT 30
 #define STACKTAGCOUNT 8
 
-enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD, 
+enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, BUTTON, CUSTOM };
 
 class Solisp::Stack {
@@ -37,7 +37,7 @@ public:
 
 	int x = -1;
 	int y = -1;
-	
+
 	Stack() {}
 	~Stack() {
 		delete filter;
@@ -64,7 +64,7 @@ public:
 	}
 
 	void add_count(int count) {
-		this->count += count; 
+		this->count += count;
 	}
 
 	//Set top of stack
@@ -86,6 +86,7 @@ public:
 		if(max > 0 && this->count + count > max)
 			return false;
 
+		//return true;
 		return filter == NULL || filter->matches(count, newCard, stack);
 	}
 

@@ -4,8 +4,8 @@ Pyramid, Classic
 (Max 1)
 
 (VLayout
-	(Apply 
-		(Filter { 
+	(Apply
+		(Filter {
 			(+ 12 1)	(+ 1 12)
 			(+ 11 2)	(+ 2 11)
 			(+ 10 3) 	(+ 3 10)
@@ -13,9 +13,9 @@ Pyramid, Classic
 			(+ 8 5)		(+ 5 8)
 			(+ 7 6)		(+ 6 7)
 		})
-		(HLayout 
+		(HLayout
 			(PStack (Start 0 28))
-			(HStack { 
+			(HStack {
 				GOAL
 				HIDDEN
 			})

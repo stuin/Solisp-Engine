@@ -25,7 +25,7 @@ Spider, Classic
 			}))
 		)
 	)
-	(Apply 
+	(Apply
 		{CUSTOM (Filter-Open (Reverse Standard))}
 		(HLayout
 			(* 4 (VStack {(Start 5 1)}))

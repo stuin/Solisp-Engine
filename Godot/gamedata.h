@@ -44,7 +44,7 @@ public:
 
 	bool test(int to) {
 		try {
-			std::cout << "Testing... ";
+			//std::cout << "Testing... ";
 			if(to > 0 && to < game.get_stack_count())
 				return game.test(to);
 		} catch (std::exception &e) {

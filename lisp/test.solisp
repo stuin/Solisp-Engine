@@ -4,9 +4,9 @@
 #Math test
 (If (==
 	(Num (+ 3 2)) # Each of these lines returns 5
-	(- 10 5) 
-	(* 5 1) 
-	(/ 20 4) 
+	(- 10 5)
+	(* 5 1)
+	(/ 20 4)
 	(% 15 10)
 ) Passed Failed)
 
@@ -19,7 +19,7 @@ Passed Failed)
 Passed Failed)
 
 #For each loops and multipling together lists
-(If (Eval (+ {*} (For-Each (Get list) i (!= i 0)))) 
+(If (Eval (+ {*} (For-Each (Get list) i (!= i 0))))
 Passed Failed)
 
 #Alternate list building

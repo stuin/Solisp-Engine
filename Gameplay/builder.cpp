@@ -221,4 +221,4 @@ int Builder::set_stacks(Stack *stack) {
 	std::cout << "Slot 0: \n";
 	make_slot(stack[0], tag_eval(env.read_stream(rule_file, LIST)), VStack, -1, -1);
 	return make_layout(stack, env.read_stream(rule_file, LAYOUT)).count;
-}	
+}

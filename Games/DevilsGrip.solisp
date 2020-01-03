@@ -4,9 +4,9 @@ Devil's Grip, Challenge
 (Max 1)
 
 (HLayout
-	(VLayout 
+	(VLayout
 		(* 3 (HLayout
-			(* 8 (VStack { 
+			(* 8 (VStack {
 				Goal
 				(Start 0 1)
 				(Max 4)
