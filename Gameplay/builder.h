@@ -35,7 +35,7 @@ private:
 	sexpr tag_eval(cell const &c);
 
 	//Solisp to gameplay convertions
-	Card *make_card(const cell &source);
+	Card *make_card(const cell &source, bool shuffled);
 	Filter *make_filter(const cell &source);
 
 	//Layout interpreting functions

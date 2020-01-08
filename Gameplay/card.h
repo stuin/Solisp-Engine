@@ -52,6 +52,8 @@ public:
 		return slot;
 	}
 	int get_index() {
+		if(index < 0)
+			index = 0;
 		return index;
 	}
 
@@ -81,6 +83,8 @@ public:
 
 	//Make sure index value is set properly
 	int set_index(int count) {
+		if(index < 0)
+			index = 0;
 		if(count == 0)
 			return index;
 		if(next == NULL)
@@ -92,6 +96,7 @@ public:
 	Card(char start, char end, char suit);
 	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);
+	Card *shuffle(Card *next);
 	void operator+=(Card *next);
 	void print_stack();
 };

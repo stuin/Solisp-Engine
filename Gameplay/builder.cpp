@@ -28,7 +28,7 @@ sexpr Builder::tag_eval(cell const &c) {
 }
 
 //Create card from lisp cell
-Card *Builder::make_card(const cell &source) {
+Card *Builder::make_card(const cell &source, bool shuffled) {
 	Card *current = NULL;
 	Card *start = NULL;
 	sexpr deck = env.deck_eval(source);
@@ -40,11 +40,14 @@ Card *Builder::make_card(const cell &source) {
 		if(current == NULL) {
 			current = new Card(env.card_eval(card));
 			start = current;
-		} else {
+		} else if(!shuffled) {
 			//Add to list
 			Card *value = new Card(env.card_eval(card));
 			current->set_next(value);
 			current = value;
+		} else {
+			Card *value = new Card(env.card_eval(card));
+			start = start->shuffle(value);
 		}
 	}
 	return start;
@@ -61,8 +64,8 @@ Filter *Builder::make_filter(const cell &source) {
 
 	//Pass each deck to filter
 	for(cell deck : array)
-		*output += make_card(deck);
-	
+		*output += make_card(deck, false);
+
 	return output;
 }
 
@@ -106,7 +109,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 				} while(current.recurse > 0);
 				current.recurse = -1;
 
-				//cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n"; 
+				//cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n";
 			}
 
 			final.count = current.count;
@@ -209,7 +212,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 
 //Get the overall deck to play with
 Card *Builder::get_deck() {
-	Card *c = make_card(env.read_stream(rule_file, DECK));
+	Card *c = make_card(env.read_stream(rule_file, DECK), true);
 	cout << "Deck loaded\n";
 	return c;
 }

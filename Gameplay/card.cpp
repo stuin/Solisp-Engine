@@ -43,6 +43,39 @@ Card *Card::reverse(int index, Card *last) {
 	return other->reverse(index + 1, this);
 }
 
+//Add card to list in random location
+Card *Card::shuffle(Card *next) {
+	if(index == 0)
+		index = -2;
+	else
+		index--;
+
+	//Get random space in list
+	int i = rand() % -index;
+	//std::cout << "Shuffling, index = " << -index << ", i = " << i << "\n";
+
+	//Add card to linked list
+	if(i == 0) {
+		//Replace first card
+		next->set_next(this);
+		next->index = index;
+		index = 0;
+		return next;
+	} else {
+		//Reach selected spot
+		Card *pos = this;
+		while(i > 1) {
+			pos = pos->next;
+			i--;
+		}
+
+		//Insert card into space
+		next->set_next(pos->next);
+		pos->set_next(next);
+		return this;
+	}
+}
+
 //Add new card to list
 void Card::operator+=(Card *next) {
 	if(this->next == NULL)

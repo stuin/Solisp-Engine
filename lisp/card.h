@@ -20,9 +20,11 @@ struct Solisp::cardData {
 			case 'R':
 				if(other.suit == 'H' || other.suit == 'D')
 					return true;
+				break;
 			case 'B':
 				if(other.suit == 'C' || other.suit == 'S')
 					return true;
+				break;
 		}
 		return false;
 	}

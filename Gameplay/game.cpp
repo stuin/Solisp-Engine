@@ -128,6 +128,7 @@ void Game::deal() {
 
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
+	srand(time(NULL));
 	stack[0].set_card(builder->get_deck());
 	Card *card = stack[0].get_card();
 
@@ -149,14 +150,14 @@ bool Game::grab(int num, int from) {
 	if(from > STACKCOUNT)
 		return false;
 
-	//If top card hidden
+	//Fail if top card hidden
 	if(stack[from].get_card()->is_hidden()) {
 		*current += new Move(1, from, from, true, true, current);
 		update();
 		return false;
 	}
 
-	//If stack is output
+	//Fail if stack marked as output
 	if(stack[from].get_tag(OUTPUT) || num < 1)
 		return false;
 

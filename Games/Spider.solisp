@@ -1,9 +1,6 @@
 Spider, Classic
 
-(* 4 (Deck (+
-	(Spades Standard)
-	(Hearts Standard)
-)))
+(* 8 (Deck (Spades Standard)))
 (Filter-Open (Four-Suit (Reverse Standard)))
 
 (VLayout
@@ -26,7 +23,7 @@ Spider, Classic
 		)
 	)
 	(Apply
-		{CUSTOM (Filter-Open (Reverse Standard))}
+		{CUSTOM (Filter-Open (Four-Suit (Reverse Standard)))}
 		(HLayout
 			(* 4 (VStack {(Start 5 1)}))
 			(* 6 (VStack {(Start 4 1)}))
