@@ -38,6 +38,8 @@ std::list<std::string> Enviroment::tokenize(const std::string & str) {
 cell Enviroment::atom(const std::string & token) {
     if(isdigit(token[0]) || (token[0] == '-' && isdigit(token[1])))
         return cell(stoi(token));
+    if(token.length() == 1)
+    	return cell(token[0]);
     return cell(token);
 }
 
