@@ -99,7 +99,7 @@ cell Enviroment::read_stream(std::istream &in, cell_type type, int new_line) {
 						if(object.length() > 0)
 							object += ' ';
 						comment = true;
-					} 
+					}
 				}
 
 				if(c == '"')
@@ -119,14 +119,13 @@ cell Enviroment::read_stream(std::istream &in, cell_type type, int new_line) {
 		} else if(new_line == end_line - 1)
 			new_line++;
 	}
-	
 
 	//Run actual evaluation with error checking
 	try {
 		if(object.length() > 0) {
 			if(in.eof() && levels != 0)
 				throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
- 
+
 			start_line = end_line;
 			return force_eval[type](this, read(object));
 		}

@@ -31,8 +31,6 @@ void CardEnviroment::build_library_cont() {
 	};
 
 	//Link force evaluators
-	library["Card"] = forcer(CARD);
-	library["Deck"] = forcer(DECK);
 	library["Filter"] = forcer(TAGFILTER);
 	library["Filter-All"] = library["Filter"];
 
@@ -107,7 +105,7 @@ void CardEnviroment::build_library_cont() {
 		return cell(*output, LAYOUT);
 	};
 	//Duplicate layout multiple times
-	library["*"] = [](Enviroment *env, marker pos, marker end) {
+	library["Clone"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		output->push_back(Multiply);
 		output->push_back(*pos++);

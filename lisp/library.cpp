@@ -44,12 +44,6 @@ void Enviroment::build_library() {
 		return cell(env->list_eval(c), LIST);
 	};
 
-	//Link force evaluators
-	library["Str"] = forcer(STRING);
-	library["Num"] = forcer(NUMBER);
-	library["Char"] = forcer(CHAR);
-	library["List"] = forcer(LIST);
-
 	//Basic arithmatic
 	library["+"] = arithmetic(std::plus<int>());
 	library["-"] = arithmetic(std::minus<int>());
@@ -91,7 +85,7 @@ void Enviroment::build_library() {
 		DONE;
 		return cell(*output, LIST);
 	};
-	library["Clone"] = [](Enviroment *env, marker pos, marker end) {
+	library["Duplicate"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		int count = env->num_eval(*pos++);
 		sexpr array = env->list_eval(*pos++);
@@ -107,6 +101,16 @@ void Enviroment::build_library() {
 		std::reverse(output.begin(),output.end());
 		DONE;
 		return cell(output, LIST);
+	};
+	library["Join"] = [](Enviroment *env, marker pos, marker end) {
+		string output;
+		sexpr array = env->list_eval(*pos++);
+
+		for(cell s : array)
+			output += env->str_eval(s, false);
+
+		DONE;
+		return output;
 	};
 
 	//Control flow

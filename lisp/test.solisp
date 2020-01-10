@@ -3,15 +3,15 @@
 
 #Math test
 (If (==
-	(Num (+ 3 2)) # Each of these lines returns 5
+	(+ 3 2) # Each of these lines returns 5
 	(- 10 5)
 	(* 5 1)
 	(/ 20 4)
 	(% 15 10)
 ) Passed Failed)
 
-#Basic type setting + string concat
-(If (> (Str (Append 3 2)) 30) #32 > 30
+#Basic type setting + Joining concat
+(If (> (Join {3 2}) 30) #32 > 30
 Passed Failed)
 
 #Summing up lists
@@ -19,22 +19,21 @@ Passed Failed)
 Passed Failed)
 
 #For each loops and multipling together lists
-(Append {*} (For-Each (Get list) i (!= i 0)))
 (If (Eval (Append {*} (For-Each (Get list) i (!= i 0))))
 Passed Failed)
 
 #Alternate list building
-(Str (Eval (Quote Append P a s s e "d")))
+(Join (Quote P a s s e "d"))
 
 #Reverse list
-(Str (Eval (Reverse {d e s s a P Append})))
+(Join (Reverse {d e s s a P}))
 
 #Duplicating list
-(If (== (Num (Eval (Append {+} (* 4 {1 1})))) 8)
+(If (== 8 (Eval (Append {+} (Duplicate 4 {1 1}))))
 Passed Failed)
 
 #Weird formatting test
 (If#Testing
-1(Str 		 Passed)"Failed"
+1(Join 		 {Pass ed})"Failed"
 )
 
