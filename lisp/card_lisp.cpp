@@ -69,6 +69,11 @@ int Enviroment::num_eval_cont(cell const &c) {
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
+//Convert special types to numbers
+char Enviroment::char_eval_cont(cell const &c) {
+	throw std::domain_error("Cannot convert to char from type " + std::to_string(c.type));
+}
+
 //Convert special types to lists
 sexpr Enviroment::list_eval_cont(cell const &c) {
 	if(c.type == DECK || c.type == FILTER || c.type == TAGFILTER)

@@ -31,19 +31,19 @@ void CardEnviroment::build_library_cont() {
 	};
 
 	//Link force evaluators
-	library[CARD]["Card"] = forcer(CARD);
-	library[DECK]["Deck"] = forcer(DECK);
-	library[TAGFILTER]["Filter"] = forcer(TAGFILTER);
-	library[TAGFILTER]["Filter-All"] = library[TAGFILTER]["Filter"];
+	library["Card"] = forcer(CARD);
+	library["Deck"] = forcer(DECK);
+	library["Filter"] = forcer(TAGFILTER);
+	library["Filter-All"] = library["Filter"];
 
-	library[TAGFILTER]["Filter-Open"] = [](Enviroment* env, marker pos, marker end) {
+	library["Filter-Open"] = [](Enviroment* env, marker pos, marker end) {
 		cell output = cell(cenv->tagfilter_eval(*pos++, true), TAGFILTER);
 		DONE;
 		return output;
 	};
 
 	//Set up special filters
-	library[FILTER]["Four-Suit"] = [](Enviroment *env, marker pos, marker end) {
+	library["Four-Suit"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr array = cenv->deck_eval(*pos++);
 		sexpr *output = new sexpr();
 		string suits[4] = {"Hearts", "Spades", "Diamonds", "Clubs"};
@@ -58,7 +58,7 @@ void CardEnviroment::build_library_cont() {
 
 		return cell(*output, FILTER);
 	};
-	library[FILTER]["Alternating"] = [](Enviroment *env, marker pos, marker end) {
+	library["Alternating"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr array = cenv->deck_eval(*pos++);
 		sexpr *output = new sexpr();
 
@@ -81,23 +81,23 @@ void CardEnviroment::build_library_cont() {
 	};
 
 	//Change suit of full deck
-	library[DECK]["Hearts"] = setSuits('H');
-	library[DECK]["Spades"] = setSuits('S');
-	library[DECK]["Diamonds"] = setSuits('D');
-	library[DECK]["Clubs"] = setSuits('C');
-	library[DECK]["Red"] = setSuits('R');
-	library[DECK]["Black"] = setSuits('B');
+	library["Hearts"] = setSuits('H');
+	library["Spades"] = setSuits('S');
+	library["Diamonds"] = setSuits('D');
+	library["Clubs"] = setSuits('C');
+	library["Red"] = setSuits('R');
+	library["Black"] = setSuits('B');
 
 	//Create layout to hold slots
-	library[LAYOUT]["VLayout"] = buildLayout(VLayout);
-	library[LAYOUT]["HLayout"] = buildLayout(HLayout);
-	library[LAYOUT]["VStack"] = buildLayout(VStack);
-	library[LAYOUT]["HStack"] = buildLayout(HStack);
-	library[LAYOUT]["PStack"] = buildLayout(PStack);
-	library[LAYOUT]["Slot"] = buildLayout(Slot);
+	library["VLayout"] = buildLayout(VLayout);
+	library["HLayout"] = buildLayout(HLayout);
+	library["VStack"] = buildLayout(VStack);
+	library["HStack"] = buildLayout(HStack);
+	library["PStack"] = buildLayout(PStack);
+	library["Slot"] = buildLayout(Slot);
 
 	//Apply tags to all contained slots
-	library[LAYOUT]["Apply"] = [](Enviroment *env, marker pos, marker end) {
+	library["Apply"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		output->push_back(Apply);
 		output->push_back(*pos++);
@@ -107,18 +107,18 @@ void CardEnviroment::build_library_cont() {
 		return cell(*output, LAYOUT);
 	};
 	//Duplicate layout multiple times
-	library[LAYOUT]["*"] = [](Enviroment *env, marker pos, marker end) {
+	library["*"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		output->push_back(Multiply);
 		output->push_back(*pos++);
 		output->push_back(*pos++);
-		
+
 		DONE;
 		return cell(*output, LAYOUT);
 	};
 
 	//Grid layout of specific width
-	library[LAYOUT]["GLayout"] = [](Enviroment *env, marker pos, marker end) {
+	library["GLayout"] = [](Enviroment *env, marker pos, marker end) {
 		int row_length = env->num_eval(*pos++);
 		sexpr *output = new sexpr();
 		output->push_back(VLayout);

@@ -55,12 +55,13 @@ Card *Builder::make_card(const cell &source, bool shuffled) {
 
 //Create filter from lisp cell
 Filter *Builder::make_filter(const cell &source) {
-
 	//Retrieve cell values
-	sexpr array = env.tagfilter_eval(source);
+	sexpr array = env.tagfilter_eval(source, true);
 	bool open = env.num_eval(array[1]);
 	array = env.filter_eval(array[0]);
 	Filter *output = new Filter(open);
+
+	cout << "\tFilter by: " << env.str_eval(source, true) << "\n";
 
 	//Pass each deck to filter
 	for(cell deck : array)
@@ -153,21 +154,19 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 
 	//Read connected tags
 	for(cell c : data) {
-		if(c.type == TAGFILTER || c.type == FILTER) {
-			cout << "\tFilter by: " << env.str_eval(c, true) << "\n";
+		if(c.type == TAGFILTER || c.type == FILTER)
 			stack.set_filter(make_filter(c));
-		} else if(c.type == EXPR) {
+		else if(c.type == EXPR) {
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
 			if(env.str_eval(list[0]) == "Start")
 				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
 			else if(env.str_eval(list[0]) == "Max")
 				stack.set_max(env.num_eval(list[1]));
-			else if(env.str_eval(list[0]).find("Filter") == 0) {
-				cout << "\tFilter by: " << env.str_eval(c, true) << "\n";
+			else if(env.str_eval(list[0]).find("Filter") == 0)
 				stack.set_filter(make_filter(c));
-			} //else
-				//cout << "\tUnhandled expression: " << env.str_eval(c, true) << "\n";
+			else
+				cout << "\tUnhandled expression: " << env.str_eval(c, true) << "\n";
 		} else {
 			//Boolean tag evaluation
 			auto tag = tag_map.find(env.str_eval(c));

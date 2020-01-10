@@ -11,28 +11,26 @@
 ) Passed Failed)
 
 #Basic type setting + string concat
-(If (> (Str (+ 3 2)) 30) #32 > 30
+(If (> (Str (Concat 3 2)) 30) #32 > 30
 Passed Failed)
 
 #Summing up lists
-(If (< (Eval (+ {+} (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
+(If (< (Eval (Append {+} (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
 #For each loops and multipling together lists
-(If (Eval (+ {*} (For-Each (Get list) i (!= i 0))))
+(Append {*} (For-Each (Get list) i (!= i 0)))
+(If (Eval (Append {*} (For-Each (Get list) i (!= i 0))))
 Passed Failed)
 
 #Alternate list building
-(Str (Eval (Quote + P a s s e "d")))
-
-#Run full string as code
-(Read "(+ P a s s e d)" )
+(Str (Eval (Quote Concat P a s s e "d")))
 
 #Reverse list
-(Str (Eval (Reverse {d e s s a P +})))
+(Str (Eval (Reverse {d e s s a P Concat})))
 
 #Duplicating list
-(If (== (Num (Eval (+ {+} (* 4 {1 1})))) 8)
+(If (== (Num (Eval (Append {+} (* 4 {1 1})))) 8)
 Passed Failed)
 
 #Weird formatting test

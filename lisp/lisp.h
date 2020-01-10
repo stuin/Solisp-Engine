@@ -31,21 +31,22 @@ using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 
 //Allow for adding specialized types
 #ifndef type_count
-#define type_count 4
+#define type_count 5
 #define addons false
 
 //Base type lists
-enum cell_type {EXPR, STRING, NUMBER, LIST};
+enum cell_type {EXPR, STRING, NUMBER, CHAR, LIST};
 
 //Main data sructure
 struct cell {
 	cell_type type;
-	std::variant<sexpr, string, int> content;
+	std::variant<sexpr, string, char, int> content;
 
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
 	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
+	cell(char c, cell_type t = CHAR) : content{std::move(c)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
 
 	//Equality
@@ -63,7 +64,6 @@ private:
 
 	//Library structure
 	void build_library();
-	builtin search_library(string name, cell_type type);
 
 	//Reader functions
 	std::list<std::string> tokenize(const std::string & str);
@@ -75,25 +75,18 @@ private:
 	template <class T> builtin arithmetic(T func);
 
 public:
-	cell_type type_conversions[type_count][type_count] = {
-		{NUMBER, STRING, LIST, EXPR},
-		{STRING, NUMBER, LIST, EXPR},
-		{NUMBER, STRING, EXPR},
-		{LIST, STRING, EXPR}
-	};
-
 	bool addons = false;
 	force_builtin force_eval[type_count];
-	std::map<string, builtin> library[type_count];
+	std::map<string, builtin> library;
 	std::map<string, cell> vars;
 
 	//Type forcing conversions
 	builtin forcer(cell_type type);
-	void merge_convertors(std::initializer_list<std::initializer_list<cell_type>> added);
 
 	//Allow additional type conversions
 	string str_eval_cont(cell const &c, bool literal=false);
 	int num_eval_cont(cell const &c);
+	char char_eval_cont(cell const &c);
 	sexpr list_eval_cont(cell const &c);
 
 	//Base eval function
@@ -103,6 +96,7 @@ public:
 	//Convert types
 	string str_eval(cell const &c, bool literal=false);
 	int num_eval(cell const &c);
+	char char_eval(cell const &c);
 	sexpr list_eval(cell const &c);
 
 	//Public reader functions

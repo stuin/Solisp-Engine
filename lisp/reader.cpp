@@ -34,7 +34,7 @@ std::list<std::string> Enviroment::tokenize(const std::string & str) {
     return tokens;
 }
 
-//Numbers become Numbers; every other token is a String
+//Numbers become Numbers; every other token is a String or char
 cell Enviroment::atom(const std::string & token) {
     if(isdigit(token[0]) || (token[0] == '-' && isdigit(token[1])))
         return cell(stoi(token));

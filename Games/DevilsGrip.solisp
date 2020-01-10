@@ -1,19 +1,19 @@
 Devil's Grip, Challenge
 
 (* 2 (Deck (Four-Suit (- Standard 1))))
-(Max 1)
+{(Max 1)}
 
 (HLayout
 	(VLayout
 		(* 3 (HLayout
 			(* 8 (VStack {
-				Goal
+				GOAL
 				(Start 0 1)
 				(Max 4)
 				(Filter-Open {
-					(Same-Suit {2 5 8 11})
-					(Same-Suit {3 6 9 12})
-					(Same-Suit {4 7 10 13})
+					(Four-Suit {2 5 8 11})
+					(Four-Suit {3 6 9 12})
+					(Four-Suit {4 7 10 13})
 				})
 			}))
 		))

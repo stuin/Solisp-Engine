@@ -5,20 +5,6 @@
  * Lisp type convertions and definitions
  */
 
-//Retrieving function from library
-builtin Enviroment::search_library(string name, cell_type type) {
-	int i = 0;
-	do {
-		//Check every function in a convertable type
-		auto b = library[type_conversions[type][i]].find(name);
-		if(b != library[type_conversions[type][i]].end())
-			return b->second;
-		i++;
-	} while(type_conversions[type][i - 1] != EXPR);
-
-	throw std::invalid_argument{name + " not in the library for type " + std::to_string(type)};
-}
- 
 //Base eval function
 cell Enviroment::eval(cell const &c, cell_type type) {
 	if(c.type == EXPR)
@@ -32,6 +18,8 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 		return std::get<string>(c.content);
 	if(c.type == NUMBER)
 		return std::to_string(std::get<int>(c.content));
+	if(c.type == CHAR)
+		return "" + std::get<char>(c.content);
 	if(c.type == EXPR && !literal)
 		return str_eval(eval(c, STRING));
 	if(c.type == LIST || c.type == EXPR) {
@@ -41,16 +29,17 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 			output += str_eval(s, literal) + " ";
 		return output;
 	}
-	
+
 	if(addons) return str_eval_cont(c, literal);
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
-
 }
 
 //Convert to number
-int Enviroment::num_eval(cell const &c) { 
+int Enviroment::num_eval(cell const &c) {
 	if(c.type == NUMBER)
 		return std::get<int>(c.content);
+	if(c.type == CHAR)
+		return std::get<char>(c.content);
 	if(c.type == STRING) {
 		string s = std::get<string>(c.content);
 
@@ -62,7 +51,7 @@ int Enviroment::num_eval(cell const &c) {
 		auto it = vars.find(s);
 		if(it != vars.end())
 			return num_eval(it->second);
-		
+
 		//Try boolean values
 		if(s[0] == 't' || s[0] == 'T')
 			return 1;
@@ -78,6 +67,19 @@ int Enviroment::num_eval(cell const &c) {
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
+char Enviroment::char_eval(cell const &c) {
+	if(c.type == NUMBER)
+		return '0' + std::get<int>(c.content);
+	if(c.type == CHAR)
+		return std::get<char>(c.content);
+	if(c.type == EXPR)
+		return char_eval(eval(c, CHAR));
+
+	if(addons) return char_eval_cont(c);
+
+	throw std::domain_error("Cannot convert to char from type " + std::to_string(c.type));
+}
+
 //Convert to list
 sexpr Enviroment::list_eval(cell const &c) {
 	if(c.type == LIST)
@@ -91,7 +93,7 @@ sexpr Enviroment::list_eval(cell const &c) {
 	}
 	if(c.type == EXPR)
 		return list_eval(eval(c, LIST));
-	
+
 	if(addons) return list_eval_cont(c);
 
 	//Convert to single object list
@@ -104,10 +106,14 @@ sexpr Enviroment::list_eval(cell const &c) {
 cell Enviroment::eval(sexpr const &s, cell_type type) {
 	if(s.begin() == s.end())
 		throw std::domain_error("Empty sexpr");
-	else {
-		string name = str_eval(*s.begin());
-		return search_library(name, type)(this, ++s.begin(), s.end());
-	}
+
+	//Search library for function
+	string name = str_eval(*s.begin());
+	auto b = library.find(name);
+	if(b != library.end())
+		return b->second(this, ++s.begin(), s.end());
+
+	throw std::invalid_argument{name + " not in the library"};
 }
 
 //Build a function to force set the type of a structure
@@ -117,20 +123,4 @@ builtin Enviroment::forcer(cell_type type) {
 		DONE;
 		return output;
 	};
-}
-
-void Enviroment::merge_convertors(std::initializer_list<std::initializer_list<cell_type>> added) {
-	auto list = added.begin();
-	int y = 0;
-	while(list != added.end()) {
-		auto type = list->begin();
-		int x = 0;
-		while(type != list->end()) {
-			type_conversions[y][x] = *type;
-			x++;
-			type++;
-		}
-		list++;
-		y++;
-	}
 }
