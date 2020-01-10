@@ -45,8 +45,8 @@ struct cell {
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
-	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(char c, cell_type t = CHAR) : content{std::move(c)} { type = t; }
+	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
 
 	//Equality

@@ -19,7 +19,7 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 	if(c.type == NUMBER)
 		return std::to_string(std::get<int>(c.content));
 	if(c.type == CHAR)
-		return "" + std::get<char>(c.content);
+		return std::get<char>(c.content) + "";
 	if(c.type == EXPR && !literal)
 		return str_eval(eval(c, STRING));
 	if(c.type == LIST || c.type == EXPR) {
@@ -69,7 +69,7 @@ int Enviroment::num_eval(cell const &c) {
 
 char Enviroment::char_eval(cell const &c) {
 	if(c.type == NUMBER)
-		return '0' + std::get<int>(c.content);
+		return std::get<int>(c.content);
 	if(c.type == CHAR)
 		return std::get<char>(c.content);
 	if(c.type == EXPR)
