@@ -11,7 +11,7 @@
 ) Passed Failed)
 
 #Basic type setting + string concat
-(If (> (Str (Concat 3 2)) 30) #32 > 30
+(If (> (Str (Append 3 2)) 30) #32 > 30
 Passed Failed)
 
 #Summing up lists
@@ -24,10 +24,10 @@ Passed Failed)
 Passed Failed)
 
 #Alternate list building
-(Str (Eval (Quote Concat P a s s e "d")))
+(Str (Eval (Quote Append P a s s e "d")))
 
 #Reverse list
-(Str (Eval (Reverse {d e s s a P Concat})))
+(Str (Eval (Reverse {d e s s a P Append})))
 
 #Duplicating list
 (If (== (Num (Eval (Append {+} (* 4 {1 1})))) 8)

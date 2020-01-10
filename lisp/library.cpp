@@ -50,14 +50,6 @@ void Enviroment::build_library() {
 	library["Char"] = forcer(CHAR);
 	library["List"] = forcer(LIST);
 
-	//String concatanation
-	library["Concat"] = [](Enviroment *env, marker pos, marker end) {
-		string value;
-		while (pos != end)
-			value += env->str_eval(*pos++);
-		return value;
-	};
-
 	//Basic arithmatic
 	library["+"] = arithmetic(std::plus<int>());
 	library["-"] = arithmetic(std::minus<int>());

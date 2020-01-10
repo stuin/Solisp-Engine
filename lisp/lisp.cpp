@@ -90,6 +90,11 @@ sexpr Enviroment::list_eval(cell const &c) {
 		auto it = vars.find(s);
 		if(it != vars.end())
 			return list_eval(it->second);
+
+		sexpr output;
+		for(char a : s)
+			output.push_back(cell(a));
+		return output;
 	}
 	if(c.type == EXPR)
 		return list_eval(eval(c, LIST));
