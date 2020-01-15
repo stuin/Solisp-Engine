@@ -29,25 +29,28 @@ using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 //End of builtin function macro
 #define DONE if(pos != end) throw std::domain_error("Too many arguments: " + env->str_eval(*pos, true));
 
+//Base data types
+#define EXPR 0
+#define STRING 1
+#define NUMBER 2
+#define CHAR 3
+#define LIST 4
+
 //Allow for adding specialized types
 #ifndef type_count
 #define type_count 5
-#define addons false
-
-//Base type lists
-enum cell_type {EXPR, STRING, NUMBER, CHAR, LIST};
 
 //Main data sructure
 struct cell {
-	cell_type type;
+	int type;
 	std::variant<sexpr, string, char, int> content;
 
 	//Constructors
 	cell() { cell(""); }
-	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
-	cell(char c, cell_type t = CHAR) : content{std::move(c)} { type = t; }
-	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
-	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
+	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
+	cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
+	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
+	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
 
 	//Equality
 	friend bool operator==(const cell &first, const cell &second) {
@@ -75,23 +78,22 @@ private:
 	template <class T> builtin arithmetic(T func);
 
 public:
-	bool addons = false;
 	force_builtin force_eval[type_count];
 	std::map<string, builtin> library;
 	std::map<string, cell> vars;
 
 	//Type forcing conversions
-	builtin forcer(cell_type type);
+	builtin forcer(int type);
 
 	//Allow additional type conversions
-	string str_eval_cont(cell const &c, bool literal=false);
-	int num_eval_cont(cell const &c);
-	char char_eval_cont(cell const &c);
-	sexpr list_eval_cont(cell const &c);
+	virtual string str_eval_cont(cell const &c, bool literal=false);
+	virtual int num_eval_cont(cell const &c);
+	virtual char char_eval_cont(cell const &c);
+	virtual sexpr list_eval_cont(cell const &c);
 
 	//Base eval function
-	cell eval(sexpr const &c, cell_type type);
-	cell eval(cell const &c, cell_type type);
+	cell eval(sexpr const &c, int type);
+	cell eval(cell const &c, int type);
 
 	//Convert types
 	string str_eval(cell const &c, bool literal=false);
@@ -101,7 +103,7 @@ public:
 
 	//Public reader functions
 	cell read(const std::string & s);
-	cell read_stream(std::istream &in, cell_type type, int new_line = -1);
+	cell read_stream(std::istream &in, int type, int new_line = -1);
 
 	Enviroment() {
 		build_library();

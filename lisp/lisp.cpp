@@ -6,7 +6,7 @@
  */
 
 //Base eval function
-cell Enviroment::eval(cell const &c, cell_type type) {
+cell Enviroment::eval(cell const &c, int type) {
 	if(c.type == EXPR)
 		return std::visit([type, this](auto const &c) { return this->eval(c, type); }, c.content);
     return c;
@@ -30,7 +30,10 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 		return output;
 	}
 
-	if(addons) return str_eval_cont(c, literal);
+	return str_eval_cont(c, literal);
+}
+
+string Enviroment::str_eval_cont(cell const &c, bool literal) {
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
@@ -63,10 +66,14 @@ int Enviroment::num_eval(cell const &c) {
 	if(c.type == EXPR)
 		return num_eval(eval(c, NUMBER));
 
-	if(addons) return num_eval_cont(c);
+	return num_eval_cont(c);
+}
+
+int Enviroment::num_eval_cont(cell const &c) {
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
+//Convert to char
 char Enviroment::char_eval(cell const &c) {
 	if(c.type == NUMBER)
 		return std::get<int>(c.content);
@@ -75,8 +82,10 @@ char Enviroment::char_eval(cell const &c) {
 	if(c.type == EXPR)
 		return char_eval(eval(c, CHAR));
 
-	if(addons) return char_eval_cont(c);
+	return char_eval_cont(c);
+}
 
+char Enviroment::char_eval_cont(cell const &c) {
 	throw std::domain_error("Cannot convert to char from type " + std::to_string(c.type));
 }
 
@@ -99,8 +108,10 @@ sexpr Enviroment::list_eval(cell const &c) {
 	if(c.type == EXPR)
 		return list_eval(eval(c, LIST));
 
-	if(addons) return list_eval_cont(c);
+	return list_eval_cont(c);
+}
 
+sexpr Enviroment::list_eval_cont(cell const &c) {
 	//Convert to single object list
 	sexpr *output = new sexpr();
 	output->push_back(c);
@@ -108,7 +119,7 @@ sexpr Enviroment::list_eval(cell const &c) {
 }
 
 //Actual expression evaluation
-cell Enviroment::eval(sexpr const &s, cell_type type) {
+cell Enviroment::eval(sexpr const &s, int type) {
 	if(s.begin() == s.end())
 		throw std::domain_error("Empty sexpr");
 
@@ -122,7 +133,7 @@ cell Enviroment::eval(sexpr const &s, cell_type type) {
 }
 
 //Build a function to force set the type of a structure
-builtin Enviroment::forcer(cell_type type) {
+builtin Enviroment::forcer(int type) {
 	return [type](Enviroment* env, marker pos, marker end) {
 		cell output = env->force_eval[type](env, *pos++);
 		DONE;

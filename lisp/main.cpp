@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 		while(true) {
 			std::cout << "test>";
 			std::cout << env.str_eval(env.read_stream(std::cin, STRING)) + "\n";
-		}	
+		}
 	}
-	
+
 }

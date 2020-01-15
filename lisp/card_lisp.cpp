@@ -47,7 +47,7 @@ builtin CardEnviroment::buildLayout(layout_type index) {
 }
 
 //Convert special types to strings
-string Enviroment::str_eval_cont(cell const &c, bool literal) {
+string CardEnviroment::str_eval_cont(cell const &c, bool literal) {
 	//Card is stored as string
 	if(c.type == CARD)
 		return ((CardEnviroment*)this)->to_string(std::get<cardData>(c.content));
@@ -63,19 +63,14 @@ string Enviroment::str_eval_cont(cell const &c, bool literal) {
 }
 
 //Convert special types to numbers
-int Enviroment::num_eval_cont(cell const &c) {
+int CardEnviroment::num_eval_cont(cell const &c) {
 	if(c.type == CARD)
 		return std::get<cardData>(c.content).value;
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
-//Convert special types to numbers
-char Enviroment::char_eval_cont(cell const &c) {
-	throw std::domain_error("Cannot convert to char from type " + std::to_string(c.type));
-}
-
 //Convert special types to lists
-sexpr Enviroment::list_eval_cont(cell const &c) {
+sexpr CardEnviroment::list_eval_cont(cell const &c) {
 	if(c.type == DECK || c.type == FILTER || c.type == TAGFILTER)
 		return std::get<sexpr>(c.content);
 

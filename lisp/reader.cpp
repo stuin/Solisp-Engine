@@ -46,7 +46,7 @@ cell Enviroment::atom(const std::string & token) {
 //Return the Lisp expression in the given tokens
 cell Enviroment::read_from(std::list<std::string> & tokens) {
     const std::string token(tokens.front());
-    cell_type type = (token == "{") ? LIST : EXPR;
+    int type = (token == "{") ? LIST : EXPR;
     tokens.pop_front();
     if(token == "(" || token == "{") {
         sexpr *output = new sexpr();
@@ -66,7 +66,7 @@ cell Enviroment::read(const std::string & s) {
 }
 
 //Read objects spanning multiple lines into one string
-cell Enviroment::read_stream(std::istream &in, cell_type type, int new_line) {
+cell Enviroment::read_stream(std::istream &in, int type, int new_line) {
 	std::string object;
 	int levels = -1;
 	bool literal = false;

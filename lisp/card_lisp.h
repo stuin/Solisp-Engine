@@ -21,22 +21,33 @@ using Solisp::cardData;
 
 enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
 
+#define EXPR 0
+#define STRING 1
+#define NUMBER 2
+#define CHAR 3
+#define LIST 4
+
 //Expanded type lists
+#define CARD LIST+1
+#define DECK LIST+2
+#define FILTER LIST+3
+#define TAGFILTER LIST+4
+#define LAYOUT LIST+5
+
 #define type_count 10
-enum cell_type {EXPR, STRING, NUMBER, CHAR, LIST, CARD, DECK, FILTER, TAGFILTER, LAYOUT};
 
 //Main data sructure
 struct cell {
-	cell_type type;
+	int type;
 	std::variant<sexpr, string, int, char, cardData> content;
 
 	//Constructors
 	cell() { cell(""); }
-	cell(string s, cell_type t = STRING) : content{std::move(s)} { type = t; }
-	cell(char c, cell_type t = CHAR) : content{std::move(c)} { type = t; }
-	cell(int n, cell_type t = NUMBER) : content{std::move(n)} { type = t; }
-	cell(sexpr s, cell_type t = EXPR) : content{std::move(s)} { type = t; }
-	cell(cardData c, cell_type t = CARD) : content{std::move(c)} { type = t; }
+	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
+	cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
+	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
+	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
+	cell(cardData c, int t = CARD) : content{std::move(c)} { type = t; }
 
 	//Equality
 	friend bool operator==(const cell &first, const cell &second) {
@@ -61,6 +72,11 @@ public:
 	cardData to_card(string s);
 	string to_string(cardData card);
 
+	//Extend existing cell types
+	string str_eval_cont(cell const &c, bool literal=false);
+	int num_eval_cont(cell const &c);
+	sexpr list_eval_cont(cell const &c);
+
 	//Convert cell types
 	cardData card_eval(cell const &c);
 	sexpr deck_eval(cell const &c);
@@ -69,7 +85,6 @@ public:
 	sexpr layout_eval(cell const &c);
 
 	CardEnviroment() {
-		addons = true;
 		build_library_cont();
 	}
 };
