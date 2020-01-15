@@ -175,6 +175,11 @@ sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
 			return tagfilter_eval(eval(c, TAGFILTER), open);
 		case LIST: case TAGFILTER:
 			return std::get<sexpr>(c.content);
+		case STRING:
+			//Try locating variable
+			auto it = vars.find(str_eval(c));
+			if(it != vars.end())
+				return tagfilter_eval(it->second);
 	}
 
 	//Add tag to filter

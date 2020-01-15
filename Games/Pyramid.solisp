@@ -1,7 +1,7 @@
 Pyramid, Classic
 
-(Four-Suit (- Standard 13))
-(Max 1)
+(Four-Suit (Remove 13 Standard))
+{(Max 1)}
 
 (VLayout
 	(Apply

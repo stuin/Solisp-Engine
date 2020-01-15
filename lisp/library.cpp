@@ -55,6 +55,24 @@ void Enviroment::build_library() {
 	library[">"] = comparitor(std::greater<int>());
 	library["<"] = comparitor(std::less<int>());
 
+	//Advanced list to string conversion
+	library["Join"] = [](Enviroment *env, marker pos, marker end) {
+		sexpr array = env->list_eval(*pos++);
+		string output;
+
+		//Set deliminator if provided
+		string delim = "";
+		if(pos != end)
+			delim += env->str_eval(*pos++);
+
+		//Perform actual appending
+		for(cell s : array)
+			output += env->str_eval(s, false) + delim;
+
+		DONE;
+		return output;
+	};
+
 	//List building functions
 	library["Quote"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr output;
@@ -101,22 +119,6 @@ void Enviroment::build_library() {
 		DONE;
 		return cell(output, LIST);
 	};
-	library["Join"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr array = env->list_eval(*pos++);
-		string output;
-
-		//Add deliminator if provided
-		string delim = "";
-		if(pos != end)
-			delim += env->str_eval(*pos++);
-
-		//Perform actual appending
-		for(cell s : array)
-			output += env->str_eval(s, false) + delim;
-
-		DONE;
-		return output;
-	};
 
 	//Control flow
 	library["If"] = [](Enviroment *env, marker pos, marker end) {
@@ -150,8 +152,18 @@ void Enviroment::build_library() {
 		return cell(output, LIST);
 	};
 	library["Map"] = library["For-Each"];
+	library["Step"] = [](Enviroment *env, marker pos, marker end) {
+		sexpr array = env->list_eval(*pos++);
+		cell output;
 
-	//Run data as code
+		for(cell c : array)
+			output = env->eval(c, EXPR);
+
+		DONE;
+		return output;
+	};
+
+	//Convert list to runnable code
 	library["Eval"] = [](Enviroment *env, marker pos, marker end) {
 		cell c = cell(env->list_eval(*pos++), EXPR);
 		DONE;
@@ -166,11 +178,6 @@ void Enviroment::build_library() {
 		return output;
 	};
 	library["Def"] = library["Set"];
-	library["Get"] = [](Enviroment *env, marker pos, marker end) {
-		string name = env->str_eval(*pos++);
-		DONE;
-		return env->vars[name];
-	};
 
 	//Universal comparisons
 	library["=="] = [](Enviroment *env, marker pos, marker end) {

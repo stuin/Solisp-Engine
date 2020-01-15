@@ -1,12 +1,12 @@
 Devil's Grip, Challenge
 
-(* 2 (Deck (Four-Suit (- Standard 1))))
+(Duplcate 2 (Deck (Four-Suit (Remove 1 Standard))))
 {(Max 1)}
 
 (HLayout
 	(VLayout
-		(* 3 (HLayout
-			(* 8 (VStack {
+		(Clone 3 (HLayout
+			(Clone 8 (VStack {
 				GOAL
 				(Start 0 1)
 				(Max 4)

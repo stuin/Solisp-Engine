@@ -5,7 +5,7 @@ Streets and Alleys, Normal
 
 (HLayout
 	(VLayout
-		(* 4 (HStack {
+		(Clone 4 (HStack {
 			MIRRORED
 			(Start 0 7)
 			(Filter-Open (Reverse Standard))
@@ -19,7 +19,7 @@ Streets and Alleys, Normal
 		(Slot (Filter (Diamonds Standard)))
 	))
 	(VLayout
-		(* 4 (HStack {
+		(Clone 4 (HStack {
 			(Start 0 6)
 			(Filter-Open (Reverse Standard))
 			(On-Grab (For-Each GOAL g (Soft-Move this g)))

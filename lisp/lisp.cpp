@@ -16,18 +16,27 @@ cell Enviroment::eval(cell const &c, int type) {
 string Enviroment::str_eval(cell const &c, bool literal) {
 	if(c.type == EXPR && !literal)
 		return str_eval(eval(c, STRING));
+
+	string output;
+	sexpr array;
 	switch(c.type) {
-		case STRING:
-			return std::get<string>(c.content);
 		case NUMBER:
 			return std::to_string(std::get<int>(c.content));
 		case CHAR:
 			return string(1, std::get<int>(c.content));
 		case LIST: case EXPR:
-			string output;
-			sexpr vec = std::get<sexpr>(c.content);
-			for(cell s : vec)
+			array = std::get<sexpr>(c.content);
+			for(cell s : array)
 				output += str_eval(s, literal) + " ";
+			return output;
+		case STRING:
+			output = std::get<string>(c.content);
+
+			//Try accessing variable value
+			auto it = vars.find(output);
+			if(it != vars.end())
+				return str_eval(it->second);
+
 			return output;
 	}
 
@@ -81,9 +90,16 @@ char Enviroment::char_eval(cell const &c) {
 		case NUMBER: case CHAR:
 			return std::get<int>(c.content);
 		case STRING:
+			//Check if short enough
 			string s = std::get<string>(c.content);
 			if(s.length() == 1)
 				return s[0];
+
+			//Try accessing variable value
+			auto it = vars.find(s);
+			if(it != vars.end())
+				return char_eval(it->second);
+
 			throw std::domain_error("Cannot convert to char from multi-char string");
 	}
 
@@ -111,7 +127,7 @@ sexpr Enviroment::list_eval(cell const &c) {
 			//Convert string to char list
 			sexpr output;
 			for(char a : s)
-				output.push_back(cell(a));
+				output.push_back(cell(a, CHAR));
 			return output;
 	}
 

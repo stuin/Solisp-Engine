@@ -1,19 +1,19 @@
 Spider, Classic
 
-(* 8 (Deck (Spades Standard)))
+(Duplicate 8 (Deck (Spades Standard)))
 (Filter-Open (Four-Suit (Reverse Standard)))
 
 (VLayout
 	(VLayout
 		(HLayout
-			(* 8 (Slot {
+			(Clone 8 (Slot {
 				GOAL
 				OUTPUT
 				(Filter-All (Four-Suit (Reverse Standard)))
 			}))
 		)
 		(HLayout
-			(* 5 (Slot {
+			(Clone 5 (Slot {
 				INPUT
 				BUTTON
 				(Grab-If (Eval (+ {*} (For-Each CUSTOM t (> (Count t) 0)))))
@@ -25,8 +25,8 @@ Spider, Classic
 	(Apply
 		{CUSTOM (Filter-Open (Four-Suit (Reverse Standard)))}
 		(HLayout
-			(* 4 (VStack {(Start 5 1)}))
-			(* 6 (VStack {(Start 4 1)}))
+			(Clone 4 (VStack {(Start 5 1)}))
+			(Clone 6 (VStack {(Start 4 1)}))
 		)
 	)
 )

@@ -14,16 +14,15 @@
 (If (< (Eval (Append {+} (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
-#For-each loops and product of a list
-(If (Eval (Append {*} (For-Each (Get list) i (!= i 0))))
+#Mapping loops and product of a list
+(If (Eval (Append {*} (Map list i (!= i 0))))
 Passed Failed)
 
-#List building, reversing, and joining
-(Join (Reverse (Quote "d" e s s a P)) ,)
+#General list modifying
+(Join (Remove (Join (Reverse (Quote "e,d" s s a P)) ,) ,))
 
-#Duplicating list
-(If (== 8 (Eval (Append {+} (Duplicate 4 {1 1}))))
-Passed Failed)
+#Step/tail
+(Step {(Set start Pass) (Join {start ed})})
 
 #Weird formatting test
 (If#Testing
