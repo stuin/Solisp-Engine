@@ -138,12 +138,3 @@ cell Enviroment::eval(sexpr const &s, int type) {
 
 	throw std::invalid_argument{name + " not in the library"};
 }
-
-//Build a function to force set the type of a structure
-builtin Enviroment::forcer(int type) {
-	return [type](Enviroment* env, marker pos, marker end) {
-		cell output = env->force_eval[type](env, *pos++);
-		DONE;
-		return output;
-	};
-}

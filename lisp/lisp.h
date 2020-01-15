@@ -75,16 +75,7 @@ public:
 	std::map<string, builtin> library;
 	std::map<string, cell> vars;
 
-	//Type forcing conversions
-	builtin forcer(int type);
-
-	//Allow additional type conversions
-	virtual string str_eval_cont(cell const &c, bool literal=false);
-	virtual int num_eval_cont(cell const &c);
-	virtual char char_eval_cont(cell const &c);
-	virtual sexpr list_eval_cont(cell const &c);
-
-	//Base eval function
+	//Base eval functions
 	cell eval(sexpr const &c, int type);
 	cell eval(cell const &c, int type);
 
@@ -93,6 +84,12 @@ public:
 	int num_eval(cell const &c);
 	char char_eval(cell const &c);
 	sexpr list_eval(cell const &c);
+
+	//Allow additional type conversions
+	virtual string str_eval_cont(cell const &c, bool literal);
+	virtual int num_eval_cont(cell const &c);
+	virtual char char_eval_cont(cell const &c);
+	virtual sexpr list_eval_cont(cell const &c);
 
 	//Public reader functions
 	cell read(const std::string & s);

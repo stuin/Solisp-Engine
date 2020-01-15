@@ -48,16 +48,18 @@ builtin CardEnviroment::buildLayout(layout_type index) {
 //Convert special types to strings
 string CardEnviroment::str_eval_cont(cell const &c, bool literal) {
 	//Card is stored as string
-	if(c.type == CARD)
-		return std::get<string>(c.content); //((CardEnviroment*)this)->to_string(std::get<cardData>(c.content));
-	if(c.type == DECK || c.type == FILTER || c.type == LAYOUT || c.type == TAGFILTER) {
-		//Treat as normal list
-		string output;
-		sexpr vec = std::get<sexpr>(c.content);
-		for(cell s : vec)
-			output += str_eval(s, literal) + " ";
-		return output;
+	switch(c.type) {
+		case CARD:
+			return std::get<string>(c.content);
+		case DECK: case FILTER: case TAGFILTER: case LAYOUT:
+			//Treat as normal list
+			string output;
+			sexpr vec = std::get<sexpr>(c.content);
+			for(cell s : vec)
+				output += str_eval(s, literal) + " ";
+			return output;
 	}
+
 	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
 }
 
@@ -81,96 +83,99 @@ sexpr CardEnviroment::list_eval_cont(cell const &c) {
 
 //Convert to card
 cardData CardEnviroment::card_eval(cell const &c) {
-	if(c.type == STRING || c.type == CARD) {
-		string s = std::get<string>(c.content);
+	sexpr list;
+	switch(c.type) {
+		case EXPR:
+			return card_eval(eval(c, CARD));
+		case NUMBER:
+			return to_card("N" + std::to_string(std::get<int>(c.content)));
+		case DECK:
+			list = std::get<sexpr>(c.content);
+			if(list.size() > 1)
+				throw std::domain_error("Deck with multiple items to single card.");
+			return card_eval(list[0]);
+		case STRING: case CARD:
+			string s = std::get<string>(c.content);
 
-		//Try base conversion
-		if(s.length() >= 2 && s.length() <= 3)
-			return to_card(std::get<string>(c.content));
+			//Try base conversion
+			if(s.length() >= 2 && s.length() <= 3)
+				return to_card(std::get<string>(c.content));
 
-		//Try locating variable
-		auto it = vars.find(s);
-		if(it != vars.end())
-			return card_eval(it->second);
+			//Try locating variable
+			auto it = vars.find(s);
+			if(it != vars.end())
+				return card_eval(it->second);
 
-		throw std::domain_error("Cannot convert to card from string " + s);
+			throw std::domain_error("Cannot convert to card from string " + s);
 	}
-	if(c.type == NUMBER)
-		return to_card("N" + std::to_string(std::get<int>(c.content)));
-	if(c.type == DECK) {
-		sexpr list = std::get<sexpr>(c.content);
-		if(list.size() > 1)
-			throw std::domain_error("Deck with multiple items to single card.");
-		return card_eval(list[0]);
-	}
-	if(c.type == EXPR)
-		return card_eval(eval(c, CARD));
 
 	throw std::domain_error("Cannot convert to card from type " + std::to_string(c.type));
 }
 
 //Convert cell to deck
 sexpr CardEnviroment::deck_eval(cell const &c) {
-	if(c.type == DECK)
-		return std::get<sexpr>(c.content);
-	if(c.type == LIST) {
-		sexpr array = std::get<sexpr>(c.content);
-		sexpr *output = new sexpr();
+	sexpr array;
+	sexpr output;
+	switch(c.type) {
+		case EXPR:
+			return deck_eval(eval(c, DECK));
+		case DECK:
+			return std::get<sexpr>(c.content);
+		case TAGFILTER:
+			return deck_eval(cell(filter_eval(c), FILTER));
+		case LIST:
+			array = std::get<sexpr>(c.content);
 
-		//Convert all contents to cards
-		for(cell value : array)
-			output->push_back(force_eval[CARD](this, value));
-		return *output;
-	}
-	if(c.type == FILTER) {
-		sexpr array = std::get<sexpr>(c.content);
-		sexpr *output = new sexpr();
+			//Convert all contents to cards
+			for(cell value : array)
+				output.push_back(force_eval[CARD](this, value));
+			return output;
+		case FILTER:
+			array = std::get<sexpr>(c.content);
 
-		//Flatten contained decks into one
-		for(cell value : array) {
-			sexpr deck = deck_eval(value);
-			output->insert(output->end(), deck.begin(), deck.end());
-		}
-		return *output;
+			//Flatten contained decks into one
+			for(cell value : array) {
+				sexpr deck = deck_eval(value);
+				output.insert(output.end(), deck.begin(), deck.end());
+			}
+			return output;
 	}
-	if(c.type == TAGFILTER)
-		return deck_eval(cell(filter_eval(c), FILTER));
-	if(c.type == EXPR)
-		return deck_eval(eval(c, DECK));
 	return list_eval(c);
 }
 
 //Convert cell to filter
 sexpr CardEnviroment::filter_eval(cell const &c) {
-	if(c.type == FILTER)
-		return std::get<sexpr>(c.content);
-	if(c.type == TAGFILTER)
-		return filter_eval(std::get<sexpr>(c.content)[0]);
-	if(c.type == LIST) {
-		sexpr array = std::get<sexpr>(c.content);
-		sexpr *output = new sexpr();
+	sexpr array;
+	sexpr output;
+	switch(c.type) {
+		case EXPR:
+			return filter_eval(eval(c, FILTER));
+		case FILTER:
+			return std::get<sexpr>(c.content);
+		case TAGFILTER:
+			return filter_eval(std::get<sexpr>(c.content)[0]);
+		case DECK:
+			output.push_back(c);
+			return output;
+		case LIST:
+			array = std::get<sexpr>(c.content);
 
-		//Convert all contents to decks
-		for(cell value : array)
-			output->push_back(cell(deck_eval(value), DECK));
-		return *output;
+			//Convert all contents to decks
+			for(cell value : array)
+				output.push_back(force_eval[DECK](this, value));
+			return output;
 	}
-	if(c.type == DECK) {
-		sexpr *output = new sexpr();
-		output->push_back(c);
-		return *output;
-	}
-	if(c.type == EXPR)
-		return filter_eval(eval(c, FILTER));
 	return list_eval(c);
 }
 
 //Convert cell to filter with tag
 sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
-	if(c.type == TAGFILTER || c.type == LIST)
-		return std::get<sexpr>(c.content);
-	if(c.type == EXPR)
-		return tagfilter_eval(eval(c, TAGFILTER), open);
+	switch(c.type) {
+		case EXPR:
+			return tagfilter_eval(eval(c, TAGFILTER), open);
+		case LIST: case TAGFILTER:
+			return std::get<sexpr>(c.content);
+	}
 
 	//Add tag to filter
 	sexpr *output = new sexpr();
@@ -181,10 +186,12 @@ sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
 
 //Convert cell to layout
 sexpr CardEnviroment::layout_eval(cell const &c) {
-	if(c.type == LAYOUT || c.type == LIST)
-		return std::get<sexpr>(c.content);
-	if(c.type == EXPR)
-		return layout_eval(eval(c, LAYOUT));
+	switch(c.type) {
+		case EXPR:
+			return layout_eval(eval(c, LAYOUT));
+		case LAYOUT: case LIST:
+			return std::get<sexpr>(c.content);
+	}
 	return list_eval(c);
 }
 

@@ -57,44 +57,43 @@ void Enviroment::build_library() {
 
 	//List building functions
 	library["Quote"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
+		sexpr output;
 		while(pos != end)
-			output->push_back(env->eval(*pos++, EXPR));
-		return cell(*output, LIST);
+			output.push_back(env->eval(*pos++, EXPR));
+		return cell(output, LIST);
 	};
 	library["Append"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
+		sexpr output;
 		while(pos != end) {
 			sexpr array = env->list_eval(*pos++);
-			output->insert(output->end(), array.begin(), array.end());
+			output.insert(output.end(), array.begin(), array.end());
 		}
 		DONE;
-		return cell(*output, LIST);
+		return cell(output, LIST);
 	};
 	library["Remove"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
-		cell arraycell = *pos;
 		sexpr array = env->list_eval(*pos++);
 		cell remove = env->eval(*pos++, EXPR);
+		sexpr output;
 
 		//Copy all non-matching cells
 		for(cell c : array) {
 			if(!(remove == env->force_eval[remove.type](env, c)))
-				output->push_back(c);
+				output.push_back(c);
 		}
 		DONE;
-		return cell(*output, LIST);
+		return cell(output, LIST);
 	};
 	library["Duplicate"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
 		int count = env->num_eval(*pos++);
 		sexpr array = env->list_eval(*pos++);
+		sexpr output;
 
 		for(int i = 0; i < count; i++)
-			output->insert(output->end(), array.begin(), array.end());
+			output.insert(output.end(), array.begin(), array.end());
 
 		DONE;
-		return cell(*output, LIST);
+		return cell(output, LIST);
 	};
 	library["Reverse"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr output = env->list_eval(*pos++);
@@ -103,8 +102,8 @@ void Enviroment::build_library() {
 		return cell(output, LIST);
 	};
 	library["Join"] = [](Enviroment *env, marker pos, marker end) {
-		string output;
 		sexpr array = env->list_eval(*pos++);
+		string output;
 
 		//Add deliminator if provided
 		string delim = "";
@@ -139,16 +138,16 @@ void Enviroment::build_library() {
 	library["For-Each"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
 		string var = env->str_eval(*pos++);
-		sexpr *output = new sexpr();
+		sexpr output;
 
 		//Re list each value
 		for(cell c : array) {
 			env->vars[var] = c;
-			output->push_back(env->eval(*pos, EXPR));
+			output.push_back(env->eval(*pos, EXPR));
 		}
 		pos++;
 		DONE;
-		return cell(*output, LIST);
+		return cell(output, LIST);
 	};
 	library["Map"] = library["For-Each"];
 
