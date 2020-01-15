@@ -39,12 +39,12 @@ enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Appl
 //Main data sructure
 struct cell {
 	int type;
-	std::variant<sexpr, string, int, char, cardData> content;
+	std::variant<sexpr, string, int, cardData> content;
 
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
-	cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
+	//cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
 	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
 	cell(cardData c, int t = CARD) : content{std::move(c)} { type = t; }

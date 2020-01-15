@@ -106,8 +106,14 @@ void Enviroment::build_library() {
 		string output;
 		sexpr array = env->list_eval(*pos++);
 
+		//Add deliminator if provided
+		string delim = "";
+		if(pos != end)
+			delim += env->str_eval(*pos++);
+
+		//Perform actual appending
 		for(cell s : array)
-			output += env->str_eval(s, false);
+			output += env->str_eval(s, false) + delim;
 
 		DONE;
 		return output;

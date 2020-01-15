@@ -10,23 +10,16 @@
 	(% 15 10)
 ) Passed Failed)
 
-#Basic type setting + Joining concat
-(If (> (Join {3 2}) 30) #32 > 30
-Passed Failed)
-
 #Summing up lists
 (If (< (Eval (Append {+} (Set list {1 2 3 4 5}))) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
-#For each loops and multipling together lists
+#For-each loops and product of a list
 (If (Eval (Append {*} (For-Each (Get list) i (!= i 0))))
 Passed Failed)
 
-#Alternate list building
-(Join (Quote P a s s e "d"))
-
-#Reverse list
-(Join (Reverse {d e s s a P}))
+#List building, reversing, and joining
+(Join (Reverse (Quote "d" e s s a P)) ,)
 
 #Duplicating list
 (If (== 8 (Eval (Append {+} (Duplicate 4 {1 1}))))

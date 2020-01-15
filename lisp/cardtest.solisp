@@ -1,7 +1,6 @@
 (== N13 13)
 (== (Remove Standard 13) (Remove {1 2 3 4 5 6 7 8 9 10 11 12 13} 13))
 (!= (Hearts {1 2 3 4 5}) (Spades {1 2 3 4 5}))
-(Clone 4 {1 2 3})
 (Clone 2 (Four-Suit (Remove Standard 1)))
 (Alternating (Reverse Standard))
 (Filter (Alternating (Reverse Standard)))

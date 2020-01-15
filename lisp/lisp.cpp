@@ -14,20 +14,21 @@ cell Enviroment::eval(cell const &c, int type) {
 
 //Convert to string
 string Enviroment::str_eval(cell const &c, bool literal) {
-	if(c.type == STRING)
-		return std::get<string>(c.content);
-	if(c.type == NUMBER)
-		return std::to_string(std::get<int>(c.content));
-	if(c.type == CHAR)
-		return std::get<char>(c.content) + "";
 	if(c.type == EXPR && !literal)
 		return str_eval(eval(c, STRING));
-	if(c.type == LIST || c.type == EXPR) {
-		string output;
-		sexpr vec = std::get<sexpr>(c.content);
-		for(cell s : vec)
-			output += str_eval(s, literal) + " ";
-		return output;
+	switch(c.type) {
+		case STRING:
+			return std::get<string>(c.content);
+		case NUMBER:
+			return std::to_string(std::get<int>(c.content));
+		case CHAR:
+			return string(1, std::get<int>(c.content));
+		case LIST: case EXPR:
+			string output;
+			sexpr vec = std::get<sexpr>(c.content);
+			for(cell s : vec)
+				output += str_eval(s, literal) + " ";
+			return output;
 	}
 
 	return str_eval_cont(c, literal);
@@ -39,32 +40,31 @@ string Enviroment::str_eval_cont(cell const &c, bool literal) {
 
 //Convert to number
 int Enviroment::num_eval(cell const &c) {
-	if(c.type == NUMBER)
-		return std::get<int>(c.content);
-	if(c.type == CHAR)
-		return std::get<char>(c.content);
-	if(c.type == STRING) {
-		string s = std::get<string>(c.content);
+	switch(c.type) {
+		case EXPR:
+			return num_eval(eval(c, NUMBER));
+		case NUMBER: case CHAR:
+			return std::get<int>(c.content);
+		case STRING:
+			string s = std::get<string>(c.content);
 
-		//If numerical string
-		if(isdigit(s[0]) || s[0] == '-')
-			return std::stoi(s);
+			//If numerical string
+			if(isdigit(s[0]) || s[0] == '-')
+				return std::stoi(s);
 
-		//Try accessing variable value
-		auto it = vars.find(s);
-		if(it != vars.end())
-			return num_eval(it->second);
+			//Try accessing variable value
+			auto it = vars.find(s);
+			if(it != vars.end())
+				return num_eval(it->second);
 
-		//Try boolean values
-		if(s[0] == 't' || s[0] == 'T')
-			return 1;
-		if(s[0] == 'f' || s[0] == 'F')
-			return 0;
+			//Try boolean values
+			if(s[0] == 't' || s[0] == 'T')
+				return 1;
+			if(s[0] == 'f' || s[0] == 'F')
+				return 0;
 
-		throw std::domain_error("No variable or value found for " + s);
+			throw std::domain_error("No variable or value found for " + s);
 	}
-	if(c.type == EXPR)
-		return num_eval(eval(c, NUMBER));
 
 	return num_eval_cont(c);
 }
@@ -75,12 +75,17 @@ int Enviroment::num_eval_cont(cell const &c) {
 
 //Convert to char
 char Enviroment::char_eval(cell const &c) {
-	if(c.type == NUMBER)
-		return std::get<int>(c.content);
-	if(c.type == CHAR)
-		return std::get<char>(c.content);
-	if(c.type == EXPR)
-		return char_eval(eval(c, CHAR));
+	switch(c.type) {
+		case EXPR:
+			return char_eval(eval(c, CHAR));
+		case NUMBER: case CHAR:
+			return std::get<int>(c.content);
+		case STRING:
+			string s = std::get<string>(c.content);
+			if(s.length() == 1)
+				return s[0];
+			throw std::domain_error("Cannot convert to char from multi-char string");
+	}
 
 	return char_eval_cont(c);
 }
@@ -91,22 +96,24 @@ char Enviroment::char_eval_cont(cell const &c) {
 
 //Convert to list
 sexpr Enviroment::list_eval(cell const &c) {
-	if(c.type == LIST)
-		return std::get<sexpr>(c.content);
-	if(c.type == STRING) {
-		//Try accessing variable value
-		string s = str_eval(c);
-		auto it = vars.find(s);
-		if(it != vars.end())
-			return list_eval(it->second);
+	switch(c.type) {
+		case EXPR:
+			return list_eval(eval(c, LIST));
+		case LIST:
+			return std::get<sexpr>(c.content);
+		case STRING: case CHAR:
+			//Try accessing variable value
+			string s = str_eval(c);
+			auto it = vars.find(s);
+			if(it != vars.end())
+				return list_eval(it->second);
 
-		sexpr output;
-		for(char a : s)
-			output.push_back(cell(a));
-		return output;
+			//Convert string to char list
+			sexpr output;
+			for(char a : s)
+				output.push_back(cell(a));
+			return output;
 	}
-	if(c.type == EXPR)
-		return list_eval(eval(c, LIST));
 
 	return list_eval_cont(c);
 }
