@@ -1,4 +1,5 @@
 #include "card.h"
+#include "lisp.h"
 
 #include <vector>
 #include <string>
@@ -11,58 +12,23 @@
  * Solitaire lisp types and convertions
  */
 
-//Required early type definitions
-struct cell;
-using std::string;
-using sexpr = std::vector<cell>;
+//Additional type definitions
 using Solisp::cardData;
+enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
 
 #define cenv ((CardEnviroment*)env)
 
-enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
-
-#define EXPR 0
-#define STRING 1
-#define NUMBER 2
-#define CHAR 3
-#define LIST 4
-
-//Expanded type lists
+//Added cell types
 #define CARD LIST+1
 #define DECK LIST+2
 #define FILTER LIST+3
 #define TAGFILTER LIST+4
 #define LAYOUT LIST+5
 
-#define type_count 10
-
-//Main data sructure
-struct cell {
-	int type;
-	std::variant<sexpr, string, int, cardData> content;
-
-	//Constructors
-	cell() { cell(""); }
-	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
-	//cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
-	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
-	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
-	cell(cardData c, int t = CARD) : content{std::move(c)} { type = t; }
-
-	//Equality
-	friend bool operator==(const cell &first, const cell &second) {
-		return first.content == second.content;
-	}
-};
-
-//Import main lisp system
-#include "lisp.h"
-
 class CardEnviroment : public Enviroment {
 private:
 	//Card builtin generators
-	builtin setSuits(char suit);
-	builtin setSuit(char suit);
+	builtin setSuits(string suit);
 	builtin buildLayout(layout_type index);
 
 	void build_library_cont();

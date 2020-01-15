@@ -36,10 +36,6 @@ using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 #define CHAR 3
 #define LIST 4
 
-//Allow for adding specialized types
-#ifndef type_count
-#define type_count 5
-
 //Main data sructure
 struct cell {
 	int type;
@@ -48,7 +44,6 @@ struct cell {
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
-	//cell(char c, int t = CHAR) : content{std::move(c)} { type = t; }
 	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
 	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
 
@@ -57,8 +52,6 @@ struct cell {
 		return first.content == second.content;
 	}
 };
-
-#endif
 
 //Enviroment of system variables
 class Enviroment {
@@ -78,7 +71,7 @@ private:
 	template <class T> builtin arithmetic(T func);
 
 public:
-	force_builtin force_eval[type_count];
+	force_builtin force_eval[10];
 	std::map<string, builtin> library;
 	std::map<string, cell> vars;
 

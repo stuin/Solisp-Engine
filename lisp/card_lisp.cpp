@@ -19,7 +19,7 @@ string CardEnviroment::to_string(cardData card) {
 }
 
 //Build a function to set the suit of a list of cards
-builtin CardEnviroment::setSuits(char suit) {
+builtin CardEnviroment::setSuits(string suit) {
 	return [suit](Enviroment *env, marker pos, marker end) {
 		sexpr *output = new sexpr();
 		sexpr array = cenv->deck_eval(*pos++);
@@ -27,8 +27,7 @@ builtin CardEnviroment::setSuits(char suit) {
 		//Add all cards to new deck
 		for(cell c : array) {
 			cardData d = cenv->card_eval(c);
-			d.suit = suit;
-			output->push_back(d);
+			output->push_back(cell(suit + std::to_string(d.value), CARD));
 		}
 
 		DONE;
@@ -50,7 +49,7 @@ builtin CardEnviroment::buildLayout(layout_type index) {
 string CardEnviroment::str_eval_cont(cell const &c, bool literal) {
 	//Card is stored as string
 	if(c.type == CARD)
-		return ((CardEnviroment*)this)->to_string(std::get<cardData>(c.content));
+		return std::get<string>(c.content); //((CardEnviroment*)this)->to_string(std::get<cardData>(c.content));
 	if(c.type == DECK || c.type == FILTER || c.type == LAYOUT || c.type == TAGFILTER) {
 		//Treat as normal list
 		string output;
@@ -65,7 +64,7 @@ string CardEnviroment::str_eval_cont(cell const &c, bool literal) {
 //Convert special types to numbers
 int CardEnviroment::num_eval_cont(cell const &c) {
 	if(c.type == CARD)
-		return std::get<cardData>(c.content).value;
+		return card_eval(c).value;
 	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
 }
 
@@ -82,9 +81,7 @@ sexpr CardEnviroment::list_eval_cont(cell const &c) {
 
 //Convert to card
 cardData CardEnviroment::card_eval(cell const &c) {
-	if(c.type == CARD)
-		return std::get<cardData>(c.content);
-	if(c.type == STRING) {
+	if(c.type == STRING || c.type == CARD) {
 		string s = std::get<string>(c.content);
 
 		//Try base conversion
@@ -100,12 +97,6 @@ cardData CardEnviroment::card_eval(cell const &c) {
 	}
 	if(c.type == NUMBER)
 		return to_card("N" + std::to_string(std::get<int>(c.content)));
-	if(c.type == STRING) {
-		//Try locating variable
-		auto it = vars.find(std::get<string>(c.content));
-		if(it != vars.end())
-			return card_eval(it->second);
-	}
 	if(c.type == DECK) {
 		sexpr list = std::get<sexpr>(c.content);
 		if(list.size() > 1)
@@ -128,7 +119,7 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 
 		//Convert all contents to cards
 		for(cell value : array)
-			output->push_back(cell(card_eval(value), CARD));
+			output->push_back(force_eval[CARD](this, value));
 		return *output;
 	}
 	if(c.type == FILTER) {
@@ -144,12 +135,6 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 	}
 	if(c.type == TAGFILTER)
 		return deck_eval(cell(filter_eval(c), FILTER));
-	if(c.type == STRING) {
-		//Try locating variable
-		auto it = vars.find(std::get<string>(c.content));
-		if(it != vars.end())
-			return deck_eval(it->second);
-	}
 	if(c.type == EXPR)
 		return deck_eval(eval(c, DECK));
 	return list_eval(c);
@@ -175,12 +160,6 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 		output->push_back(c);
 		return *output;
 	}
-	if(c.type == STRING) {
-		//Try locating variable
-		auto it = vars.find(std::get<string>(c.content));
-		if(it != vars.end())
-			return filter_eval(it->second);
-	}
 	if(c.type == EXPR)
 		return filter_eval(eval(c, FILTER));
 	return list_eval(c);
@@ -204,12 +183,6 @@ sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
 sexpr CardEnviroment::layout_eval(cell const &c) {
 	if(c.type == LAYOUT || c.type == LIST)
 		return std::get<sexpr>(c.content);
-	if(c.type == STRING) {
-		//Try locating variable
-		auto it = vars.find(std::get<string>(c.content));
-		if(it != vars.end())
-			return layout_eval(it->second);
-	}
 	if(c.type == EXPR)
 		return layout_eval(eval(c, LAYOUT));
 	return list_eval(c);

@@ -10,12 +10,12 @@ void CardEnviroment::build_library_cont() {
 	sexpr *standard = new sexpr();
 	standard->reserve(13);
 	for(int i = 1; i <= 13; i++)
-		standard->push_back(to_card("N" + std::to_string(i)));
+		standard->push_back(cell("N" + std::to_string(i), CARD));
 	vars["Standard"] = cell(*standard, DECK);
 
 	//Build force evaluators
 	force_eval[CARD] = [](Enviroment *env, cell const &c) {
-		return cell(cenv->card_eval(c), CARD);
+		return cell(cenv->to_string(cenv->card_eval(c)), CARD);
 	};
 	force_eval[DECK] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->deck_eval(c), DECK);
@@ -67,9 +67,9 @@ void CardEnviroment::build_library_cont() {
 			for(cell c : array) {
 				//Set each card color
 				cardData d = cenv->card_eval(c);
-				d.suit = red ? 'R' : 'B';
+				string suit = red ? "R" : "B";
 				red = !red;
-				deck->push_back(d);
+				deck->push_back(cell(suit + std::to_string(d.value), CARD));
 			}
 			output->push_back(cell(*deck, DECK));
 			red = true;
@@ -79,12 +79,12 @@ void CardEnviroment::build_library_cont() {
 	};
 
 	//Change suit of full deck
-	library["Hearts"] = setSuits('H');
-	library["Spades"] = setSuits('S');
-	library["Diamonds"] = setSuits('D');
-	library["Clubs"] = setSuits('C');
-	library["Red"] = setSuits('R');
-	library["Black"] = setSuits('B');
+	library["Hearts"] = setSuits("H");
+	library["Spades"] = setSuits("S");
+	library["Diamonds"] = setSuits("D");
+	library["Clubs"] = setSuits("C");
+	library["Red"] = setSuits("R");
+	library["Black"] = setSuits("B");
 
 	//Create layout to hold slots
 	library["VLayout"] = buildLayout(VLayout);
