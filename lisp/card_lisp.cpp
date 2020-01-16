@@ -15,34 +15,7 @@ cardData CardEnviroment::to_card(string s) {
 
 //Convert card to string
 string CardEnviroment::to_string(cardData card) {
-	return card.suit + std::to_string(card.value);
-}
-
-//Build a function to set the suit of a list of cards
-builtin CardEnviroment::setSuits(string suit) {
-	return [suit](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
-		sexpr array = cenv->deck_eval(*pos++);
-
-		//Add all cards to new deck
-		for(cell c : array) {
-			cardData d = cenv->card_eval(c);
-			output->push_back(cell(suit + std::to_string(d.value), CARD));
-		}
-
-		DONE;
-		return cell(*output, DECK);
-	};
-}
-
-builtin CardEnviroment::buildLayout(layout_type index) {
-	return [index](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
-		output->push_back(index);
-		while(pos != end)
-			output->push_back(*pos++);
-		return cell(*output, LAYOUT);
-	};
+	return string(1, card.suit) + std::to_string(card.value);
 }
 
 //Convert special types to strings
@@ -87,7 +60,7 @@ cardData CardEnviroment::card_eval(cell const &c) {
 	switch(c.type) {
 		case EXPR:
 			return card_eval(eval(c));
-		case NUMBER:
+		case NUMBER: case CHAR:
 			return to_card("N" + std::to_string(std::get<int>(c.content)));
 		case DECK:
 			list = std::get<sexpr>(c.content);
@@ -116,6 +89,7 @@ cardData CardEnviroment::card_eval(cell const &c) {
 sexpr CardEnviroment::deck_eval(cell const &c) {
 	sexpr array;
 	sexpr output;
+	string s;
 	switch(c.type) {
 		case EXPR:
 			return deck_eval(eval(c));
@@ -130,6 +104,14 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 			for(cell value : array)
 				output.push_back(force_eval[CARD](this, value));
 			return output;
+		case STRING: case CARD:
+			//Try base conversion
+			s = std::get<string>(c.content);
+			if(s.length() >= 1 && s.length() <= 3) {
+				output.push_back(force_eval[CARD](this, s));
+				return output;
+			}
+			break;
 		case FILTER:
 			array = std::get<sexpr>(c.content);
 

@@ -2,28 +2,28 @@
 
 /*
  * Created by Stuart Irwin on 29/10/2019.
- * Library functions for lisp system.
+ * library functions for lisp system.
  */
 
 //Build a number comparison function
-template <class T> builtin Enviroment::comparitor(T func) {
-	return [func](Enviroment *env, marker pos, marker end) {
+template <class T> cell Enviroment::comparitor(T func) {
+	return cell([func](Enviroment *env, marker pos, marker end) {
 		int source = env->num_eval(*pos++);
 		while(pos != end)
 			if(!func(source, env->num_eval(*pos++)))
 				return 0;
 		return 1;
-	};
+	});
 }
 
 //Build a number arithmatic function
-template <class T> builtin Enviroment::arithmetic(T func) {
-	return [func](Enviroment *env, marker pos, marker end) {
+template <class T> cell Enviroment::arithmetic(T func) {
+	return cell([func](Enviroment *env, marker pos, marker end) {
 		int value = env->num_eval(*pos++);
 		while(pos != end)
 			value = func(value, env->num_eval(*pos++));
 		return value;
-	};
+	});
 }
 
 void Enviroment::build_library() {
@@ -45,18 +45,18 @@ void Enviroment::build_library() {
 	};
 
 	//Basic arithmatic
-	library["+"] = arithmetic(std::plus<int>());
-	library["-"] = arithmetic(std::minus<int>());
-	library["*"] = arithmetic(std::multiplies<int>());
-	library["/"] = arithmetic(std::divides<int>());
-	library["%"] = arithmetic(std::modulus<int>());
+	set("+", arithmetic(std::plus<int>()));
+	set("-", arithmetic(std::minus<int>()));
+	set("*", arithmetic(std::multiplies<int>()));
+	set("/", arithmetic(std::divides<int>()));
+	set("%", arithmetic(std::modulus<int>()));
 
 	//Numerical comparisons
-	library[">"] = comparitor(std::greater<int>());
-	library["<"] = comparitor(std::less<int>());
+	set(">", comparitor(std::greater<int>()));
+	set("<", comparitor(std::less<int>()));
 
 	//Advanced list to string conversion
-	library["Join"] = [](Enviroment *env, marker pos, marker end) {
+	set("Join", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
 		string output;
 
@@ -71,16 +71,16 @@ void Enviroment::build_library() {
 
 		DONE;
 		return output;
-	};
+	}));
 
 	//List building functions
-	library["Quote"] = [](Enviroment *env, marker pos, marker end) {
+	set("Quote", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr output;
 		while(pos != end)
 			output.push_back(env->eval(*pos++));
 		return cell(output, LIST);
-	};
-	library["Append"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Append", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr output;
 		while(pos != end) {
 			sexpr array = env->list_eval(*pos++);
@@ -88,21 +88,21 @@ void Enviroment::build_library() {
 		}
 		DONE;
 		return cell(output, LIST);
-	};
-	library["Remove"] = [](Enviroment *env, marker pos, marker end) {
-		sexpr array = env->list_eval(*pos++);
+	}));
+	set("Remove", cell([](Enviroment *env, marker pos, marker end) {
 		cell remove = env->eval(*pos++);
+		sexpr array = env->list_eval(*pos++);
 		sexpr output;
 
 		//Copy all non-matching cells
 		for(cell c : array) {
-			if(!(remove == env->force_eval[remove.type](env, c)))
+			if(!(env->equals(remove, c)))
 				output.push_back(c);
 		}
 		DONE;
 		return cell(output, LIST);
-	};
-	library["Duplicate"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Duplicate", cell([](Enviroment *env, marker pos, marker end) {
 		int count = env->num_eval(*pos++);
 		sexpr array = env->list_eval(*pos++);
 		sexpr output;
@@ -112,16 +112,16 @@ void Enviroment::build_library() {
 
 		DONE;
 		return cell(output, LIST);
-	};
-	library["Reverse"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Reverse", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr output = env->list_eval(*pos++);
 		std::reverse(output.begin(),output.end());
 		DONE;
 		return cell(output, LIST);
-	};
+	}));
 
 	//Control flow
-	library["If"] = [](Enviroment *env, marker pos, marker end) {
+	set("If", cell([](Enviroment *env, marker pos, marker end) {
 		cell output = cell(0);
 		if(env->num_eval(*pos++)) {
 			//If true
@@ -136,8 +136,8 @@ void Enviroment::build_library() {
 		}
 		DONE;
 		return output;
-	};
-	library["For-Each"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Map", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
 		string var = env->str_eval(*pos++);
 		sexpr output;
@@ -153,9 +153,8 @@ void Enviroment::build_library() {
 		pos++;
 		DONE;
 		return cell(output, LIST);
-	};
-	library["Map"] = library["For-Each"];
-	library["Step"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Step", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
 		cell output;
 
@@ -164,46 +163,45 @@ void Enviroment::build_library() {
 
 		DONE;
 		return output;
-	};
+	}));
 
 	//Convert list to runnable code
-	library["Eval"] = [](Enviroment *env, marker pos, marker end) {
+	set("Eval", cell([](Enviroment *env, marker pos, marker end) {
 		cell c = cell(env->list_eval(*pos++), EXPR);
 		DONE;
 		return c;
-	};
+	}));
 
 	//Variable management
-	library["Set"] = [](Enviroment *env, marker pos, marker end) {
+	set("Set", cell([](Enviroment *env, marker pos, marker end) {
 		string name = env->str_eval(*pos++);
 		cell output = env->set(name, *pos++);
 		DONE;
 		return output;
-	};
-	library["Def"] = library["Set"];
-	library["Env"] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("Env", cell([](Enviroment *env, marker pos, marker end) {
 		env->shift_env(true);
 		cell output = env->eval(*pos++);
 
 		env->shift_env(false);
 		DONE;
 		return output;
-	};
+	}));
 
 	//Universal comparisons
-	library["=="] = [](Enviroment *env, marker pos, marker end) {
+	set("==", cell([](Enviroment *env, marker pos, marker end) {
 		cell c = env->eval(*pos++);
 		while(pos != end) {
-			if(!(c.content == env->force_eval[c.type](env, *pos++).content))
+			if(!(env->equals(c, *pos++)))
 				return 0;
 		}
 		return 1;
-	};
-	library["!="] = [](Enviroment *env, marker pos, marker end) {
+	}));
+	set("!=", cell([](Enviroment *env, marker pos, marker end) {
 		cell c = env->eval(*pos++);
 		while(pos != end)
-			if(c.content == env->force_eval[c.type](env, *pos++).content)
+			if(env->equals(c, *pos++))
 				return 0;
 		return 1;
-	};
+	}));
 }

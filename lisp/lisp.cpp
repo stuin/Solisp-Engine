@@ -11,7 +11,7 @@ cell *Enviroment::get(string s) {
 	for(int i = current; i >= 0; i--) {
 		auto it = vars[i].find(s);
 		if(it != vars[i].end())
-			return &it->second;
+			return &(it->second);
 	}
 
 	return NULL;
@@ -28,7 +28,7 @@ void Enviroment::shift_env(bool in) {
 		std::map<string, cell> lib;
 		vars.push_back(lib);
 		current++;
-	} else if(current > 0) {
+	} else if(current > 1) {
 		vars.pop_back();
 		current--;
 	}
@@ -52,17 +52,12 @@ cell Enviroment::eval(sexpr const &s) {
 		throw std::domain_error("Empty sexpr");
 
 	//Search library for function
-	string name = str_eval(*s.begin());
-	auto b = library.find(name);
-	if(b != library.end())
-		return b->second(this, ++s.begin(), s.end());
-
-	throw std::invalid_argument{name + " not in the library"};
+	return function_eval(*s.begin())(this, ++s.begin(), s.end());
 }
 
 //Convert to string
 string Enviroment::str_eval(cell const &c, bool literal) {
-	if(c.type == EXPR && !literal)
+	if((c.type == EXPR && !literal))
 		return str_eval(eval(c));
 
 	string output;
@@ -165,8 +160,8 @@ sexpr Enviroment::list_eval(cell const &c) {
 			return list_eval(eval(c));
 		case LIST:
 			return std::get<sexpr>(c.content);
-		case STRING: case CHAR:
-			string s = str_eval(c);
+		case STRING:
+			string s = std::get<string>(c.content);
 
 			//Check if variable
 			cell *var = get(s);
@@ -188,4 +183,44 @@ sexpr Enviroment::list_eval_cont(cell const &c) {
 	sexpr *output = new sexpr();
 	output->push_back(c);
 	return *output;
+}
+
+//Convert cell to function
+builtin Enviroment::function_eval(cell const &c) {
+	cell *var;
+	switch(c.type) {
+		case EXPR:
+			return function_eval(eval(c));
+		case FUNCTION:
+			return std::get<builtin>(c.content);
+		case STRING:
+			//Check if variable
+			var = get(std::get<string>(c.content));
+			if(var != NULL)
+				return function_eval(*var);
+		case CHAR:
+			//Check if variable
+			var = get(string(1, std::get<int>(c.content)));
+			if(var != NULL)
+				return function_eval(*var);
+	}
+
+	throw std::domain_error("Cannot convert to function from type " + std::to_string(c.type));
+}
+
+//Compare two cells
+bool Enviroment::equals(const cell &first, const cell &second) {
+	if(auto val = std::get_if<sexpr>(&first.content))
+			return equals(*val, std::get<sexpr>(force_eval[first.type](this, second).content));
+	return first.content == force_eval[first.type](this, second).content;
+}
+
+bool Enviroment::equals(const sexpr &first, const sexpr &second) {
+	marker pos1 = first.begin();
+	marker pos2 = second.begin();
+	while(pos1 != first.end() && pos2 != second.end())
+		if(!equals(*pos1++, *pos2++))
+			return false;
+
+	return pos1 == first.end() && pos2 == second.end();
 }

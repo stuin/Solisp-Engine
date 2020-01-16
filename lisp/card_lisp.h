@@ -28,20 +28,18 @@ enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Appl
 class CardEnviroment : public Enviroment {
 private:
 	//Card builtin generators
-	builtin setSuits(string suit);
-	builtin buildLayout(layout_type index);
-
-	void build_library_cont();
-
+	cell setSuits(string suit);
+	cell buildLayout(layout_type index);
 public:
 	//Convert stored string to card
 	cardData to_card(string s);
 	string to_string(cardData card);
 
 	//Extend existing cell types
-	string str_eval_cont(cell const &c, bool literal=false);
-	int num_eval_cont(cell const &c);
-	sexpr list_eval_cont(cell const &c);
+	string str_eval_cont(cell const &c, bool literal=false) override;
+	int num_eval_cont(cell const &c) override;
+	sexpr list_eval_cont(cell const &c) override;
+	void build_library_cont() override;
 
 	//Convert cell types
 	cardData card_eval(cell const &c);
@@ -52,5 +50,6 @@ public:
 
 	CardEnviroment() {
 		build_library_cont();
+		shift_env(true);
 	}
 };

@@ -129,7 +129,7 @@ cell Enviroment::read_stream(std::istream &in, int type, int new_line) {
 				throw std::domain_error(std::to_string(levels) + " non matched parenthesis");
 
 			start_line = end_line;
-			return force_eval[type](this, read(object));
+			return force_eval[type](this, eval(read(object)));
 		}
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;

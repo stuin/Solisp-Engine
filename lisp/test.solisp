@@ -19,7 +19,7 @@ Passed Failed)
 Passed Failed)
 
 #General list modifying
-(Join (Remove (Join (Reverse (Quote "e,d" s s a P)) ,) ,))
+(Join (Remove , (Join (Reverse (Quote "e,d" s s a P)) ,)))
 
 #Step/tail
 (Step {(Set start Pass) (Join {start ed})})

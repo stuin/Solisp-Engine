@@ -12,6 +12,7 @@ int main(int argc, char const *argv[])
 			while(!infile.eof())
 				std::cout << env.str_eval(env.read_stream(infile, STRING)) + "\n";
 		}
+		infile.close();
 	} else {
 		while(true) {
 			std::cout << "test>";

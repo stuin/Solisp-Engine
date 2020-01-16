@@ -31,23 +31,24 @@ using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 
 //Base data types
 #define EXPR 0
-#define STRING 1
-#define NUMBER 2
-#define CHAR 3
-#define LIST 4
+#define FUNCTION 1
+#define STRING 2
+#define NUMBER 3
+#define CHAR 4
+#define LIST 5
 
 //Main data sructure
 struct cell {
 	int type;
-	std::variant<sexpr, string, int> content;
+	std::variant<sexpr, string, int, builtin> content;
 
 	//Constructors
 	cell() { cell(""); }
 	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
-	cell(int n, int t = NUMBER) : content{std::move(n)} { type = t; }
+	cell(int s, int t = NUMBER) : content{std::move(s)} { type = t; }
 	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }
+	cell(builtin s, int t = FUNCTION) : content{std::move(s)} { type = t; }
 
-	//Equality
 	friend bool operator==(const cell &first, const cell &second) {
 		return first.content == second.content;
 	}
@@ -69,12 +70,11 @@ private:
 	cell read_from(std::list<std::string> & tokens);
 
 	//Lambda builder functions
-	template <class T> builtin comparitor(T func);
-	template <class T> builtin arithmetic(T func);
+	template <class T> cell comparitor(T func);
+	template <class T> cell arithmetic(T func);
 
 public:
-	force_builtin force_eval[10];
-	std::map<string, builtin> library;
+	force_builtin force_eval[15];
 
 	//Variable retrieval
 	cell *get(string s);
@@ -82,26 +82,33 @@ public:
 	void shift_env(bool in);
 
 	//Base eval functions
-	cell eval(sexpr const &c);
 	cell eval(cell const &c);
+	cell eval(sexpr const &c);
 
 	//Convert types
 	string str_eval(cell const &c, bool literal=false);
 	int num_eval(cell const &c);
 	char char_eval(cell const &c);
 	sexpr list_eval(cell const &c);
+	builtin function_eval(cell const &c);
 
 	//Allow additional type conversions
 	virtual string str_eval_cont(cell const &c, bool literal);
 	virtual int num_eval_cont(cell const &c);
 	virtual char char_eval_cont(cell const &c);
 	virtual sexpr list_eval_cont(cell const &c);
+	virtual void build_library_cont() {};
 
 	//Public reader functions
 	cell read(const std::string & s);
 	cell read_stream(std::istream &in, int type, int new_line = -1);
 
+	//Comparisons with proper conversion
+	bool equals(const cell &first, const cell &second);
+	bool equals(const sexpr &first, const sexpr &second);
+
 	Enviroment() {
+		shift_env(true);
 		build_library();
 		shift_env(true);
 	}
