@@ -57,6 +57,8 @@ struct cell {
 class Enviroment {
 private:
 	int start_line = 0;
+	int current = -1;
+	std::vector<std::map<string, cell>> vars;
 
 	//Library structure
 	void build_library();
@@ -73,11 +75,15 @@ private:
 public:
 	force_builtin force_eval[10];
 	std::map<string, builtin> library;
-	std::map<string, cell> vars;
+
+	//Variable retrieval
+	cell *get(string s);
+	cell set(string s, cell c);
+	void shift_env(bool in);
 
 	//Base eval functions
-	cell eval(sexpr const &c, int type);
-	cell eval(cell const &c, int type);
+	cell eval(sexpr const &c);
+	cell eval(cell const &c);
 
 	//Convert types
 	string str_eval(cell const &c, bool literal=false);
@@ -97,5 +103,6 @@ public:
 
 	Enviroment() {
 		build_library();
+		shift_env(true);
 	}
 };

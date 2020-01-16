@@ -11,7 +11,7 @@ void CardEnviroment::build_library_cont() {
 	standard->reserve(13);
 	for(int i = 1; i <= 13; i++)
 		standard->push_back(cell("N" + std::to_string(i), CARD));
-	vars["Standard"] = cell(*standard, DECK);
+	set("Standard", cell(*standard, DECK));
 
 	//Build force evaluators
 	force_eval[CARD] = [](Enviroment *env, cell const &c) {

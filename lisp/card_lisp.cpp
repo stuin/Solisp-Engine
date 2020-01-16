@@ -86,7 +86,7 @@ cardData CardEnviroment::card_eval(cell const &c) {
 	sexpr list;
 	switch(c.type) {
 		case EXPR:
-			return card_eval(eval(c, CARD));
+			return card_eval(eval(c));
 		case NUMBER:
 			return to_card("N" + std::to_string(std::get<int>(c.content)));
 		case DECK:
@@ -101,10 +101,10 @@ cardData CardEnviroment::card_eval(cell const &c) {
 			if(s.length() >= 2 && s.length() <= 3)
 				return to_card(std::get<string>(c.content));
 
-			//Try locating variable
-			auto it = vars.find(s);
-			if(it != vars.end())
-				return card_eval(it->second);
+			//Check if variable
+			cell *var = get(s);
+			if(var != NULL)
+				return card_eval(*var);
 
 			throw std::domain_error("Cannot convert to card from string " + s);
 	}
@@ -118,7 +118,7 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 	sexpr output;
 	switch(c.type) {
 		case EXPR:
-			return deck_eval(eval(c, DECK));
+			return deck_eval(eval(c));
 		case DECK:
 			return std::get<sexpr>(c.content);
 		case TAGFILTER:
@@ -149,7 +149,7 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 	sexpr output;
 	switch(c.type) {
 		case EXPR:
-			return filter_eval(eval(c, FILTER));
+			return filter_eval(eval(c));
 		case FILTER:
 			return std::get<sexpr>(c.content);
 		case TAGFILTER:
@@ -171,15 +171,10 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 //Convert cell to filter with tag
 sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
 	switch(c.type) {
-		case EXPR:
-			return tagfilter_eval(eval(c, TAGFILTER), open);
+		case EXPR: case STRING:
+			return tagfilter_eval(eval(c), open);
 		case LIST: case TAGFILTER:
 			return std::get<sexpr>(c.content);
-		case STRING:
-			//Try locating variable
-			auto it = vars.find(str_eval(c));
-			if(it != vars.end())
-				return tagfilter_eval(it->second);
 	}
 
 	//Add tag to filter
@@ -193,7 +188,7 @@ sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
 sexpr CardEnviroment::layout_eval(cell const &c) {
 	switch(c.type) {
 		case EXPR:
-			return layout_eval(eval(c, LAYOUT));
+			return layout_eval(eval(c));
 		case LAYOUT: case LIST:
 			return std::get<sexpr>(c.content);
 	}

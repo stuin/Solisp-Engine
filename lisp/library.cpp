@@ -77,7 +77,7 @@ void Enviroment::build_library() {
 	library["Quote"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr output;
 		while(pos != end)
-			output.push_back(env->eval(*pos++, EXPR));
+			output.push_back(env->eval(*pos++));
 		return cell(output, LIST);
 	};
 	library["Append"] = [](Enviroment *env, marker pos, marker end) {
@@ -91,7 +91,7 @@ void Enviroment::build_library() {
 	};
 	library["Remove"] = [](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
-		cell remove = env->eval(*pos++, EXPR);
+		cell remove = env->eval(*pos++);
 		sexpr output;
 
 		//Copy all non-matching cells
@@ -141,12 +141,15 @@ void Enviroment::build_library() {
 		sexpr array = env->list_eval(*pos++);
 		string var = env->str_eval(*pos++);
 		sexpr output;
+		env->shift_env(true);
 
 		//Re list each value
 		for(cell c : array) {
-			env->vars[var] = c;
-			output.push_back(env->eval(*pos, EXPR));
+			env->set(var, c);
+			output.push_back(env->eval(*pos));
 		}
+
+		env->shift_env(false);
 		pos++;
 		DONE;
 		return cell(output, LIST);
@@ -157,7 +160,7 @@ void Enviroment::build_library() {
 		cell output;
 
 		for(cell c : array)
-			output = env->eval(c, EXPR);
+			output = env->eval(c);
 
 		DONE;
 		return output;
@@ -173,15 +176,23 @@ void Enviroment::build_library() {
 	//Variable management
 	library["Set"] = [](Enviroment *env, marker pos, marker end) {
 		string name = env->str_eval(*pos++);
-		cell output = env->vars[name] = *pos++;
+		cell output = env->set(name, *pos++);
 		DONE;
 		return output;
 	};
 	library["Def"] = library["Set"];
+	library["Env"] = [](Enviroment *env, marker pos, marker end) {
+		env->shift_env(true);
+		cell output = env->eval(*pos++);
+
+		env->shift_env(false);
+		DONE;
+		return output;
+	};
 
 	//Universal comparisons
 	library["=="] = [](Enviroment *env, marker pos, marker end) {
-		cell c = env->eval(*pos++, EXPR);
+		cell c = env->eval(*pos++);
 		while(pos != end) {
 			if(!(c.content == env->force_eval[c.type](env, *pos++).content))
 				return 0;
@@ -189,7 +200,7 @@ void Enviroment::build_library() {
 		return 1;
 	};
 	library["!="] = [](Enviroment *env, marker pos, marker end) {
-		cell c = env->eval(*pos++, EXPR);
+		cell c = env->eval(*pos++);
 		while(pos != end)
 			if(c.content == env->force_eval[c.type](env, *pos++).content)
 				return 0;
