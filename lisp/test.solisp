@@ -11,11 +11,11 @@
 ) Passed Failed)
 
 #Summing up lists
-(If (< (Eval (Append {+ (Set list {1 2 3 4 5})})) 20) #{+ 1 2 3 4 5}
+(If (< (Eval {+ (Set list {1 2 3 4 5})}) 20) #{+ 1 2 3 4 5}
 Passed Failed)
 
 #Mapping loops and product of a list
-(If (Eval (Append * (Map list i (!= i 0))))
+(If (Eval * (Map list i (!= i 0)))
 Passed Failed)
 
 #General list modifying

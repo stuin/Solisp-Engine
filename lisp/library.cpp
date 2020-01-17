@@ -80,16 +80,6 @@ void Enviroment::build_library() {
 			output.push_back(env->eval(*pos++));
 		return cell(output, LIST);
 	}));
-	set("Append", cell([](Enviroment *env, marker pos, marker end) {
-		LISTREMAINS;
-		sexpr output;
-
-		while(pos != end) {
-			sexpr array = env->list_eval(*pos++);
-			output.insert(output.end(), array.begin(), array.end());
-		}
-		return cell(output, LIST);
-	}));
 	set("Remove", cell([](Enviroment *env, marker pos, marker end) {
 		cell remove = env->eval(*pos++);
 		LISTREMAINS;
@@ -115,8 +105,12 @@ void Enviroment::build_library() {
 	}));
 	set("Reverse", cell([](Enviroment *env, marker pos, marker end) {
 		LISTREMAINS;
-		std::reverse(args.begin(), args.end());
-		return cell(args, LIST);
+		sexpr output;
+
+		while(pos != end)
+			output.push_back(*--end);
+
+		return cell(output, LIST);
 	}));
 
 	//Control flow
@@ -166,8 +160,13 @@ void Enviroment::build_library() {
 	//Convert list to runnable code
 	set("Eval", cell([](Enviroment *env, marker pos, marker end) {
 		LISTREMAINS;
-		cell c = cell(args, EXPR);
-		return c;
+		sexpr output;
+
+		while(pos != end) {
+			sexpr array = env->list_eval(*pos++);
+			output.insert(output.end(), array.begin(), array.end());
+		}
+		return cell(output, EXPR);
 	}));
 
 	//Variable management
@@ -189,10 +188,9 @@ void Enviroment::build_library() {
 	//Universal comparisons
 	set("==", cell([](Enviroment *env, marker pos, marker end) {
 		cell c = env->eval(*pos++);
-		while(pos != end) {
+		while(pos != end)
 			if(!(env->equals(c, *pos++)))
 				return 0;
-		}
 		return 1;
 	}));
 	set("!=", cell([](Enviroment *env, marker pos, marker end) {
