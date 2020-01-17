@@ -81,43 +81,42 @@ void Enviroment::build_library() {
 		return cell(output, LIST);
 	}));
 	set("Append", cell([](Enviroment *env, marker pos, marker end) {
+		LISTREMAINS;
 		sexpr output;
+
 		while(pos != end) {
 			sexpr array = env->list_eval(*pos++);
 			output.insert(output.end(), array.begin(), array.end());
 		}
-		DONE;
 		return cell(output, LIST);
 	}));
 	set("Remove", cell([](Enviroment *env, marker pos, marker end) {
 		cell remove = env->eval(*pos++);
-		sexpr array = env->list_eval(*pos++);
+		LISTREMAINS;
 		sexpr output;
 
 		//Copy all non-matching cells
-		for(cell c : array) {
-			if(!(env->equals(remove, c)))
-				output.push_back(c);
+		while(pos != end) {
+			if(!(env->equals(remove, *pos)))
+				output.push_back(*pos);
+			pos++;
 		}
-		DONE;
 		return cell(output, LIST);
 	}));
 	set("Duplicate", cell([](Enviroment *env, marker pos, marker end) {
 		int count = env->num_eval(*pos++);
-		sexpr array = env->list_eval(*pos++);
+		LISTREMAINS;
 		sexpr output;
 
 		for(int i = 0; i < count; i++)
-			output.insert(output.end(), array.begin(), array.end());
+			output.insert(output.end(), pos, end);
 
-		DONE;
 		return cell(output, LIST);
 	}));
 	set("Reverse", cell([](Enviroment *env, marker pos, marker end) {
-		sexpr output = env->list_eval(*pos++);
-		std::reverse(output.begin(),output.end());
-		DONE;
-		return cell(output, LIST);
+		LISTREMAINS;
+		std::reverse(args.begin(), args.end());
+		return cell(args, LIST);
 	}));
 
 	//Control flow
@@ -155,20 +154,19 @@ void Enviroment::build_library() {
 		return cell(output, LIST);
 	}));
 	set("Step", cell([](Enviroment *env, marker pos, marker end) {
-		sexpr array = env->list_eval(*pos++);
+		LISTREMAINS;
 		cell output;
 
-		for(cell c : array)
-			output = env->eval(c);
+		while(pos != end)
+			output = env->eval(*pos++);
 
-		DONE;
 		return output;
 	}));
 
 	//Convert list to runnable code
 	set("Eval", cell([](Enviroment *env, marker pos, marker end) {
-		cell c = cell(env->list_eval(*pos++), EXPR);
-		DONE;
+		LISTREMAINS;
+		cell c = cell(args, EXPR);
 		return c;
 	}));
 

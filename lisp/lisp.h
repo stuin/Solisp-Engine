@@ -27,7 +27,8 @@ using builtin = std::function<auto(Enviroment*, marker, marker)->cell>;
 using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 
 //End of builtin function macro
-#define DONE if(pos != end) throw std::domain_error("Too many arguments: " + env->str_eval(*pos, true));
+#define DONE if(pos != end) throw std::domain_error("Too many arguments: " + env->str_eval(*pos, true))
+#define LISTREMAINS sexpr args; if(pos != end && pos == --end) { args = env->list_eval(*pos); pos = args.begin(); end = args.end();} else { marker run = pos; end++; while(run != end) args.push_back(*run++); }
 
 //Base data types
 #define EXPR 0
