@@ -12,17 +12,14 @@ using std::bitset;
 using std::cout;
 
 //Ensure consistant tag data structure
-sexpr Builder::tag_eval(cell const &c) {
-	sexpr list = env.list_eval(c);
+sexpr Builder::tag_eval(sexpr list, bool layout) {
+	sexpr output;
+	if(layout)
+		list.erase(list.begin());
+
 	if(list[0].type == FILTER) {
-		sexpr *output = new sexpr();
-		output->push_back(env.force_eval[TAGFILTER](&env, c));
-		return *output;
-	}
-	if(c.type == EXPR) {
-		sexpr *output = new sexpr();
-		output->push_back(c);
-		return *output;
+		output.push_back(cell(list, TAGFILTER));
+		return output;
 	}
 	return list;
 }
@@ -56,8 +53,8 @@ Card *Builder::make_card(const cell &source, bool shuffled) {
 //Create filter from lisp cell
 Filter *Builder::make_filter(const cell &source) {
 	//Retrieve cell values
-	sexpr array = env.tagfilter_eval(source, true);
-	bool open = env.num_eval(array[1]);
+	sexpr array = env.tagfilter_eval(source, OPEN);
+	filter_type open = (filter_type)env.num_eval(array[1]);
 	array = env.filter_eval(array[0]);
 	Filter *output = new Filter(open);
 
@@ -82,34 +79,26 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 	switch(type) {
 		//General linear layouts
 		case VLayout: case HLayout:
-			for(int i = 1; i < list.size(); i++) {
-				do {
-					added = make_layout(stack, list[i], tags, current);
+			for(unsigned int i = 1; i < list.size(); i++) {
+				added = make_layout(stack, list[i], tags, current);
 
-					//Keep track of position and count
-					current.count = added.count;
-					if(type == VLayout) {
-						//Sum y and max x
-						current.y += added.y;
-						final.y = current.y;
+				//Keep track of position and count
+				current.count = added.count;
+				if(type == VLayout) {
+					//Sum y and max x
+					current.y += added.y;
+					final.y = current.y;
 
-						if(final.x < added.x)
-							final.x = added.x;
-					} else {
-						//Sum x and max y
-						current.x += added.x;
-						final.x = current.x;
-						if(final.y < added.y) {
-							final.y = added.y;
-						}
+					if(final.x < added.x)
+						final.x = added.x;
+				} else {
+					//Sum x and max y
+					current.x += added.x;
+					final.x = current.x;
+					if(final.y < added.y) {
+						final.y = added.y;
 					}
-
-					//Check if current layout contains multiplier
-					if(added.recurse != -1)
-						current.recurse = added.recurse - 1;
-				} while(current.recurse > 0);
-				current.recurse = -1;
-
+				}
 				//cout << "\tEnd Height value: " << current.y << "+" << added.y << "\n";
 			}
 
@@ -117,43 +106,35 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 			return final;
 		//Basic card slots
 		case Slot: case HStack: case VStack:
-			array = tag_eval(list[1]);
+			array = tag_eval(list, true);
 			array.insert(array.end(), tags.begin(), tags.end());
 
 			cout << "Slot " << current.count << ":\n";
-
-			added = make_slot(stack[current.count], array, env.num_eval(list[0]), current.x, current.y);
+			try {
+				added = make_slot(stack[current.count], array, env.num_eval(list[0]), current.x, current.y);
+			} catch(std::exception &e) {
+				std::cerr << "Slot Error: " << e.what() << std::endl;
+				std::cerr << env.str_eval(cell(array)) << "\n";
+			}
 			added.count += current.count;
-			added.recurse = current.recurse;
 			return added;
 		//Apply tags to all slots in layout
 		case Apply:
-			array = tag_eval(list[1]);
+			array = tag_eval(env.list_eval(list[1]), false);
 			tags.insert(tags.end(), array.begin(), array.end());
 			return make_layout(stack, list[2], tags, current);
-		//Tell parent to duplicate internal layout
-		case Multiply:
-			if(current.recurse < 0) {
-				added = make_layout(stack, list[2], tags, current);
-				added.recurse = env.num_eval(list[1]);
-			} else {
-				int transfer = current.recurse;
-				current.recurse = -1;
-				added = make_layout(stack, list[2], tags, current);
-				added.recurse = transfer;
-			}
-			return added;
 	}
 	return current;
 }
 
 //Set internal values of stack
 layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y) {
-	layout dim = {1, 1, 1, -1};
+	layout dim = {1, 1, 1};
 	stack.set_cords(x, y);
 
 	//Read connected tags
 	for(cell c : data) {
+		//cout << "cell: " << env.str_eval(c, true) << "\n";
 		if(c.type == TAGFILTER || c.type == FILTER)
 			stack.set_filter(make_filter(c));
 		else if(c.type == EXPR) {
@@ -163,7 +144,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
 			else if(env.str_eval(list[0]) == "Max")
 				stack.set_max(env.num_eval(list[1]));
-			else if(env.str_eval(list[0]).find("Filter") == 0)
+			else if(env.str_eval(list[0], true).find("Filter") == 0)
 				stack.set_filter(make_filter(c));
 			else
 				cout << "\tUnhandled expression: " << env.str_eval(c, true) << "\n";
@@ -219,8 +200,22 @@ Card *Builder::get_deck() {
 //Set up all stacks on game board
 int Builder::set_stacks(Stack *stack) {
 	bitset<STACKTAGCOUNT> bits(0);
+	cell c;
 
-	std::cout << "Slot 0: \n";
-	make_slot(stack[0], tag_eval(env.read_stream(rule_file, LIST)), VStack, -1, -1);
-	return make_layout(stack, env.read_stream(rule_file, LAYOUT)).count;
+	try {
+		std::cout << "Slot 0: \n";
+		c = env.read_stream(rule_file, EXPR);
+
+		sexpr array;
+		array.push_back(cell("VStack"));
+		array.push_back(c);
+		make_slot(stack[0], tag_eval(env.layout_eval(array), true), VStack, -1, -1);
+
+		c = env.read_stream(rule_file, LAYOUT);
+		return make_layout(stack, c).count;
+	} catch(std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		//std::cerr << env.str_eval(c, true) << "\n";
+	}
+	return 0;
 }

@@ -1,6 +1,6 @@
 Spider, Classic
 
-(Duplicate 8 (Deck (Spades Standard)))
+(Clone 8 (Spades Standard))
 (Filter-Open (Four-Suit (Reverse Standard)))
 
 (VLayout
@@ -25,8 +25,12 @@ Spider, Classic
 	(Apply
 		{CUSTOM (Filter-Open (Four-Suit (Reverse Standard)))}
 		(HLayout
-			(Clone 4 (VStack {(Start 5 1)}))
-			(Clone 6 (VStack {(Start 4 1)}))
+			(HLayout
+				(Clone 4 (VStack {(Start 5 1)}))
+			)
+			(HLayout
+				(Clone 6 (VStack {(Start 4 1)}))
+			)
 		)
 	)
 )

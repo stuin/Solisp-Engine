@@ -1,6 +1,7 @@
 #pragma once
 
 #include "card.h"
+#include "../lisp/card_lisp.h"
 #include <iostream>
 
 using std::cout;
@@ -14,15 +15,15 @@ class Solisp::Filter {
 private:
 	Card *content;
 	Filter *next = NULL;
-	bool open;
+	filter_type open;
 
 public:
-	Filter(bool open) {
+	Filter(filter_type open) {
 		this->content = NULL;
 		this->open = open;
 	}
 
-	Filter(Card *card, bool open=false) {
+	Filter(Card *card, filter_type open=CLOSED) {
 		this->content = card;
 		this->open = open;
 	}
@@ -38,10 +39,12 @@ public:
 		Card *current = newCard;
 		Card *filter = content;
 
-		if(current != NULL ) {
-			//Check if top card matches any card in filter
-			while(filter != NULL && !filter->matches(current->get_data())) {
-				filter = filter->get_next();
+		if(current != NULL) {
+			if(open != ALL) {
+				//Check if top card matches any card in filter
+				while(filter != NULL && !filter->matches(current->get_data())) {
+					filter = filter->get_next();
+				}
 			}
 
 			//Move through new cards alongside filter
@@ -56,13 +59,15 @@ public:
 			}
 		}
 
-		//If old stack is empty, check if end of filter
-		if(current == NULL && oldCard == NULL && (open || filter == NULL))
-			return true;
+		if(current == NULL) {
+			//If old stack is empty, check if end of filter
+			if(oldCard == NULL && (open == OPEN || filter == NULL))
+				return true;
 
-		//Check if new card lines up with old card
-		if(current == NULL && filter != NULL && oldCard != NULL && filter->matches(oldCard->get_data()))
-			return true;
+			//Check if new card lines up with old card
+			if(filter != NULL && oldCard != NULL && filter->matches(oldCard->get_data()))
+				return true;
+		}
 
 		//If match not found, move to next filter
 		if(next != NULL)

@@ -26,9 +26,11 @@ using marker = sexpr::const_iterator;
 using builtin = std::function<auto(Enviroment*, marker, marker)->cell>;
 using force_builtin = std::function<cell(Enviroment*, const cell&)>;
 
-//End of builtin function macro
+//General function macros
 #define DONE if(pos != end) throw std::domain_error("Too many arguments: " + env->str_eval(*pos, true))
 #define LISTREMAINS sexpr args; if(pos != end && pos == --end) { args = env->list_eval(*pos); pos = args.begin(); end = args.end();} else end++
+#define CONVERTERROR(goal) throw std::domain_error("Cannot convert " + str_eval(c, true) + " to " + goal + " from type " + std::to_string(c.type))
+
 
 //Base data types
 #define EXPR 0

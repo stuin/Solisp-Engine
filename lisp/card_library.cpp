@@ -8,25 +8,29 @@
 //Build a function to set the suit of a list of cards
 cell CardEnviroment::setSuits(string suit) {
 	return cell([suit](Enviroment *env, marker pos, marker end) {
+		LISTREMAINS;
 		sexpr output;
-		sexpr array = cenv->list_eval(*pos++);
 
 		//Add all cards to new deck
-		for(cell c : array)
-			output.push_back(cell(suit + std::to_string(env->num_eval(c)), CARD));
+		while(pos != end)
+			output.push_back(cell(suit + std::to_string(env->num_eval(*pos++)), CARD));
 
-		DONE;
 		return cell(output, DECK);
 	});
 }
 
 cell CardEnviroment::buildLayout(layout_type index) {
 	return cell([index](Enviroment *env, marker pos, marker end) {
-		sexpr *output = new sexpr();
-		output->push_back(index);
+		LISTREMAINS;
+		sexpr output;
+
+		output.push_back(index);
 		while(pos != end)
-			output->push_back(*pos++);
-		return cell(*output, LAYOUT);
+			output.push_back(*pos++);
+
+		//output.push_back(cell(array, LIST));
+
+		return cell(output, LAYOUT);
 	});
 }
 
@@ -49,7 +53,7 @@ void CardEnviroment::build_library_cont() {
 		return cell(cenv->filter_eval(c), FILTER);
 	};
 	force_eval[TAGFILTER] = [](Enviroment *env, cell const &c) {
-		return cell(cenv->tagfilter_eval(c, false), TAGFILTER);
+		return cell(cenv->tagfilter_eval(c, CLOSED), TAGFILTER);
 	};
 	force_eval[LAYOUT] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->layout_eval(c), LAYOUT);
@@ -57,12 +61,17 @@ void CardEnviroment::build_library_cont() {
 
 	//Base filter types
 	set("Filter", cell([](Enviroment *env, marker pos, marker end) {
-		cell output = cell(cenv->tagfilter_eval(*pos++, false), TAGFILTER);
+		cell output = cell(cenv->tagfilter_eval(*pos++, CLOSED), TAGFILTER);
 		DONE;
 		return output;
 	}));
 	set("Filter-Open", cell([](Enviroment *env, marker pos, marker end) {
-		cell output = cell(cenv->tagfilter_eval(*pos++, true), TAGFILTER);
+		cell output = cell(cenv->tagfilter_eval(*pos++, OPEN), TAGFILTER);
+		DONE;
+		return output;
+	}));
+	set("Filter-All", cell([](Enviroment *env, marker pos, marker end) {
+		cell output = cell(cenv->tagfilter_eval(*pos++, ALL), TAGFILTER);
 		DONE;
 		return output;
 	}));
@@ -125,16 +134,6 @@ void CardEnviroment::build_library_cont() {
 	set("Apply", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr output;
 		output.push_back(Apply);
-		output.push_back(*pos++);
-		output.push_back(*pos++);
-
-		DONE;
-		return cell(output, LAYOUT);
-	}));
-	//Duplicate layout multiple times
-	set("Clone", cell([](Enviroment *env, marker pos, marker end) {
-		sexpr output;
-		output.push_back(Multiply);
 		output.push_back(*pos++);
 		output.push_back(*pos++);
 

@@ -33,14 +33,15 @@ string CardEnviroment::str_eval_cont(cell const &c, bool literal) {
 			return output;
 	}
 
-	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
+	CONVERTERROR("string");
 }
 
 //Convert special types to numbers
 int CardEnviroment::num_eval_cont(cell const &c) {
 	if(c.type == CARD)
 		return card_eval(c).value;
-	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
+
+	CONVERTERROR("number");
 }
 
 //Convert special types to lists
@@ -82,7 +83,7 @@ cardData CardEnviroment::card_eval(cell const &c) {
 			throw std::domain_error("Cannot convert to card from string " + s);
 	}
 
-	throw std::domain_error("Cannot convert to card from type " + std::to_string(c.type));
+	CONVERTERROR("card");
 }
 
 //Convert cell to deck
@@ -151,7 +152,7 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 }
 
 //Convert cell to filter with tag
-sexpr CardEnviroment::tagfilter_eval(cell const &c, bool open) {
+sexpr CardEnviroment::tagfilter_eval(cell const &c, filter_type open) {
 	switch(c.type) {
 		case EXPR: case STRING:
 			return tagfilter_eval(eval(c), open);
@@ -171,9 +172,10 @@ sexpr CardEnviroment::layout_eval(cell const &c) {
 	switch(c.type) {
 		case EXPR:
 			return layout_eval(eval(c));
-		case LAYOUT: case LIST:
+		case LAYOUT:
 			return std::get<sexpr>(c.content);
 	}
-	return list_eval(c);
+
+	CONVERTERROR("layout");
 }
 

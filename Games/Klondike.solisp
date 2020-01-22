@@ -14,7 +14,7 @@ Klondike, Classic
 			)
 		)
 		(HLayout
-			(Slot { Start-Extra BUTTON INPUT (On-Grab
+			(Slot Start-Extra BUTTON INPUT (On-Grab
 				{
 					(Move-All this (+ this 1))
 					(If (== (Count this) 0)
@@ -24,9 +24,9 @@ Klondike, Classic
 					(Flip this (+ this 1))
 					(Flip this (+ this 1))
 				}
-			)})
+			))
 			(HStack {(Max 3)})
-			(Slot {INPUT OUTPUT})
+			(Slot INPUT OUTPUT)
 		)
 	)
 	(Apply

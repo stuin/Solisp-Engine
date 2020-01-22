@@ -67,6 +67,8 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 			return std::to_string(std::get<int>(c.content));
 		case CHAR:
 			return string(1, std::get<int>(c.content));
+		case FUNCTION:
+			return "f";
 		case LIST: case EXPR:
 			array = std::get<sexpr>(c.content);
 			for(cell s : array)
@@ -77,7 +79,7 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 
 			//Check if variable
 			cell *var = get(output);
-			if(var != NULL)
+			if(!literal && var != NULL)
 				return str_eval(*var);
 
 			return output;
@@ -87,7 +89,7 @@ string Enviroment::str_eval(cell const &c, bool literal) {
 }
 
 string Enviroment::str_eval_cont(cell const &c, bool literal) {
-	throw std::domain_error("Cannot convert to string from type " + std::to_string(c.type));
+	CONVERTERROR("string");
 }
 
 //Convert to number
@@ -122,7 +124,7 @@ int Enviroment::num_eval(cell const &c) {
 }
 
 int Enviroment::num_eval_cont(cell const &c) {
-	throw std::domain_error("Cannot convert to number from type " + std::to_string(c.type));
+	CONVERTERROR("number");
 }
 
 //Convert to char
@@ -150,7 +152,7 @@ char Enviroment::char_eval(cell const &c) {
 }
 
 char Enviroment::char_eval_cont(cell const &c) {
-	throw std::domain_error("Cannot convert to char from type " + std::to_string(c.type));
+	CONVERTERROR("char");
 }
 
 //Convert to list
@@ -204,8 +206,7 @@ builtin Enviroment::function_eval(cell const &c) {
 			if(var != NULL)
 				return function_eval(*var);
 	}
-
-	throw std::domain_error("Cannot convert to function from type " + std::to_string(c.type));
+	CONVERTERROR("function");
 }
 
 //Compare two cells

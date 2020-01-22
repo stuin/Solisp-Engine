@@ -93,7 +93,7 @@ void Enviroment::build_library() {
 		}
 		return cell(output, LIST);
 	}));
-	set("Duplicate", cell([](Enviroment *env, marker pos, marker end) {
+	set("Clone", cell([](Enviroment *env, marker pos, marker end) {
 		int count = env->num_eval(*pos++);
 		LISTREMAINS;
 		sexpr output;

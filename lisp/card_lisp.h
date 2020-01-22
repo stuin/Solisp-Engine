@@ -14,7 +14,8 @@
 
 //Additional type definitions
 using Solisp::cardData;
-enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply, Multiply};
+enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply};
+enum filter_type { CLOSED, OPEN, ALL };
 
 #define cenv ((CardEnviroment*)env)
 
@@ -45,7 +46,7 @@ public:
 	cardData card_eval(cell const &c);
 	sexpr deck_eval(cell const &c);
 	sexpr filter_eval(cell const &c);
-	sexpr tagfilter_eval(cell const &c, bool open=false);
+	sexpr tagfilter_eval(cell const &c, filter_type open=CLOSED);
 	sexpr layout_eval(cell const &c);
 
 	CardEnviroment() {
