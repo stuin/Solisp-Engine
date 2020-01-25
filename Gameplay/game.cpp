@@ -45,6 +45,12 @@ void Game::apply(Move *move, bool reverse) {
 	Card *source = stack[from].get_card();
 	stack[to].set_card(source);
 
+	if(source == NULL) {
+		std::cerr << "Taking cards from empty stack\n";
+		return;
+	}
+
+
 	//Find bottom moved card
 	while(count > 1 && source->get_next() != NULL) {
 		if(flip)

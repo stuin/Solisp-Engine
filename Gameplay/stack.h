@@ -14,10 +14,10 @@ namespace Solisp {
 using std::bitset;
 
 #define MAXSTACKCOUNT 30
-#define STACKTAGCOUNT 8
+#define STACKTAGCOUNT 9
 
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
-	SPREAD_HORIZONTAL, SPREAD_REVERSE, BUTTON, CUSTOM };
+	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, CUSTOM };
 
 class Solisp::Stack {
 private:
@@ -79,7 +79,7 @@ public:
 	//Check if new cards can be placed on stack
 	bool matches(int count, Card *newCard) {
 		//Check if INPUT or if inserting multiple into single stack
-		if(tags[INPUT] || (!tags[SPREAD] && count > 1))
+		if(tags[INPUT] || (!tags[SPREAD] && !tags[SPREAD_FAKE] && count > 1))
 			return false;
 
 		//Check max card count of stack

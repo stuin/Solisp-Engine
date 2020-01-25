@@ -1,15 +1,16 @@
 Spider, Classic
 
 (Clone 8 (Spades Standard))
-(Filter-Open (Four-Suit (Reverse Standard)))
+(Filter-Open (Spades (Reverse Standard)))
 
 (VLayout
-	(VLayout
+	(HLayout
 		(HLayout
 			(Clone 8 (Slot {
 				GOAL
 				OUTPUT
-				(Filter-All (Four-Suit (Reverse Standard)))
+				MULTI
+				(Filter-All (Spades (Reverse Standard)))
 			}))
 		)
 		(HLayout
@@ -23,12 +24,10 @@ Spider, Classic
 		)
 	)
 	(Apply
-		{CUSTOM (Filter-Open (Four-Suit (Reverse Standard)))}
+		{CUSTOM (Filter-Open (Spades (Reverse Standard)))}
 		(HLayout
-			(HLayout
+			(Append
 				(Clone 4 (VStack {(Start 5 1)}))
-			)
-			(HLayout
 				(Clone 6 (VStack {(Start 4 1)}))
 			)
 		)

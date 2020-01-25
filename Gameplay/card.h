@@ -63,6 +63,9 @@ public:
 	}
 
 	//Check if normal card matches this filter card
+	bool matches(Card *other) {
+		return data == other->get_data();
+	}
 	bool matches(cardData other) {
 		return data == other;
 	}

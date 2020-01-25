@@ -6,11 +6,11 @@ namespace Solisp {
 
 struct Solisp::cardData {
 	char value = 'N';
-	int suit = -1;
+	char suit = 'N';
 
 	//Check if normal card matches this filter card
 	friend bool operator==(const Solisp::cardData &data, const Solisp::cardData &other) {
-		if(data.value != other.value && data.value != -1)
+		if(data.value != other.value && data.value != 'N')
 			return false;
 
 		if(data.suit == 'N' || data.suit == other.suit)
@@ -32,4 +32,4 @@ struct Solisp::cardData {
 
 char card_face(Solisp::cardData card);
 
-enum filter_type { CLOSED, OPEN, ALL };
+enum filter_type { OPEN, CLOSED, ALL };

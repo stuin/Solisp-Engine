@@ -29,6 +29,7 @@ Card *Builder::make_card(const cell &source, bool shuffled) {
 	Card *current = NULL;
 	Card *start = NULL;
 	sexpr deck = env.deck_eval(source);
+	//shuffled = false;
 
 	for(int i = deck.size(); i > 0; i--) {
 		cell card = deck[i - 1];
@@ -58,7 +59,7 @@ Filter *Builder::make_filter(const cell &source) {
 	array = env.filter_eval(array[0]);
 	Filter *output = new Filter(open);
 
-	cout << "\tFilter by: " << env.str_eval(source, true) << "\n";
+	cout << "\tFilter by: " << env.str_eval(cell(array, FILTER)) << "with code: " << open << "\n";
 
 	//Pass each deck to filter
 	for(cell deck : array)

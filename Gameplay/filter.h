@@ -18,7 +18,7 @@ private:
 	filter_type open;
 
 public:
-	Filter(filter_type open) {
+	Filter(filter_type open=CLOSED) {
 		this->content = NULL;
 		this->open = open;
 	}
@@ -42,13 +42,13 @@ public:
 		if(current != NULL) {
 			if(open != ALL) {
 				//Check if top card matches any card in filter
-				while(filter != NULL && !filter->matches(current->get_data())) {
+				while(filter != NULL && !filter->matches(current)) {
 					filter = filter->get_next();
 				}
 			}
 
 			//Move through new cards alongside filter
-			while(current != NULL && filter != NULL && filter->matches(current->get_data())) {
+			while(current != NULL && filter != NULL && filter->matches(current)) {
 				current = current->get_next();
 				filter = filter->get_next();
 				count--;
@@ -65,7 +65,7 @@ public:
 				return true;
 
 			//Check if new card lines up with old card
-			if(filter != NULL && oldCard != NULL && filter->matches(oldCard->get_data()))
+			if(filter != NULL && oldCard != NULL && filter->matches(oldCard))
 				return true;
 		}
 

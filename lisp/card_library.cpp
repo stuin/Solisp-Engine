@@ -78,7 +78,6 @@ void CardEnviroment::build_library_cont() {
 
 	//Set up special filters
 	set("Four-Suit", cell([](Enviroment *env, marker pos, marker end) {
-		sexpr array = cenv->deck_eval(*pos++);
 		string suits[4] = {"Hearts", "Spades", "Diamonds", "Clubs"};
 		sexpr output;
 
@@ -86,10 +85,12 @@ void CardEnviroment::build_library_cont() {
 		for(string s : suits) {
 			sexpr deck;
 			deck.push_back(cell(s));
-			deck.push_back(cell(array, DECK));
+			deck.push_back(*pos);
 			output.push_back(cell(deck, EXPR));
 		}
 
+		pos++;
+		DONE;
 		return cell(output, FILTER);
 	}));
 	set("Alternating", cell([](Enviroment *env, marker pos, marker end) {

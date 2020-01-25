@@ -50,9 +50,9 @@ sexpr CardEnviroment::list_eval_cont(cell const &c) {
 		return std::get<sexpr>(c.content);
 
 	//Convert to single object list
-	sexpr *output = new sexpr();
-	output->push_back(c);
-	return *output;
+	sexpr output;
+	output.push_back(c);
+	return output;
 }
 
 //Convert to card
@@ -144,8 +144,11 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 			array = std::get<sexpr>(c.content);
 
 			//Convert all contents to decks
-			for(cell value : array)
-				output.push_back(force_eval[DECK](this, value));
+			if(array[0].type == CARD)
+				output.push_back(c);
+			else
+				for(cell value : array)
+					output.push_back(force_eval[DECK](this, value));
 			return output;
 	}
 	return list_eval(c);
@@ -154,17 +157,17 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 //Convert cell to filter with tag
 sexpr CardEnviroment::tagfilter_eval(cell const &c, filter_type open) {
 	switch(c.type) {
-		case EXPR: case STRING:
+		case EXPR: //case STRING:
 			return tagfilter_eval(eval(c), open);
-		case LIST: case TAGFILTER:
+		case TAGFILTER:
 			return std::get<sexpr>(c.content);
 	}
 
 	//Add tag to filter
-	sexpr *output = new sexpr();
-	output->push_back(force_eval[FILTER](this, c));
-	output->push_back(open);
-	return *output;
+	sexpr output;
+	output.push_back(force_eval[FILTER](this, c));
+	output.push_back(open);
+	return output;
 }
 
 //Convert cell to layout

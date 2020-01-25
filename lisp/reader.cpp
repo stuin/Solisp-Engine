@@ -49,11 +49,11 @@ cell Enviroment::read_from(std::list<std::string> & tokens) {
     int type = (token == "{") ? LIST : EXPR;
     tokens.pop_front();
     if(token == "(" || token == "{") {
-        sexpr *output = new sexpr();
+        sexpr output;
         while(tokens.front() != ")" && tokens.front() != "}")
-            output->push_back(read_from(tokens));
+            output.push_back(read_from(tokens));
         tokens.pop_front();
-        return cell(*output, type);
+        return cell(output, type);
     }
     else
         return atom(token);
@@ -138,5 +138,5 @@ cell Enviroment::read_stream(std::istream &in, int type, int new_line) {
 	}
 
 	start_line = end_line;
-	return cell("");
+	throw std::domain_error("Message displayed above");
 }

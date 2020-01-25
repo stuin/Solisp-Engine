@@ -29,6 +29,7 @@ private:
 		{"OUTPUT", OUTPUT},
 		{"BUTTON", BUTTON},
 		{"MIRRORED", SPREAD_REVERSE},
+		{"MULTI", SPREAD_FAKE},
 		{"CUSTOM", CUSTOM}
 	};
 	sexpr tag_eval(sexpr list, bool layout);

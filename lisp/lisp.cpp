@@ -182,9 +182,9 @@ sexpr Enviroment::list_eval(cell const &c) {
 
 sexpr Enviroment::list_eval_cont(cell const &c) {
 	//Convert to single object list
-	sexpr *output = new sexpr();
-	output->push_back(c);
-	return *output;
+	sexpr output;
+	output.push_back(c);
+	return output;
 }
 
 //Convert cell to function

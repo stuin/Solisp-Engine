@@ -1,6 +1,6 @@
 Devil's Grip, Challenge
 
-(Duplcate 2 (Deck (Four-Suit (Remove 1 Standard))))
+(Clone 2 (Four-Suit {2 3 4 5 6 7 8 9 10 11 12 13}))
 {(Max 1)}
 
 (HLayout
@@ -10,16 +10,16 @@ Devil's Grip, Challenge
 				GOAL
 				(Start 0 1)
 				(Max 4)
-				(Filter-Open {
+				(Filter-Open (Append
 					(Four-Suit {2 5 8 11})
 					(Four-Suit {3 6 9 12})
 					(Four-Suit {4 7 10 13})
-				})
+				))
 			}))
 		))
 	)
 	(HLayout
-		(Slot Start-Extra)
-		(HStack INPUT)
+		(Slot {Start-Extra})
+		(HStack {INPUT})
 	)
 )

@@ -80,6 +80,16 @@ void Enviroment::build_library() {
 			output.push_back(env->eval(*pos++));
 		return cell(output, LIST);
 	}));
+	set("Append", cell([](Enviroment *env, marker pos, marker end) {
+		LISTREMAINS;
+		sexpr output;
+
+		while(pos != end) {
+			sexpr array = env->list_eval(*pos++);
+			output.insert(output.end(), array.begin(), array.end());
+		}
+		return cell(output, LIST);
+	}));
 	set("Remove", cell([](Enviroment *env, marker pos, marker end) {
 		cell remove = env->eval(*pos++);
 		LISTREMAINS;
