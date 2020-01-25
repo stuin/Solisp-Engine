@@ -15,7 +15,6 @@
 //Additional type definitions
 using Solisp::cardData;
 enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Apply};
-enum filter_type { CLOSED, OPEN, ALL };
 
 #define cenv ((CardEnviroment*)env)
 

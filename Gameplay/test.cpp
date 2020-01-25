@@ -18,7 +18,10 @@ int main(int argc, char const *argv[]) {
 	Solisp::Builder *builder = new Solisp::Builder(rule_files[game_number]);
 
 	cout << "Setting up game\n";
-	game.setup(builder);
+	Solisp::Card *initial = game.setup(builder);
+
+	cout << "Checking existing cards\n";
+	initial->print_stack();
 	game.update();
 
 	cout << "\nListing slots\n";

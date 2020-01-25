@@ -31,3 +31,5 @@ struct Solisp::cardData {
 };
 
 char card_face(Solisp::cardData card);
+
+enum filter_type { CLOSED, OPEN, ALL };

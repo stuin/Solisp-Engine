@@ -7,10 +7,10 @@ Klondike, Classic
 	(HLayout
 		(Apply {GOAL OUTPUT}
 			(HLayout
-				(Slot (Filter (Black Standard)))
-				(Slot (Filter (Black Standard)))
-				(Slot (Filter (Red Standard)))
-				(Slot (Filter (Red Standard)))
+				(Slot (Filter (Clubs Standard)))
+				(Slot (Filter (Spades Standard)))
+				(Slot (Filter (Hearts Standard)))
+				(Slot (Filter (Diamonds Standard)))
 			)
 		)
 		(HLayout

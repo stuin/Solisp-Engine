@@ -1,7 +1,7 @@
 #pragma once
 
 #include "card.h"
-#include "../lisp/card_lisp.h"
+
 #include <iostream>
 
 using std::cout;

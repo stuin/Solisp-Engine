@@ -27,7 +27,7 @@ public:
 	}
 
 	int get_frame() {
-		switch(card->get_data().suit) {
+		switch((char)card->get_data().suit) {
 			case 'C':
 				return card->get_data().value - 1;
 			case 'D':
@@ -43,7 +43,6 @@ public:
 	bool is_hidden() {
 		return card->is_hidden();
 	}
-	
 
 protected:
 	static void _bind_methods() {

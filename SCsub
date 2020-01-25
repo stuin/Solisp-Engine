@@ -16,8 +16,8 @@ module_env = env.Clone()
 module_env.Append(CCFLAGS=['-O2'])
 module_env.Append(CXXFLAGS=['-std=c++17'])
 
-module_env.Append(CPPPATH=["./Gameplay","./Godot"])
-module_env.Append(LIBPATH=["./Gameplay"])
+module_env.Append(CPPPATH=["./Gameplay","./Godot", "./lisp"])
+module_env.Append(LIBPATH=["./Gameplay", "./lisp"])
 
 if ARGUMENTS.get('solisp_shared', 'yes') == 'yes':
     # Shared lib compilation

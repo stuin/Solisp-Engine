@@ -1,11 +1,12 @@
 #include "register_types.h"
-#include "Gameplay/game.h"
-#include "Gameplay/filelist.h"
 
 #include "core/class_db.h"
 #include "core/reference.h"
 
 #include <stdexcept>
+
+#include "Gameplay/game.h"
+#include "Gameplay/filelist.h"
 
 #include "Godot/carddata.h"
 #include "Godot/slotdata.h"

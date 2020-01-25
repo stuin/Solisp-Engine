@@ -42,7 +42,6 @@ public:
 			return stack->get_tag(SPREAD_REVERSE) ? -1 : 1;
 		return 0;
 	}
-	
 
 protected:
 	static void _bind_methods() {
