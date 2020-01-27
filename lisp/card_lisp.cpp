@@ -66,7 +66,7 @@ cardData CardEnviroment::card_eval(cell const &c) {
 		case DECK:
 			list = std::get<sexpr>(c.content);
 			if(list.size() > 1)
-				throw std::domain_error("Deck with multiple items to single card.");
+				CONVERTERROR("single card");
 			return card_eval(list[0]);
 		case STRING: case CARD:
 			string s = std::get<string>(c.content);
@@ -91,6 +91,7 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 	sexpr array;
 	sexpr output;
 	string s;
+
 	switch(c.type) {
 		case EXPR:
 			return deck_eval(eval(c));
@@ -101,9 +102,18 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 		case LIST:
 			array = std::get<sexpr>(c.content);
 
-			//Convert all contents to cards
-			for(cell value : array)
-				output.push_back(force_eval[CARD](this, value));
+			if(array[0].type == DECK || array[0].type == EXPR) {
+				//Flatten contained decks into one
+				for(cell value : array) {
+					sexpr deck = deck_eval(eval(value));
+					output.insert(output.end(), deck.begin(), deck.end());
+				}
+			} else {
+				//Convert all contents to cards
+				for(cell value : array)
+					output.push_back(force_eval[CARD](this, value));
+			}
+
 			return output;
 		case STRING: case CARD:
 			//Try base conversion
@@ -123,7 +133,8 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 			}
 			return output;
 	}
-	return list_eval(c);
+
+	CONVERTERROR("deck");
 }
 
 //Convert cell to filter
