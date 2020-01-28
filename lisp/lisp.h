@@ -100,7 +100,6 @@ public:
 	virtual int num_eval_cont(cell const &c);
 	virtual char char_eval_cont(cell const &c);
 	virtual sexpr list_eval_cont(cell const &c);
-	virtual void build_library_cont() {};
 
 	//Public reader functions
 	cell read(const std::string & s);

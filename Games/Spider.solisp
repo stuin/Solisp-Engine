@@ -18,7 +18,7 @@ Spider, Classic
 				INPUT
 				BUTTON
 				(Grab-If (Eval * (For-Each CUSTOM t (> (Count t) 0))))
-				(On-Grab (For-Each CUSTOM t (Move 2 t)))
+				(On-Grab (For-Each CUSTOM t (Move this t)))
 				(Start 10 0)
 			}))
 		)

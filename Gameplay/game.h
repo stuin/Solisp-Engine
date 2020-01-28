@@ -6,8 +6,7 @@ namespace Solisp {
 #include <queue>
 #include <stdexcept>
 
-#include "builder.h"
-#include "move.h"
+#include "../lisp/game_env.h"
 
 /*
  * Created by Stuart Irwin on 29/6/2019.
@@ -17,8 +16,8 @@ namespace Solisp {
 class Solisp::Game {
 private:
 	//Game definition
-	//Feature functions;
 	char STACKCOUNT = MAXSTACKCOUNT;
+	GameEnviroment env;
 
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];
@@ -58,13 +57,14 @@ public:
 	//Clear hand
 	void cancel();
 
+	//History management
 	void undo();
 	void redo();
 
+	//Stack access
 	int get_stack_count() {
 		return STACKCOUNT;
 	}
-
 	Stack *get_stack(int i) {
 		if(i >= STACKCOUNT)
 			return NULL;

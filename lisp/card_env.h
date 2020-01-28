@@ -1,12 +1,6 @@
 #include "card.h"
 #include "lisp.h"
 
-#include <vector>
-#include <string>
-#include <variant>
-
-#include <iostream>
-
 /*
  * Created by Stuart Irwin on 1/11/2019.
  * Solitaire lisp types and convertions
@@ -30,6 +24,8 @@ private:
 	//Card builtin generators
 	cell setSuits(string suit);
 	cell buildLayout(layout_type index);
+
+	void build_library_cards();
 public:
 	//Convert stored string to card
 	cardData to_card(string s);
@@ -39,7 +35,6 @@ public:
 	string str_eval_cont(cell const &c, bool literal=false) override;
 	int num_eval_cont(cell const &c) override;
 	sexpr list_eval_cont(cell const &c) override;
-	void build_library_cont() override;
 
 	//Convert cell types
 	cardData card_eval(cell const &c);
@@ -49,7 +44,7 @@ public:
 	sexpr layout_eval(cell const &c);
 
 	CardEnviroment() {
-		build_library_cont();
+		build_library_cards();
 		shift_env(true);
 	}
 };

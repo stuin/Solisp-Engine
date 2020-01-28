@@ -18,7 +18,7 @@ Klondike, Classic
 				{
 					(Move-All this (+ this 1))
 					(If (== (Count this) 0)
-						(Flip-All (+ this 2) this)
+						(Flip 3 (+ this 2) this)
 					)
 					(Flip this (+ this 1))
 					(Flip this (+ this 1))

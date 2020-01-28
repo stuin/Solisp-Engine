@@ -87,6 +87,18 @@ void Game::apply(Move *move, bool reverse) {
 		source->set_next(destination);
 		stack[to].get_card()->set_index(realCount);
 	}
+
+	if(move->get_tag(PLAYER)) {
+		//Check stack grab function
+		cell c = stack[from].get_function(ONGRAB);
+		if(c.type != STRING)
+			env.run(c, from, move);
+
+		//Check stack place function
+		c = stack[to].get_function(ONPLACE);
+		if(c.type != STRING)
+			env.run(c, to, move);
+	}
 }
 
 //Run functions and check win
@@ -139,6 +151,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 	Card *card = stack[0].get_card();
 
 	STACKCOUNT = builder->set_stacks(stack);
+	env.setup(stack, STACKCOUNT);
 
 	deal();
 	//apply();
@@ -177,6 +190,11 @@ bool Game::grab(int num, int from) {
 		i++;
 	}
 
+	//Check if stack has function defined
+	cell c = stack[from].get_function(GRABIF);
+	if(c.type != STRING && !env.run(c, from, current))
+		return false;
+
 	//Set picked cards
 	if(stack[0].matches(num, stack[from].get_card())) {
 		this->from = from;
@@ -197,6 +215,11 @@ bool Game::test(int to) {
 
 	//Check for proper move
 	if(to == from || stack[to].matches(count, stack[from].get_card())) {
+		//Check if stack has function defined
+		cell c = stack[to].get_function(PLACEIF);
+		if(c.type != STRING && !env.run(c, to, current))
+			return false;
+
 		tested = to;
 		return true;
 	}

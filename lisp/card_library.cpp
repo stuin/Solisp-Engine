@@ -34,7 +34,7 @@ cell CardEnviroment::buildLayout(layout_type index) {
 	});
 }
 
-void CardEnviroment::build_library_cont() {
+void CardEnviroment::build_library_cards() {
 	//Set global lisp variables
 	sexpr standard;
 	standard.reserve(13);

@@ -15,15 +15,18 @@ using std::bitset;
 
 #define MAXSTACKCOUNT 30
 #define STACKTAGCOUNT 9
+#define STACKFUNCOUNT 4
 
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, CUSTOM };
+enum func_tag { ONGRAB, ONPLACE, GRABIF, PLACEIF };
 
 class Solisp::Stack {
 private:
 	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
+	cell functions[STACKFUNCOUNT] = { cell("") };
 	int max = -1;
 
 	//Current state
@@ -44,36 +47,34 @@ public:
 		delete stack;
 	}
 
+	//Unique variable setters
 	void set_cords(int x, int y) {
 		this->x = x;
 		this->y = y;
 	}
-
 	void set_tag(int tag, bool value=true) {
 		tags[tag] = value;
 	}
-
-	//Set maximum card count
-	void set_max(int max) {
-		this->max = max;
-	}
-
 	void set_start(int hidden=0, int shown=0) {
 		start_hidden = hidden;
 		start_shown = shown;
 	}
-
 	void add_count(int count) {
 		this->count += count;
 	}
 
-	//Set top of stack
+	//General variable setters
+	void set_max(int max) {
+		this->max = max;
+	}
 	void set_card(Card *card) {
 		stack = card;
 	}
-
 	void set_filter(Filter *filter) {
 		this->filter = filter;
+	}
+	void set_func(cell function, func_tag type) {
+		functions[type] = function;
 	}
 
 	//Check if new cards can be placed on stack
@@ -97,17 +98,17 @@ public:
 		return false;
 	}
 
+	//General variable getters
 	int get_max() {
 		return max;
 	}
-
-	//Get number of cards in stack
 	int get_count() {
 		return count;
 	}
-
-	//Get top card of stack
 	Card *get_card() {
 		return stack;
+	}
+	cell get_function(func_tag func) {
+		return functions[func];
 	}
 };

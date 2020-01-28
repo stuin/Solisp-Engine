@@ -3,7 +3,6 @@ namespace Solisp {
 }
 
 #include "stack.h"
-#include "../lisp/card_env.h"
 
 /*
  * Created by Stuart Irwin on 4/10/2019.
