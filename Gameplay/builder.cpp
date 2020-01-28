@@ -190,33 +190,3 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 	dim.y += 3;
 	return dim;
 }
-
-//Get the overall deck to play with
-Card *Builder::get_deck() {
-	Card *c = make_card(env.read_stream(rule_file, DECK), true);
-	cout << "Deck loaded\n";
-	return c;
-}
-
-//Set up all stacks on game board
-int Builder::set_stacks(Stack *stack) {
-	bitset<STACKTAGCOUNT> bits(0);
-	cell c;
-
-	try {
-		std::cout << "Slot 0: \n";
-		c = env.read_stream(rule_file, EXPR);
-
-		sexpr array;
-		array.push_back(cell("VStack"));
-		array.push_back(c);
-		make_slot(stack[0], tag_eval(env.layout_eval(array), true), VStack, -1, -1);
-
-		c = env.read_stream(rule_file, LAYOUT);
-		return make_layout(stack, c).count;
-	} catch(std::exception &e) {
-		std::cerr << "Error: " << e.what() << std::endl;
-		//std::cerr << env.str_eval(c, true) << "\n";
-	}
-	return 0;
-}

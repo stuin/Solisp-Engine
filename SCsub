@@ -5,7 +5,7 @@ sources = [
     "Gameplay/game.cpp",
     "Gameplay/card.cpp",
     "Gameplay/builder.cpp",
-    "lisp/card_lisp.cpp",
+    "lisp/card_env.cpp",
     "lisp/card_library.cpp",
     "lisp/lisp.cpp",
     "lisp/library.cpp",
