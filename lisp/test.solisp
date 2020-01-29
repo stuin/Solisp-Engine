@@ -21,7 +21,7 @@ Passed Failed)
 #General list modifying
 (Join (Remove , (Join (Reverse "e,d" s s a P) ,)))
 
-#Step/tail
+#Step
 (Step (Set start Pass) (Join {start ed}))
 
 #Test nested enviroments

@@ -11,6 +11,22 @@ using Solisp::Filter;
 using std::bitset;
 using std::cout;
 
+std::map<string, stack_tags> Builder::tag_map = {
+	{"GOAL", GOAL},
+	{"INPUT", INPUT},
+	{"OUTPUT", OUTPUT},
+	{"BUTTON", BUTTON},
+	{"MIRRORED", SPREAD_REVERSE},
+	{"MULTI", SPREAD_FAKE},
+	{"CUSTOM", CUSTOM}
+};
+std::map<string, func_tag> Builder::func_map = {
+	{"On-Grab", ONGRAB},
+	{"On-Place", ONPLACE},
+	{"Grab-If", GRABIF},
+	{"Place-If", PLACEIF}
+};
+
 //Ensure consistant tag data structure
 sexpr Builder::tag_eval(sexpr list, bool layout) {
 	sexpr output;
@@ -141,7 +157,12 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 		else if(c.type == EXPR) {
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
-			if(env.str_eval(list[0]) == "Start")
+			auto func = func_map.find(env.str_eval(list[0]));
+
+			if(func != func_map.end()) {
+				stack.set_function(list, func->second);
+				cout << "\tFunction set: " << env.str_eval(c, true) << "\n";
+			} else if(env.str_eval(list[0]) == "Start")
 				stack.set_start(env.num_eval(list[1]), env.num_eval(list[2]));
 			else if(env.str_eval(list[0]) == "Max")
 				stack.set_max(env.num_eval(list[1]));

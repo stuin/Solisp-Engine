@@ -21,16 +21,6 @@ private:
 	CardEnviroment env;
 	std::string name;
 
-	//Map string values to tag codes
-	std::map<string, stack_tags> tag_map = {
-		{"GOAL", GOAL},
-		{"INPUT", INPUT},
-		{"OUTPUT", OUTPUT},
-		{"BUTTON", BUTTON},
-		{"MIRRORED", SPREAD_REVERSE},
-		{"MULTI", SPREAD_FAKE},
-		{"CUSTOM", CUSTOM}
-	};
 	sexpr tag_eval(sexpr list, bool layout);
 
 	//Solisp to gameplay convertions
@@ -43,6 +33,8 @@ private:
 
 
 public:
+	static std::map<string, stack_tags> tag_map;
+	static std::map<string, func_tag> func_map;
 
 	Builder(std::string file) {
 		rule_file.open(file);

@@ -17,6 +17,7 @@ using std::bitset;
 #define STACKTAGCOUNT 9
 #define STACKFUNCOUNT 4
 
+//List of tags to change stack properties
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, CUSTOM };
 enum func_tag { ONGRAB, ONPLACE, GRABIF, PLACEIF };
@@ -73,8 +74,9 @@ public:
 	void set_filter(Filter *filter) {
 		this->filter = filter;
 	}
-	void set_func(cell function, func_tag type) {
-		functions[type] = function;
+	void set_function(sexpr function, func_tag type) {
+		function[0] = cell("Step");
+		functions[type] = cell(function, EXPR);
 	}
 
 	//Check if new cards can be placed on stack

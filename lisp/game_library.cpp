@@ -5,8 +5,8 @@
  * Lisp structures for moving cards during game
  */
 
-cell GameEnviroment::general_move(int num, bool flip, bool player) {
-	return cell([num, flip, player](Enviroment *env, marker pos, marker end) {
+cell GameEnviroment::general_move(int num, bool player, bool flip) {
+	return cell([num, player, flip](Enviroment *env, marker pos, marker end) {
 		int from = env->num_eval(*pos++);
 		int to = env->num_eval(*pos++);
 		int count = num;
@@ -20,7 +20,7 @@ cell GameEnviroment::general_move(int num, bool flip, bool player) {
 
 		DONE;
 		if(genv->both_valid(from, to))
-			genv->add_move(count, from, to, flip, player);
+			genv->add_move(count, from, to, player, flip);
 		return cell(1);
 	});
 }
@@ -40,7 +40,7 @@ cell GameEnviroment::soft_move(int num) {
 
 		DONE;
 		if(genv->both_valid(from, to) && genv->test_move(count, from, to))
-			genv->add_move(count, from, to, false, true);
+			genv->add_move(count, from, to, true, false);
 		return cell(1);
 	});
 }
@@ -51,8 +51,8 @@ void GameEnviroment::build_library_game() {
 	set("Move-All", general_move(1000, false, false));
 
 	//Flip moves
-	set("Flip-Move", general_move(1, true, false));
-	set("Flip-Move-All", general_move(1000, true, false));
+	set("Flip", general_move(1, false, true));
+	set("Flip-All", general_move(1000, false, true));
 
 	//Soft moves
 	set("Soft-Move", soft_move(1));

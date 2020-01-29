@@ -91,12 +91,14 @@ void Game::apply(Move *move, bool reverse) {
 	if(move->get_tag(PLAYER)) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
-		if(c.type != STRING)
+		if(c.type == EXPR) {
+			cout << "Running " << env.str_eval(c, true) << "on stack " << from << "\n";
 			env.run(c, from, move);
+		}
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
-		if(c.type != STRING)
+		if(c.type == EXPR)
 			env.run(c, to, move);
 	}
 }
@@ -169,9 +171,9 @@ bool Game::grab(int num, int from) {
 	if(from > STACKCOUNT)
 		return false;
 
-	//Fail if top card hidden
-	if(stack[from].get_card()->is_hidden()) {
-		*current += new Move(1, from, from, true, true, current);
+	//Check if stack is button
+	if(stack[from].get_tag(BUTTON)) {
+		*current += new Move(0, from, from, true, false, current);
 		update();
 		return false;
 	}
@@ -179,6 +181,13 @@ bool Game::grab(int num, int from) {
 	//Fail if stack marked as output
 	if(stack[from].get_tag(OUTPUT) || num < 1)
 		return false;
+
+	//Flip one card if top hidden
+	if(stack[from].get_card()->is_hidden()) {
+		*current += new Move(1, from, from, true, true, current);
+		update();
+		return false;
+	}
 
 	//Check for null or hidden card in stack
 	int i = 1;
@@ -192,7 +201,7 @@ bool Game::grab(int num, int from) {
 
 	//Check if stack has function defined
 	cell c = stack[from].get_function(GRABIF);
-	if(c.type != STRING && !env.run(c, from, current))
+	if(c.type == EXPR && !env.run(c, from, current))
 		return false;
 
 	//Set picked cards
@@ -217,7 +226,7 @@ bool Game::test(int to) {
 	if(to == from || stack[to].matches(count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
-		if(c.type != STRING && !env.run(c, to, current))
+		if(c.type == EXPR && !env.run(c, to, current))
 			return false;
 
 		tested = to;
