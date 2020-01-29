@@ -15,19 +15,19 @@ using std::bitset;
 
 #define MAXSTACKCOUNT 30
 #define STACKTAGCOUNT 9
-#define STACKFUNCOUNT 4
+#define STACKFUNCOUNT 6
 
 //List of tags to change stack properties
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, CUSTOM };
-enum func_tag { ONGRAB, ONPLACE, GRABIF, PLACEIF };
+enum func_tag { ONGRAB, ONPLACE, ONFLIP, ONSTART, GRABIF, PLACEIF };
 
 class Solisp::Stack {
 private:
 	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
-	cell functions[STACKFUNCOUNT] = { cell("") };
+	cell functions[STACKFUNCOUNT] = { cell(0) };
 	int max = -1;
 
 	//Current state
@@ -75,7 +75,7 @@ public:
 		this->filter = filter;
 	}
 	void set_function(sexpr function, func_tag type) {
-		function[0] = cell("Step");
+		function[0] = cell("+");
 		functions[type] = cell(function, EXPR);
 	}
 

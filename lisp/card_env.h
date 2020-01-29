@@ -1,6 +1,8 @@
 #include "card.h"
 #include "lisp.h"
 
+#include <sstream>
+
 /*
  * Created by Stuart Irwin on 1/11/2019.
  * Solitaire lisp types and convertions

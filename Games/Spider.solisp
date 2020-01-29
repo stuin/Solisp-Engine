@@ -10,21 +10,44 @@ Spider, Classic
 				GOAL
 				OUTPUT
 				MULTI
+				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
+				(On-Place (Map BUTTON st (Soft-Move 13 this st)))
 			}))
 		)
 		(HLayout
-			(Clone 5 (Slot {
-				INPUT
-				BUTTON
-				(Grab-If (Eval * (For-Each CUSTOM t (> (Count t) 0))))
-				(On-Grab (For-Each CUSTOM t (Move this t)))
-				(Start 10 0)
-			}))
+			(Append
+				(Slot {
+					INPUT
+					BUTTON
+					(Start 10 0)
+					(Grab-If (Eval * (Map CUSTOM st (> (Count st) 0))))
+					(On-Grab
+						(Map CUSTOM st (Flip this st))
+						(Move 10 10 9)
+						(Move 10 11 10)
+						(Move 10 12 11)
+						(Move 10 13 12)
+					)
+				})
+				(Clone 4 (Slot {
+					INPUT
+					OUTPUT
+					(Start 10 0)
+				}))
+			)
 		)
 	)
 	(Apply
-		{CUSTOM (Filter-Open (Spades (Reverse Standard)))}
+		{
+			CUSTOM
+			(Filter-Open (Spades (Reverse Standard)))
+			(On-Grab
+				(If (Hidden this) (Flip this this))
+				(Soft-Move 13 7)
+			)
+			(On-Place (Soft-Move 13 7))
+		}
 		(HLayout
 			(Append
 				(Clone 4 (VStack {(Start 5 1)}))

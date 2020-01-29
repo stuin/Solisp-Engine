@@ -11,7 +11,7 @@
 using Solisp::Game;
 
 //Apply current moves to stack array
-void Game::apply() {
+void Game::update() {
 	//Recall invalid moves
 	while(!current->get_tag(VALID)) {
 		apply(current, true);
@@ -22,6 +22,17 @@ void Game::apply() {
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
 		apply(current->get_next(), false);
 		current = current->get_next();
+	}
+
+	//Check for game start functions
+	if(!started) {
+		for(int i = 1; i < STACKCOUNT; i++) {
+			cell c = stack[i].get_function(ONSTART);
+			if(c.type == EXPR)
+				env.run(c, i, current);
+		}
+		started = true;
+		update();
 	}
 }
 
@@ -88,7 +99,8 @@ void Game::apply(Move *move, bool reverse) {
 		stack[to].get_card()->set_index(realCount);
 	}
 
-	if(move->get_tag(PLAYER)) {
+	//Check for additional functions and moves
+	if(move->get_tag(PLAYER) && !reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {
@@ -101,11 +113,6 @@ void Game::apply(Move *move, bool reverse) {
 		if(c.type == EXPR)
 			env.run(c, to, move);
 	}
-}
-
-//Run functions and check win
-void Game::update() {
-	apply();
 }
 
 //Deal out cards to starting positions
@@ -156,7 +163,6 @@ Solisp::Card *Game::setup(Builder *builder) {
 	env.setup(stack, STACKCOUNT);
 
 	deal();
-	//apply();
 
 	return card;
 }

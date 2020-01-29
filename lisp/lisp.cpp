@@ -99,6 +99,8 @@ int Enviroment::num_eval(cell const &c) {
 			return num_eval(eval(c));
 		case NUMBER: case CHAR:
 			return std::get<int>(c.content);
+		case LIST:
+			return std::get<sexpr>(c.content).size();
 		case STRING:
 			string s = std::get<string>(c.content);
 

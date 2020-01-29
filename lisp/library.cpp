@@ -8,6 +8,7 @@
 //Build a number comparison function
 template <class T> cell Enviroment::comparitor(T func) {
 	return cell([func](Enviroment *env, marker pos, marker end) {
+		LISTREMAINS;
 		int source = env->num_eval(*pos++);
 		while(pos != end)
 			if(!func(source, env->num_eval(*pos++)))
@@ -19,6 +20,7 @@ template <class T> cell Enviroment::comparitor(T func) {
 //Build a number arithmatic function
 template <class T> cell Enviroment::arithmetic(T func) {
 	return cell([func](Enviroment *env, marker pos, marker end) {
+		LISTREMAINS;
 		int value = env->num_eval(*pos++);
 		while(pos != end)
 			value = func(value, env->num_eval(*pos++));
@@ -142,7 +144,7 @@ void Enviroment::build_library() {
 	}));
 	set("Map", cell([](Enviroment *env, marker pos, marker end) {
 		sexpr array = env->list_eval(*pos++);
-		string var = env->str_eval(*pos++);
+		string var = env->str_eval(*pos++, true);
 		sexpr output;
 		env->shift_env(true);
 
@@ -157,6 +159,8 @@ void Enviroment::build_library() {
 		DONE;
 		return cell(output, LIST);
 	}));
+
+	//Iterative stuff
 	set("Step", cell([](Enviroment *env, marker pos, marker end) {
 		LISTREMAINS;
 		cell output;
@@ -165,6 +169,12 @@ void Enviroment::build_library() {
 			output = env->eval(*pos++);
 
 		return output;
+	}));
+	set("Println", cell([](Enviroment *env, marker pos, marker end) {
+		string s = env->str_eval(*pos++);
+		DONE;
+		std::cout << s << "\n";
+		return cell(s);
 	}));
 
 	//Convert list to runnable code

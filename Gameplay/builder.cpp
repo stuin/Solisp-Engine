@@ -23,6 +23,8 @@ std::map<string, stack_tags> Builder::tag_map = {
 std::map<string, func_tag> Builder::func_map = {
 	{"On-Grab", ONGRAB},
 	{"On-Place", ONPLACE},
+	{"On-Flip", ONFLIP},
+	{"On-Start", ONSTART},
 	{"Grab-If", GRABIF},
 	{"Place-If", PLACEIF}
 };

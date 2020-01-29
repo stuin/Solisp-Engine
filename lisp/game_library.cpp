@@ -19,9 +19,11 @@ cell GameEnviroment::general_move(int num, bool player, bool flip) {
 		}
 
 		DONE;
-		if(genv->both_valid(from, to))
+		if(genv->both_valid(from, to)) {
 			genv->add_move(count, from, to, player, flip);
-		return cell(1);
+			return cell(count);
+		}
+		return cell(to);
 	});
 }
 
@@ -39,9 +41,11 @@ cell GameEnviroment::soft_move(int num) {
 		}
 
 		DONE;
-		if(genv->both_valid(from, to) && genv->test_move(count, from, to))
+		if(genv->both_valid(from, to) && genv->get_stack(to)->matches(count, genv->get_stack(from)->get_card())) {
 			genv->add_move(count, from, to, true, false);
-		return cell(1);
+			return cell(count);
+		}
+		return cell(0);
 	});
 }
 
@@ -62,6 +66,15 @@ void GameEnviroment::build_library_game() {
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
 		DONE;
-		return cell(genv->get_count(stack));
+		return cell(genv->get_stack(stack)->get_count());
+	}));
+
+	//Check if top card is hidden
+	set("Hidden", cell([](Enviroment *env, marker pos, marker end) {
+		int stack = env->num_eval(*pos++);
+		DONE;
+		if(genv->get_stack(stack)->get_count() > 0)
+			return cell(genv->get_stack(stack)->get_card()->is_hidden());
+		return cell(0);
 	}));
 }

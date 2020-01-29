@@ -28,9 +28,9 @@ private:
 	int to = -1;
 	int count = 0;
 	int tested = -1;
+	bool started = false;
 
 	//Apply current moves to stack array
-	void apply();
 	void apply(Move *move, bool reverse);
 
 	//Startup functions

@@ -42,6 +42,12 @@ void CardEnviroment::build_library_cards() {
 		standard.push_back(cell("N" + std::to_string(i), CARD));
 	set("Standard", cell(standard, DECK));
 
+	//Read dealer structure in as string
+	string dealer = "(HLayout (Slot Start-Extra BUTTON INPUT (On-Grab(Flip 3 (+ this 1) (+ this 2)) ";
+	dealer += "(If (== (Count this) 0) (Move-All (+ this 2) this)) (Flip 3 (+ this 1) (+ this 2))))";
+	dealer += "(HStack {(Max 3)}) (Slot INPUT OUTPUT))";
+	//set("Dealer", read(dealer));
+
 	//Build force evaluators
 	force_eval[CARD] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->to_string(cenv->card_eval(c)), CARD);

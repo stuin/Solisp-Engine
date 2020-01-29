@@ -46,7 +46,7 @@ struct cell {
 	std::variant<sexpr, string, int, builtin> content;
 
 	//Constructors
-	cell() { cell(""); }
+	cell() { cell(0); }
 	cell(string s, int t = STRING) : content{std::move(s)} { type = t; }
 	cell(int s, int t = NUMBER) : content{std::move(s)} { type = t; }
 	cell(sexpr s, int t = EXPR) : content{std::move(s)} { type = t; }

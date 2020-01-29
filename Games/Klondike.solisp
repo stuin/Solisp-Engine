@@ -14,22 +14,34 @@ Klondike, Classic
 			)
 		)
 		(HLayout
-			(Slot Start-Extra BUTTON (On-Grab
-				(Flip-All (+ this 1) (+ this 2))
-				(If (== (Count this) 0)
-					(Move-All (+ this 2) this)
+			(Slot
+				Start-Extra
+				BUTTON
+				INPUT
+				(On-Grab
+					(Flip 3 (+ this 1) (+ this 2))
+					(If (== (Count this) 0)
+						(Move-All (+ this 2) this)
+					)
+					(Flip 3 this (+ this 1))
+					(Map GOAL st (Soft-Move (+ this 1) st))
 				)
-				(Flip 3 this (+ this 1))
-			))
-			(HStack {(Max 3)})
+			)
+			(HStack
+				(Max 3)
+				(On-Grab (Map GOAL st (Soft-Move this st)))
+			)
 			(Slot INPUT OUTPUT)
 		)
 	)
 	(Apply
 		{
 			(Filter-Open (Alternating (Reverse Standard)))
-			#(On-Grab (Map GOAL g (Soft-Move this g)))
-			(On-Grab (Soft-Move this 1))
+			(On-Grab
+				(If (Hidden this) (Flip this this))
+				(Map GOAL st (Soft-Move this st))
+			)
+			(On-Start (Map GOAL st (Soft-Move this st)))
 		}
 		(HLayout
 			(VStack {(Start 0 1)})

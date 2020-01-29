@@ -30,29 +30,28 @@ public:
 			from < STACKCOUNT && to < STACKCOUNT;
 	}
 
-	//Check if move matches filters
-	bool test_move(int count, int from, int to) {
-		return stacks[to].matches(count, stacks[from].get_card());
-	}
-
 	//Add new move to game
 	void add_move(int count, int from, int to, bool player, bool flip) {
 		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 		*current += new Move(count, from, to, player, flip, current);
 	}
 
-	//Count stack
-	int get_count(int i) {
-		cout << "Counting cards\n";
-		return stacks[i].get_count();
+	//Retrieve stack properties
+	Solisp::Stack *get_stack(int i) {
+		return &stacks[i];
 	}
 
 	//Set this value before evaluating
 	bool run(cell c, int stack, Move *current) {
+		if(std::get<sexpr>(c.content).size() == 0)
+			return false;
+
+		//Update enviroment
+		bool output = true;
 		this->current = current;
 		set("this", stack);
-		bool output = true;
 
+		//Attempt evaluation
 		try {
 			output = num_eval(c);
 		} catch(std::exception &e) {
@@ -79,7 +78,7 @@ public:
 		//Link strings to stack tags
 		auto it = Solisp::Builder::tag_map.begin();
 		while(it != Solisp::Builder::tag_map.end()) {
-			set(it->first, tags[it->second]);
+			set(it->first, cell(tags[it->second], LIST));
 			it++;
 		}
 
