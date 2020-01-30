@@ -58,45 +58,43 @@ void Game::apply(Move *move, bool reverse) {
 
 	if(source == NULL) {
 		std::cerr << "Taking cards from empty stack\n";
-		return;
-	}
-
-
-	//Find bottom moved card
-	while(count > 1 && source->get_next() != NULL) {
-		if(flip)
-			source->flip();
-
-		source->set_slot(to);
-		source = source->get_next();
-
-		count--;
-		realCount++;
-	}
-	source->set_slot(to);
-
-	if(to == from)
-		destination = source->get_next();
-	else {
-		stack[from].set_card(source->get_next());
-		stack[from].add_count(-realCount);
-		stack[to].add_count(realCount);
-	}
-
-	//Record proper card count
-	if(count > 1)
-		move->correct_count(realCount);
-
-	//Reverse cards properly
-	if(flip) {
-		source->flip();
-		source->set_next(NULL);
-		stack[to].get_card()->reverse(stack[to].get_count() - realCount);
-		stack[to].get_card()->set_next(destination);
-		stack[to].set_card(source);
 	} else {
-		source->set_next(destination);
-		stack[to].get_card()->set_index(realCount);
+		//Find bottom moved card
+		while(count > 1 && source->get_next() != NULL) {
+			if(flip)
+				source->flip();
+
+			source->set_slot(to);
+			source = source->get_next();
+
+			count--;
+			realCount++;
+		}
+		source->set_slot(to);
+
+		if(to == from)
+			destination = source->get_next();
+		else {
+			stack[from].set_card(source->get_next());
+			stack[from].add_count(-realCount);
+			stack[to].add_count(realCount);
+		}
+
+		//Record proper card count
+		if(count > 1)
+			move->correct_count(realCount);
+
+		//Reverse cards properly
+		if(flip) {
+			source->flip();
+			source->set_next(NULL);
+			stack[to].get_card()->reverse(stack[to].get_count() - realCount);
+			stack[to].get_card()->set_next(destination);
+			stack[to].set_card(source);
+		} else {
+			source->set_next(destination);
+			stack[to].get_card()->set_index(realCount);
+		}
 	}
 
 	//Check for additional functions and moves

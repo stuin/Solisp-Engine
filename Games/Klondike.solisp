@@ -19,15 +19,18 @@ Klondike, Classic
 				BUTTON
 				INPUT
 				(On-Grab
-					(Flip 3 (+ this 1) (+ this 2))
+					(If (> (Count (+ this 1)) 0)
+						(Move 3 (+ this 1) (+ this 2))
+					)
 					(If (== (Count this) 0)
-						(Move-All (+ this 2) this)
+						(Flip-All (+ this 2) this)
 					)
 					(Flip 3 this (+ this 1))
-					(Map GOAL st (Soft-Move (+ this 1) st))
+					#(Map GOAL st (Soft-Move (+ this 1) st))
 				)
 			)
 			(HStack
+				INPUT
 				(Max 3)
 				(On-Grab (Map GOAL st (Soft-Move this st)))
 			)

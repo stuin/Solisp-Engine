@@ -43,11 +43,16 @@ public:
 		return 0;
 	}
 
+	bool is_button() {
+		return stack->get_tag(BUTTON);
+	}
+
 protected:
 	static void _bind_methods() {
 		ClassDB::bind_method(D_METHOD("get_x"), &SlotData::get_x);
 		ClassDB::bind_method(D_METHOD("get_y"), &SlotData::get_y);
 		ClassDB::bind_method(D_METHOD("get_offset_x"), &SlotData::get_offset_x);
 		ClassDB::bind_method(D_METHOD("get_offset_y"), &SlotData::get_offset_y);
+		ClassDB::bind_method(D_METHOD("is_button"), &SlotData::is_button);
 	}
 };
