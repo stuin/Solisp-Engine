@@ -44,7 +44,7 @@ Klondike, Classic
 				(If (Hidden this) (Flip this this))
 				(Map GOAL st (Soft-Move this st))
 			)
-			(On-Start (Map GOAL st (Soft-Move this st)))
+			#(On-Start (Map GOAL st (Soft-Move this st)))
 		}
 		(HLayout
 			(VStack {(Start 0 1)})
