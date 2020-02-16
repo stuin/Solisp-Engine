@@ -1,6 +1,6 @@
 (Hearts Standard)
 (== (Remove 13 Standard) {1 2 3 4 5 6 7 8 9 10 11 12})
 (!= (Hearts {1 2 3 4 5}) (Spades {1 2 3 4 5}))
-(Duplicate 2 (Spades (Remove 1 Standard)))
+(Clone 2 (Spades (Remove 1 Standard)))
 (Filter (Alternating (Reverse Standard)))
 (Filter-Open (Four-Suit (Reverse Standard)))

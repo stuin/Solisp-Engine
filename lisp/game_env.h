@@ -1,4 +1,4 @@
-#include "lisp.h"
+#include "Solisp/lisp.h"
 #include "../Gameplay/builder.h"
 #include "../Gameplay/move.h"
 
