@@ -1,1 +1,1 @@
-main.cpp lisp.cpp reader.cpp  *env.cpp *library.cpp
+main.cpp Solisp/lisp.cpp Solisp/reader.cpp *env.cpp *library.cpp

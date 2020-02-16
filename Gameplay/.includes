@@ -1,1 +1,1 @@
-../lisp/lisp.cpp ../lisp/*env.cpp ../lisp/*library.cpp ../lisp/reader.cpp ./*.cpp
+../lisp/Solisp/lisp.cpp ../lisp/*env.cpp ../lisp/*library.cpp ../lisp/Solsip/reader.cpp ./*.cpp
