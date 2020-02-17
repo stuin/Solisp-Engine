@@ -1,0 +1,1 @@
+files=Solisp/lisp.cpp Solisp/reader.cpp Solisp/library.cpp *env.cpp *library.cpp

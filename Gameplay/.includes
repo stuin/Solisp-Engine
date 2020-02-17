@@ -1,1 +1,2 @@
-../lisp/Solisp/lisp.cpp ../lisp/Solisp/library.cpp ../lisp/*env.cpp ../lisp/*library.cpp ../lisp/Solisp/reader.cpp ./*.cpp
+parent=../lisp/.baseincludes
+files=*.cpp
