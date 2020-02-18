@@ -1,2 +1,3 @@
 parent=.baseincludes
 files=main.cpp
+testargs=Solisp/test.solisp
