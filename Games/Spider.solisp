@@ -12,7 +12,7 @@ Spider, Classic
 				MULTI
 				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
-				(On-Place (Map BUTTON st (Soft-Move 13 this st)))
+				(On-Place (Map st BUTTON (Soft-Move 13 this st)))
 			}))
 		)
 		(HLayout
@@ -21,9 +21,9 @@ Spider, Classic
 					INPUT
 					BUTTON
 					(Start 10 0)
-					(Grab-If (Eval * (Map CUSTOM st (> (Count st) 0))))
+					(Grab-If (Eval * (Map st CUSTOM (> (Count st) 0))))
 					(On-Grab
-						(Map CUSTOM st (Flip this st))
+						(Map st CUSTOM (Flip this st))
 						(Move 10 10 9)
 						(Move 10 11 10)
 						(Move 10 12 11)

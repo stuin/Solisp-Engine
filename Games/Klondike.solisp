@@ -32,7 +32,7 @@ Klondike, Classic
 			(HStack
 				INPUT
 				(Max 3)
-				(On-Grab (Map GOAL st (Soft-Move this st)))
+				(On-Grab (Map st GOAL (Soft-Move this st)))
 			)
 			(Slot INPUT OUTPUT)
 		)
@@ -42,7 +42,7 @@ Klondike, Classic
 			(Filter-Open (Alternating (Reverse Standard)))
 			(On-Grab
 				(If (Hidden this) (Flip this this))
-				(Map GOAL st (Soft-Move this st))
+				(Map st GOAL (Soft-Move this st))
 			)
 			#(On-Start (Map GOAL st (Soft-Move this st)))
 		}
