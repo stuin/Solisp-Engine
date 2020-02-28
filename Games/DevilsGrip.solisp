@@ -15,11 +15,35 @@ Devil's Grip, Challenge
 					(Four-Suit {3 6 9 12})
 					(Four-Suit {4 7 10 13})
 				))
+				(On-Grab
+					(If (== (Count this) 0)
+						(If (> (Count 25) 0)
+							(Move 25 this)
+							(Flip 24 this)
+						)
+					)
+				)
 			}))
 		))
 	)
 	(HLayout
-		(Slot {Start-Extra})
-		(HStack {INPUT})
-	)
+			(Slot
+				Start-Extra
+				BUTTON
+				INPUT
+				(On-Grab
+					(If (> (Count (+ this 1)) 0)
+						(Move 3 (+ this 1) (+ this 2))
+					)
+					(If (== (Count this) 0)
+						(Flip-All (+ this 2) this)
+					)
+					(Flip 3 this (+ this 1))
+				)
+			)
+			(HStack
+				INPUT
+				(Max 3)
+			)
+			(Slot INPUT OUTPUT)
 )
