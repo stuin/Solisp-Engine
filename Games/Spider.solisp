@@ -21,7 +21,7 @@ Spider, Classic
 					INPUT
 					BUTTON
 					(Start 10 0)
-					(Grab-If (Eval * (Map st CUSTOM (> (Count st) 0))))
+					(Grab-If (* (Map st CUSTOM (> (Count st) 0))))
 					(On-Grab
 						(Map st CUSTOM (Flip this st))
 						(Move 10 10 9)
