@@ -77,7 +77,7 @@ Filter *Builder::make_filter(const cell &source) {
 	array = env.filter_eval(array[0]);
 	Filter *output = new Filter(open);
 
-	cout << "\tFilter by: " << env.str_eval(cell(array, FILTER)) << "with code: " << open << "\n";
+	cout << "\tFilter by: " << env.str_eval(cell(array, FILTER), true) << "with code: " << open << "\n";
 
 	//Pass each deck to filter
 	for(cell deck : array)

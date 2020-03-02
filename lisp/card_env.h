@@ -1,5 +1,5 @@
 #include "card.h"
-#include "Solisp/lisp.h"
+#include "Solisp/src/lisp.h"
 
 #include <sstream>
 
