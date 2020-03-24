@@ -85,10 +85,12 @@ void Card::operator+=(Card *next) {
 }
 
 //Print full stack of cards
-void Card::print_stack() {
-	std::cout << "{" << card_face(data) << "," << data.suit << "}, ";
+string Card::print_stack() {
+	string s = "";
 	if(next != NULL)
-		next->print_stack();
+		s = next->print_stack();
+	s += "{" + string(1, card_face(data)) + "," + string(1, data.suit) + "}, ";
+	return s;
 }
 
 //Get card face from card data

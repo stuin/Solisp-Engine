@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
 	Solisp::Card *initial = game.setup(builder);
 
 	cout << "Checking existing cards\n";
-	initial->print_stack();
+	cout << initial->print_stack();
 	game.update();
 
 	cout << "\nListing slots\n";
@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
 		cout << "Stack " << i << " at (" <<
 			game.get_stack(i)->x << "," << game.get_stack(i)->y << "): ";
 		if(game.get_stack(i)->get_card() != NULL)
-			game.get_stack(i)->get_card()->print_stack();
+			cout << game.get_stack(i)->get_card()->print_stack();
 		cout << "\n";
 		i++;
 	}

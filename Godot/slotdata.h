@@ -47,6 +47,12 @@ public:
 		return stack->get_tag(BUTTON);
 	}
 
+	String test_list() {
+		if(stack->get_card() != NULL)
+			return String(stack->get_card()->print_stack().c_str());
+		return String();
+	}
+
 protected:
 	static void _bind_methods() {
 		ClassDB::bind_method(D_METHOD("get_x"), &SlotData::get_x);
@@ -54,5 +60,6 @@ protected:
 		ClassDB::bind_method(D_METHOD("get_offset_x"), &SlotData::get_offset_x);
 		ClassDB::bind_method(D_METHOD("get_offset_y"), &SlotData::get_offset_y);
 		ClassDB::bind_method(D_METHOD("is_button"), &SlotData::is_button);
+		ClassDB::bind_method(D_METHOD("test_list"), &SlotData::test_list);
 	}
 };

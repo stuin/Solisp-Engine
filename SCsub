@@ -8,9 +8,9 @@ sources = [
     "lisp/card_env.cpp",
     "lisp/card_library.cpp",
     "lisp/game_library.cpp",
-    "lisp/lisp.cpp",
-    "lisp/library.cpp",
-    "lisp/reader.cpp"
+    "lisp/Solisp/src/lisp.cpp",
+    "lisp/Solisp/src/library.cpp",
+    "lisp/Solisp/src/reader.cpp"
 ]
 
 module_env = env.Clone()

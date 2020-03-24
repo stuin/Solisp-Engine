@@ -49,18 +49,23 @@ void CardEnviroment::build_library_cards() {
 	//set("Dealer", read(dealer));
 
 	//Build force evaluators
+	type_name[CARD] = "Card";
 	force_eval[CARD] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->to_string(cenv->card_eval(c)), CARD);
 	};
+	type_name[DECK] = "Deck";
 	force_eval[DECK] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->deck_eval(c), DECK);
 	};
+	type_name[FILTER] = "Filter";
 	force_eval[FILTER] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->filter_eval(c), FILTER);
 	};
+	type_name[TAGFILTER] = "Tag-Filter";
 	force_eval[TAGFILTER] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->tagfilter_eval(c, CLOSED), TAGFILTER);
 	};
+	type_name[LAYOUT] = "Layout";
 	force_eval[LAYOUT] = [](Enviroment *env, cell const &c) {
 		return cell(cenv->layout_eval(c), LAYOUT);
 	};

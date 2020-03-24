@@ -5,7 +5,13 @@ Klondike, Classic
 
 (VLayout
 	(HLayout
-		(Apply {GOAL OUTPUT}
+		(Apply {
+				GOAL
+				OUTPUT
+				(On-Place
+					(Map st CUSTOM (Soft-Move st this))
+				)
+			}
 			(HLayout
 				(Slot (Filter (Clubs Standard)))
 				(Slot (Filter (Spades Standard)))
@@ -39,12 +45,13 @@ Klondike, Classic
 	)
 	(Apply
 		{
+			CUSTOM
 			(Filter-Open (Alternating (Reverse Standard)))
 			(On-Grab
 				(If (Hidden this) (Flip this this))
 				(Map st GOAL (Soft-Move this st))
 			)
-			#(On-Start (Map st GOAL (Soft-Move this st)))
+			(On-Start (Map st GOAL (Soft-Move this st)))
 		}
 		(HLayout
 			(VStack {(Start 0 1)})

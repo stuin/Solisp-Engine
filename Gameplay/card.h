@@ -13,6 +13,8 @@ namespace Solisp {
  * Individual card data
  */
 
+using std::string;
+
 class Solisp::Card {
 private:
 	cardData data;
@@ -101,6 +103,6 @@ public:
 	Card *reverse(int index=0, Card *last=NULL);
 	Card *shuffle(Card *next);
 	void operator+=(Card *next);
-	void print_stack();
+	string print_stack();
 };
 
