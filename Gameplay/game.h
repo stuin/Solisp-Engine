@@ -6,7 +6,7 @@ namespace Solisp {
 #include <queue>
 #include <stdexcept>
 
-#include "../lisp/game_env.h"
+#include "../Lisp/game_env.h"
 
 /*
  * Created by Stuart Irwin on 29/6/2019.

@@ -1,3 +1,6 @@
-[submodule "lisp/Solisp"]
-	path = lisp/Solisp
-	url = https://github.com/stuin/Solisp
+[submodule "Lisp/Solisp"]
+	path = Lisp/Solisp
+	url = github:/stuin/Solisp
+[submodule "Interface/Skyrmion"]
+	path = Interface/Skyrmion
+	url = github:/stuin/Skyrmion

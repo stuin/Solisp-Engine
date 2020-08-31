@@ -1,2 +1,2 @@
-parent=../lisp/.baseincludes
-files=*.cpp
+parent=.baseincludes
+files=test.cpp

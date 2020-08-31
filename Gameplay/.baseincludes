@@ -1,0 +1,2 @@
+parent=../Lisp/.baseincludes
+files=builder.cpp card.cpp game.cpp
