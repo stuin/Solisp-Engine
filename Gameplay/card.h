@@ -59,6 +59,21 @@ public:
 		return index;
 	}
 
+	//Get animation frame for card
+	int get_frame() {
+		switch((char)data.suit) {
+			case 'C':
+				return data.value - 1;
+			case 'D':
+				return 12 + data.value;
+			case 'H':
+				return 25 + data.value;
+			case 'S':
+				return 38 + data.value;
+		}
+		return 0;
+	}
+
 	//Check what side is up
 	bool is_hidden() {
 		return hidden;
