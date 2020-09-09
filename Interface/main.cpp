@@ -34,13 +34,8 @@ int main(int argc, char const *argv[]) {
 	//Set up example slot
 	std::cout << game.get_stack(14)->get_card()->print_stack() << "\n";
 	StackRenderer mouse(game.get_stack(14));
-	mouse.setPosition(10, 10);
+	mouse.setPosition(100, 100);
 	UpdateList::addNode(&mouse);
-
-	Node node(1);
-	node.setTexture(cardset);
-	node.setPosition(300, 10);
-	UpdateList::addNode(&node);
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1200, 800));
 }
