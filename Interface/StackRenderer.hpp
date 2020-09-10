@@ -13,8 +13,13 @@ private:
     //Card image sizes
     const int tileX = 148;
     const int tileY = 230;
-    const int offsetX = tileX;
-	const int offsetY = tileY / 6;
+
+    //Card rendering adjusters
+    bool spread;
+    int offsetX = tileX;
+	int offsetY = tileY / 6;
+	int overlapX = 0;
+	int overlapY = 5;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const {
     	states.texture = &cardset;
@@ -31,20 +36,34 @@ private:
 public:
 	StackRenderer(Solisp::Stack *stack) : Node(1) {
 		this->stack = stack;
-        vertices.setPrimitiveType(sf::Quads);
+
         setScale(1, 0.75);
+        setPosition(stack->x * 75 + 50, stack->y * 50 + 30);
+        UpdateList::addNode(this);
+
+        spread = stack->get_tag(SPREAD);
+        if(stack->get_tag(SPREAD_HORIZONTAL)) {
+        	offsetX /= 6;
+        	overlapX = 5;
+        	offsetY = tileY;
+        	overlapY = 0;
+        } else if(!spread) {
+        	offsetY = tileY;
+        	overlapY = 0;
+        }
 
         //Set up buffer texture
         buffer = new sf::RenderTexture();
         if(!buffer->create(tileX, 20 * tileY))
             throw std::logic_error("Error creating buffer");
+        vertices.setPrimitiveType(sf::Quads);
 
         reload();
 	}
 
 	void reload() {
-		int i = 0;
-		int j = stack->get_count() - 1;
+		int i = (offsetX == tileX) ? 0 : stack->get_count() - 1;
+		int j = (offsetY == tileY) ? 0 : stack->get_count() - 1;
 		Solisp::Card *card = stack->get_card();
 		resize();
 
@@ -69,7 +88,7 @@ public:
 	        quad[2].position = sf::Vector2f(i * offsetX + tileX, j * offsetY + tileY);
 	        quad[3].position = sf::Vector2f(i * offsetX, j * offsetY + tileY);
 
-			while(card->get_next() != NULL) {
+			while(card->get_next() != NULL && spread) {
 				--j;
 		    	card = card->get_next();
 
@@ -83,15 +102,15 @@ public:
 
 		        // define its 4 texture coordinates
 		        quad[0].texCoords = sf::Vector2f(tu * tileX, tv * tileY);
-		        quad[1].texCoords = sf::Vector2f(tu * tileX + offsetX + 2, tv * tileY);
-		        quad[2].texCoords = sf::Vector2f(tu * tileX + offsetX + 2, tv * tileY + offsetY + 2);
-		        quad[3].texCoords = sf::Vector2f(tu * tileX, tv * tileY + offsetY + 2);
+		        quad[1].texCoords = sf::Vector2f(tu * tileX + offsetX + overlapX, tv * tileY);
+		        quad[2].texCoords = sf::Vector2f(tu * tileX + offsetX + overlapX, tv * tileY + offsetY + overlapY);
+		        quad[3].texCoords = sf::Vector2f(tu * tileX, tv * tileY + offsetY + overlapY);
 
 		        // define its 4 corners
 		        quad[0].position = sf::Vector2f(i * offsetX, j * offsetY);
-		        quad[1].position = sf::Vector2f((i + 1) * offsetX, j * offsetY);
-		        quad[2].position = sf::Vector2f((i + 1) * offsetX, (j + 1) * offsetY);
-		        quad[3].position = sf::Vector2f(i * offsetX, (j + 1) * offsetY);
+		        quad[1].position = sf::Vector2f((i + 1) * offsetX + overlapX, j * offsetY);
+		        quad[2].position = sf::Vector2f((i + 1) * offsetX + overlapX, (j + 1) * offsetY + overlapY);
+		        quad[3].position = sf::Vector2f(i * offsetX, (j + 1) * offsetY + overlapY);
 			}
 	    }
 

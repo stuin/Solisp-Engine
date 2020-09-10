@@ -1,6 +1,7 @@
 //SFML headers
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 //Game headers
 #include "Skyrmion/UpdateList.h"
@@ -31,11 +32,11 @@ int main(int argc, char const *argv[]) {
 	if(!cardset.loadFromFile("res/base_deck.png"))
 		throw std::invalid_argument("Card texture not found");
 
-	//Set up example slot
-	std::cout << game.get_stack(14)->get_card()->print_stack() << "\n";
-	StackRenderer mouse(game.get_stack(14));
-	mouse.setPosition(100, 100);
-	UpdateList::addNode(&mouse);
+	//Set up slots
+	std::vector<StackRenderer> stacks;
+	stacks.reserve(game.get_stack_count());
+	for(int i = 1; i < game.get_stack_count(); i++)
+		stacks.emplace_back(game.get_stack(i));
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1200, 800));
 }
