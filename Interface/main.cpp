@@ -3,11 +3,12 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-//Game headers
+//Engine headers
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
 #include "../Gameplay/filelist.h"
-#include "StackRenderer.hpp"
+
+#include "Pointer.hpp"
 
 #include <X11/Xlib.h>
 
@@ -35,8 +36,14 @@ int main(int argc, char const *argv[]) {
 	//Set up slots
 	std::vector<StackRenderer> stacks;
 	stacks.reserve(game.get_stack_count());
+	stacks.emplace_back(game.get_stack(0), 0);
 	for(int i = 1; i < game.get_stack_count(); i++)
-		stacks.emplace_back(game.get_stack(i));
+		stacks.emplace_back(game.get_stack(i), i);
+
+	//Set up mouse
+	Pointer mouse(&(stacks[0]), &game);
+	UpdateList::setPointer(&mouse);
+	UpdateList::addNode(&mouse);
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1200, 800));
 }

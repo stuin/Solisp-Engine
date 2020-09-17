@@ -1,10 +1,16 @@
 #include "Skyrmion/Node.h"
+#include "enums.h"
+
+#include <algorithm>
 
 sf::Texture cardset;
 
 class StackRenderer : public Node {
-private:
+public:
 	Solisp::Stack *stack;
+
+private:
+	int index;
 
 	//Graphical variables
     sf::VertexArray vertices;
@@ -30,12 +36,13 @@ private:
     void resize() {
     	setSize(sf::Vector2i(tileX, tileY * stack->get_count()));
     	setOrigin(0, 0);
-    	vertices.resize(4 * stack->get_count());
+    	vertices.resize(4 * std::max(stack->get_count(), 1));
     }
 
 public:
-	StackRenderer(Solisp::Stack *stack) : Node(1) {
+	StackRenderer(Solisp::Stack *stack, int index) : Node(index == 0 ? POINTER : STACKS) {
 		this->stack = stack;
+		this->index = index;
 
         setScale(1, 0.75);
         setPosition(stack->x * 75 + 50, stack->y * 50 + 30);
@@ -61,13 +68,19 @@ public:
         reload();
 	}
 
-	void reload() {
-		int i = (offsetX == tileX) ? 0 : stack->get_count() - 1;
-		int j = (offsetY == tileY) ? 0 : stack->get_count() - 1;
-		Solisp::Card *card = stack->get_card();
-		resize();
+	void reload(int count = -1, int skip = 0) {
+		if(count == -1)
+			count = stack->get_count();
+		int i = (offsetX == tileX) ? 0 : count - 1;
+		int j = (offsetY == tileY) ? 0 : count - 1;
 
-		if(card != NULL) {
+		//Get first card
+		Solisp::Card *card = stack->get_card();
+		while(skip-- > 0)
+			card = card->get_next();
+
+		resize();
+		if(card != NULL && count > 0) {
 			// get the current tile
 	        int tileNumber = card->get_frame();
 	        int tu = tileNumber % 13;
@@ -119,5 +132,9 @@ public:
         buffer->draw(vertices, sf::RenderStates(&cardset));
         buffer->display();
         setTexture(buffer->getTexture());
+	}
+
+	int getIndex() {
+		return index;
 	}
 };

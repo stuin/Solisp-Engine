@@ -29,7 +29,7 @@ private:
 	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
-	cell functions[STACKFUNCOUNT] = { cell(0) };
+	cell functions[STACKFUNCOUNT];
 	int max = -1;
 
 	//Current state
@@ -44,7 +44,10 @@ public:
 	int x = -1;
 	int y = -1;
 
-	Stack() {}
+	Stack() {
+		for(int i = 0; i < STACKFUNCOUNT; i++)
+			functions[i] = cell(0);
+	}
 	~Stack() {
 		delete filter;
 		delete stack;

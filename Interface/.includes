@@ -1,6 +1,7 @@
 parent=../Gameplay/.baseincludes
 
-buildargs3=-lsfml-graphics -lsfml-window -lsfml-system -lX11
+buildargs1= -g
+buildargs3=-lsfml-graphics -lsfml-window -lsfml-system -lX11 -g
 files=./*.cpp Skyrmion/*.cpp
 
 testdir=../
