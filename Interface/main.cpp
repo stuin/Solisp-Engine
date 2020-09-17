@@ -34,10 +34,10 @@ int main(int argc, char const *argv[]) {
 		throw std::invalid_argument("Card texture not found");
 
 	//Set up slots
-	std::vector<StackRenderer> stacks;
-	stacks.reserve(game.get_stack_count());
+	STACKCOUNT = game.get_stack_count();
+	stacks.reserve(STACKCOUNT);
 	stacks.emplace_back(game.get_stack(0), 0);
-	for(int i = 1; i < game.get_stack_count(); i++)
+	for(int i = 1; i < STACKCOUNT; i++)
 		stacks.emplace_back(game.get_stack(i), i);
 
 	//Set up mouse

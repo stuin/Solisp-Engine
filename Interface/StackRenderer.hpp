@@ -33,12 +33,6 @@ private:
     	target.draw(vertices, states);
     }
 
-    void resize() {
-    	setSize(sf::Vector2i(tileX, tileY * stack->get_count()));
-    	setOrigin(0, 0);
-    	vertices.resize(4 * std::max(stack->get_count(), 1));
-    }
-
 public:
 	StackRenderer(Solisp::Stack *stack, int index) : Node(index == 0 ? POINTER : STACKS) {
 		this->stack = stack;
@@ -69,20 +63,32 @@ public:
 	}
 
 	void reload(int count = -1, int skip = 0) {
-		if(count == -1)
-			count = stack->get_count();
+		//Calculate proper count
+		if(!spread)
+			count = 1;
+		else {
+			if(count == -1)
+				count = stack->get_count();
+			count -= skip;
+		}
+
+		//Apply sizing
 		int i = (offsetX == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
+		setSize(sf::Vector2i(tileX, tileY * count));
+    	setOrigin(0, 0);
+    	vertices.resize(4 * std::max(count, 1));
 
 		//Get first card
 		Solisp::Card *card = stack->get_card();
 		while(skip-- > 0)
 			card = card->get_next();
 
-		resize();
 		if(card != NULL && count > 0) {
 			// get the current tile
 	        int tileNumber = card->get_frame();
+	        if(card->is_hidden())
+	        	tileNumber = 54;
 	        int tu = tileNumber % 13;
 	        int tv = tileNumber / 13;
 
@@ -102,11 +108,13 @@ public:
 	        quad[3].position = sf::Vector2f(i * offsetX, j * offsetY + tileY);
 
 			while(card->get_next() != NULL && spread) {
-				--j;
+				(overlapY > 0) ? --j : --i;
 		    	card = card->get_next();
 
 				// get the current tile
 		        tileNumber = card->get_frame();
+	        	if(card->is_hidden())
+	        		tileNumber = 54;
 		        tu = tileNumber % 13;
 		        tv = tileNumber / 13;
 
@@ -125,6 +133,11 @@ public:
 		        quad[2].position = sf::Vector2f((i + 1) * offsetX + overlapX, (j + 1) * offsetY + overlapY);
 		        quad[3].position = sf::Vector2f(i * offsetX, (j + 1) * offsetY + overlapY);
 			}
+	    } else {
+	    	vertices[0].position = sf::Vector2f(0, 0);
+            vertices[1].position = sf::Vector2f(0, 0);
+            vertices[2].position = sf::Vector2f(0, 0);
+            vertices[3].position = sf::Vector2f(0, 0);
 	    }
 
         //Draw to buffer

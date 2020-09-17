@@ -1,5 +1,8 @@
 #include "StackRenderer.hpp"
 
+std::vector<StackRenderer> stacks;
+int STACKCOUNT;
+
 class Pointer : public Node {
 private:
 	StackRenderer *mouse;
@@ -16,12 +19,6 @@ public:
 		collideWith(STACKS);
 	}
 
-	void update(double time) override {
-		//Reset mouse
-		//if(pressed && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		//	pressed = false;
-	}
-
 	void collide(Node *object) override {
 		if(pressed) {
 			StackRenderer *stack = (StackRenderer *)object;
@@ -34,15 +31,16 @@ public:
 					mouse->stack = stack->stack;
 					mouse->reload(1);
 					mouse->setHidden(false);
-				}
+				} else
+					reloadAll();
 			} else {
 				//Place down cards
-				if(game->place(stack->getIndex())) {
+				if(game->place(stack->getIndex()))
+					reloadAll();
+				else
 					selected->reload();
-					selected = stack;
-					stack->reload();
-					mouse->setHidden(true);
-				}
+				selected = NULL;
+				mouse->setHidden(true);
 			}
 			pressed = false;
 		}
@@ -54,7 +52,13 @@ public:
 		else if(selected != NULL && event.mouseButton.button == sf::Mouse::Right) {
 			game->cancel();
 			selected->reload();
+			selected = NULL;
 			mouse->setHidden(true);
 		}
+	}
+
+	void reloadAll() {
+		for(int i = 1; i < STACKCOUNT; i++)
+			stacks[i].reload();
 	}
 };
