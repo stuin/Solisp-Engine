@@ -6,8 +6,8 @@
  */
 
 std::string rule_files[] = {
-	"/media/Programming/C/godot/modules/solisp/Games/Klondike.solisp",
-	"/media/Programming/C/godot/modules/solisp/Games/Spider.solisp",
-	"/media/Programming/C/godot/modules/solisp/Games/StreetsAlleys.solisp",
-	"/media/Programming/C/godot/modules/solisp/Games/DevilsGrip.solisp"
+	"Games/Klondike.solisp",
+	"Games/Spider.solisp",
+	"Games/StreetsAlleys.solisp",
+	"Games/DevilsGrip.solisp"
 };

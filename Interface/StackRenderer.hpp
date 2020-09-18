@@ -75,7 +75,7 @@ public:
 		//Apply sizing
 		int i = (offsetX == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
-		setSize(sf::Vector2i(tileX, tileY * std::max(count, 1)));
+		setSize(sf::Vector2i(tileX * std::max(i + 1, 1), tileY * 0.75 * std::max(j + 1, 1)));
 		setOrigin(0, 0);
     	vertices.resize(4 * std::max(count, 1));
 
@@ -164,7 +164,7 @@ public:
 			return 0;
 		int count = std::max(stack->get_count() - 1, 0);
 		if(overlapY > 0)
-			return std::min((int)(pos.y / (offsetY % tileY * 0.75)), count);
-		return std::min((int)(pos.x / (offsetX % tileX * 0.75)), count);
+			return std::min((int)(pos.y / (offsetY * 0.75)), count);
+		return std::min((int)(pos.x / (offsetX * 0.75)), count);
 	}
 };

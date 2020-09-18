@@ -47,6 +47,8 @@ public:
 	void collide(Node *object) override {
 		StackRenderer *stack = (StackRenderer *)object;
 		if(pressed) {
+			if(stack->stack->get_card() != NULL)
+				std::cout << stack->stack->get_card()->print_stack() << "\n";
 			if(!holding) {
 				//Get card count
 				int count = 1;
@@ -54,9 +56,10 @@ public:
 					count = stack->checkOffset(getPosition() - stack->getPosition());
 					count = stack->stack->get_count() - count;
 				}
+				std::cout << "Count: " << count << "\n";
 
 				//Pick up cards
-				if(count > 0 && game->grab(count, stack->getIndex())) {
+				if(game->grab(count, stack->getIndex())) {
 					from = stack;
 					stack->reload(-1, count);
 					mouse->stack = stack->stack;

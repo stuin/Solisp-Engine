@@ -8,9 +8,7 @@ Klondike, Classic
 		(Apply {
 				GOAL
 				OUTPUT
-				(On-Place
-					(Map st CUSTOM (Soft-Move st this))
-				)
+				(On-Place (Map st CUSTOM (Soft-Move st this)))
 			}
 			(HLayout
 				(Slot (Filter (Clubs Standard)))
@@ -32,7 +30,7 @@ Klondike, Classic
 						(Flip-All (+ this 2) this)
 					)
 					(Flip 3 this (+ this 1))
-					#(Map st GOAL (Soft-Move (+ this 1) st))
+					(+ (Map st GOAL (Soft-Move (+ this 1) st)))
 				)
 			)
 			(HStack
@@ -40,7 +38,10 @@ Klondike, Classic
 				(Max 3)
 				(On-Grab (Map st GOAL (Soft-Move this st)))
 			)
-			(Slot INPUT OUTPUT)
+			(Slot
+				INPUT
+				OUTPUT
+			)
 		)
 	)
 	(Apply
@@ -49,7 +50,7 @@ Klondike, Classic
 			(Filter-Open (Alternating (Reverse Standard)))
 			(On-Grab
 				(If (Hidden this) (Flip this this))
-				(Map st GOAL (Soft-Move this st))
+				(+ (Map st GOAL (Soft-Move this st)))
 			)
 			(On-Start (Map st GOAL (Soft-Move this st)))
 		}

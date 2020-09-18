@@ -102,7 +102,7 @@ void Game::apply(Move *move, bool reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {
-			cout << "Running " << env.str_eval(c, true) << "on stack " << from << "\n";
+			//cout << "Running " << env.str_eval(c, true) << "on stack " << from << "\n";
 			env.run(c, from, move);
 		}
 
