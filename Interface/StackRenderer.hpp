@@ -8,6 +8,7 @@ sf::Texture cardset;
 class StackRenderer : public Node {
 public:
 	Solisp::Stack *stack;
+    bool spread;
 
 private:
 	int index;
@@ -21,9 +22,8 @@ private:
     const int tileY = 230;
 
     //Card rendering adjusters
-    bool spread;
     int offsetX = tileX;
-	int offsetY = tileY / 6;
+	int offsetY = tileY / 5;
 	int overlapX = 0;
 	int overlapY = 5;
 
@@ -44,7 +44,7 @@ public:
 
         spread = stack->get_tag(SPREAD);
         if(stack->get_tag(SPREAD_HORIZONTAL)) {
-        	offsetX /= 6;
+        	offsetX /= 5;
         	overlapX = 5;
         	offsetY = tileY;
         	overlapY = 0;
@@ -75,13 +75,13 @@ public:
 		//Apply sizing
 		int i = (offsetX == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
-		setSize(sf::Vector2i(tileX, tileY * count));
-    	setOrigin(0, 0);
+		setSize(sf::Vector2i(tileX, tileY * std::max(count, 1)));
+		setOrigin(0, 0);
     	vertices.resize(4 * std::max(count, 1));
 
 		//Get first card
 		Solisp::Card *card = stack->get_card();
-		while(skip-- > 0)
+		while(skip-- > 0 && card != NULL)
 			card = card->get_next();
 
 		if(card != NULL && count > 0) {
@@ -149,5 +149,22 @@ public:
 
 	int getIndex() {
 		return index;
+	}
+
+	sf::Vector2f getOffset(int count) {
+		if(!spread)
+			count = 0;
+		return sf::Vector2f(
+			(offsetX % tileX) * count,
+			(offsetY % tileY) * count * 0.75);
+	}
+
+	int checkOffset(sf::Vector2f pos) {
+		if(!spread)
+			return 0;
+		int count = std::max(stack->get_count() - 1, 0);
+		if(overlapY > 0)
+			return std::min((int)(pos.y / (offsetY % tileY * 0.75)), count);
+		return std::min((int)(pos.x / (offsetX % tileX * 0.75)), count);
 	}
 };
