@@ -26,7 +26,7 @@ public:
 		this->game = game;
 		collideWith(STACKS);
 		stack->setParent(this);
-		rect.setSize(sf::Vector2f(150, 174));
+		rect.setSize(sf::Vector2f(150, 232));
 		rect.setOutlineColor(sf::Color::Cyan);
 		rect.setFillColor(sf::Color::Transparent);
 		rect.setOutlineThickness(5);

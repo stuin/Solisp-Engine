@@ -38,8 +38,8 @@ public:
 		this->stack = stack;
 		this->index = index;
 
-        setScale(1, 0.75);
-        setPosition(stack->x * 75 + 50, stack->y * 50 + 30);
+        //setScale(1, 0.75);
+        setPosition(stack->x * 75 + 50, stack->y * 75 + 30);
         UpdateList::addNode(this);
 
         spread = stack->get_tag(SPREAD);
@@ -55,7 +55,7 @@ public:
 
         //Set up buffer texture
         buffer = new sf::RenderTexture();
-        if(!buffer->create(tileX, 20 * tileY))
+        if(!buffer->create(tileX + 10 * offsetX, tileY + 20 * offsetY))
             throw std::logic_error("Error creating buffer");
         vertices.setPrimitiveType(sf::Quads);
 
@@ -75,7 +75,7 @@ public:
 		//Apply sizing
 		int i = (offsetX == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
-		setSize(sf::Vector2i(tileX * std::max(i + 1, 1), tileY * 0.75 * std::max(j + 1, 1)));
+		setSize(sf::Vector2i(tileX * std::max(i + 1, 1), tileY * std::max(j + 1, 1)));
 		setOrigin(0, 0);
     	vertices.resize(4 * std::max(count, 1));
 
@@ -93,7 +93,7 @@ public:
 	        int tv = tileNumber / 13;
 
 	        //Display on vertex
-	        sf::Vertex* quad = &vertices[(j + i) * 4];
+	        sf::Vertex* quad = &vertices[(count - 1 - (j + i)) * 4];
 
 	        // define its 4 texture coordinates
 	        quad[0].texCoords = sf::Vector2f(tu * tileX, tv * tileY);
@@ -107,7 +107,7 @@ public:
 	        quad[2].position = sf::Vector2f(i * offsetX + tileX, j * offsetY + tileY);
 	        quad[3].position = sf::Vector2f(i * offsetX, j * offsetY + tileY);
 
-			while(card->get_next() != NULL && spread) {
+			while(card->get_next() != NULL && spread && (j + i) > 0) {
 				(overlapY > 0) ? --j : --i;
 		    	card = card->get_next();
 
@@ -119,7 +119,7 @@ public:
 		        tv = tileNumber / 13;
 
 		        //Display on vertex
-		        quad = &vertices[(j + i) * 4];
+		        quad = &vertices[(count - 1 - (j + i)) * 4];
 
 		        // define its 4 texture coordinates
 		        quad[0].texCoords = sf::Vector2f(tu * tileX, tv * tileY);
@@ -156,7 +156,7 @@ public:
 			count = 0;
 		return sf::Vector2f(
 			(offsetX % tileX) * count,
-			(offsetY % tileY) * count * 0.75);
+			(offsetY % tileY) * count);
 	}
 
 	int checkOffset(sf::Vector2f pos) {
@@ -164,7 +164,7 @@ public:
 			return 0;
 		int count = std::max(stack->get_count() - 1, 0);
 		if(overlapY > 0)
-			return std::min((int)(pos.y / (offsetY * 0.75)), count);
-		return std::min((int)(pos.x / (offsetX * 0.75)), count);
+			return std::min((int)(pos.y / (offsetY)), count);
+		return std::min((int)(pos.x / (offsetX)), count);
 	}
 };

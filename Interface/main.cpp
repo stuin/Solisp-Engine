@@ -20,7 +20,7 @@ int main(int argc, char const *argv[]) {
 		cout << "Game number = " << argv[1] << "\n";
 		game_number = argv[1][0] - '0';
 	} else {
-		cout << "Game number: 0";
+		cout << "Game number = 0\n";
 		//std::cin >> game_number;
 	}
 
@@ -45,5 +45,5 @@ int main(int argc, char const *argv[]) {
 	UpdateList::setPointer(&mouse);
 	UpdateList::addNode(&mouse);
 
-	UpdateList::startEngine("Solitaire", sf::VideoMode(1200, 800));
+	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
 }
