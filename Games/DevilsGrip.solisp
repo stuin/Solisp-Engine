@@ -17,33 +17,45 @@ Devil's Grip, Challenge
 				))
 				(On-Grab
 					(If (== (Count this) 0)
-						(If (> (Count 25) 0)
-							(Move 25 this)
+						(If (> (Count 24) 0)
 							(Flip 24 this)
+							(Move 26 this)
 						)
 					)
 				)
 			}))
 		))
 	)
-	(HLayout
+	(VLayout
+		(HLayout
 			(Slot
 				Start-Extra
 				BUTTON
 				INPUT
 				(On-Grab
-					(If (> (Count (+ this 1)) 0)
-						(Move 3 (+ this 1) (+ this 2))
+					(If (> (Count (+ this 2)) 0)
+						(Move 3 (+ this 2) (+ this 1))
 					)
 					(If (== (Count this) 0)
-						(Flip-All (+ this 2) this)
+						(Flip-All (+ this 1) this)
 					)
-					(Flip 3 this (+ this 1))
+					(Flip 3 this (+ this 2))
 				)
 			)
-			(HStack
+			(Slot
+				BUTTON
 				INPUT
-				(Max 3)
+				(Grab-If (== (Count (- this 1)) 0))
+				(On-Grab
+					(Move 3 (+ this 1) this)
+					(Flip (- (Count this) 1) this (- this 1))
+					(Flip 3 (- this 1) (+ this 1))
+				)
 			)
-			(Slot INPUT OUTPUT)
+		)
+		(HStack
+			INPUT
+			(Max 3)
+		)
+	)
 )

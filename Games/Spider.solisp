@@ -12,7 +12,11 @@ Spider, Classic
 				MULTI
 				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
-				(On-Place (Map st BUTTON (Soft-Move 13 this st)))
+				(On-Place
+					(If (== (Count (- this 1)) 0)
+						(Soft-Move 13 this (- this 1))
+					)
+				)
 			}))
 		)
 		(HLayout
@@ -21,13 +25,15 @@ Spider, Classic
 					INPUT
 					BUTTON
 					(Start 10 0)
-					(Grab-If (* (Map st CUSTOM (> (Count st) 0))))
+					(Grab-If
+						(*
+							(* (Map st CUSTOM (> (Count st) 0)))
+							(> (Count this) 0)
+						)
+					)
 					(On-Grab
-						(Map st CUSTOM (Flip this st))
-						(Move 10 10 9)
-						(Move 10 11 10)
-						(Move 10 12 11)
-						(Move 10 13 12)
+						(+ (Map st CUSTOM (Flip this st)))
+						(+ (Map st (Seq this (+ this 3)) (Move 10 (+ st 1) st)))
 					)
 				})
 				(Clone 4 (Slot {
@@ -44,9 +50,9 @@ Spider, Classic
 			(Filter-Open (Spades (Reverse Standard)))
 			(On-Grab
 				(If (Hidden this) (Flip this this))
-				(Soft-Move 13 7)
+				(Soft-Move 13 this 8)
 			)
-			(On-Place (Soft-Move 13 7))
+			(On-Place (Soft-Move 13 this 8))
 		}
 		(HLayout
 			(Append

@@ -11,7 +11,7 @@ namespace Solisp {
 
 struct layout {
 	int x = 1;
-	int y = 1;
+	int y = 2;
 	int count = 1;
 };
 

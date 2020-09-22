@@ -39,8 +39,14 @@ Klondike, Classic
 				(On-Grab (Map st GOAL (Soft-Move this st)))
 			)
 			(Slot
+				BUTTON
 				INPUT
-				OUTPUT
+				(Grab-If (== (Count (- this 2)) 0))
+				(On-Grab
+					(Move 3 (- this 1) this)
+					(Flip (- (Count this) 1) this (- this 2))
+					(Flip 3 (- this 2) (- this 1))
+				)
 			)
 		)
 	)

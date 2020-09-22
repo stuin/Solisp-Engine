@@ -148,7 +148,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 
 //Set internal values of stack
 layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y) {
-	layout dim = {1, 1, 1};
+	layout dim = {1, 2, 1};
 	stack.set_cords(x, y);
 
 	//Read connected tags
@@ -210,6 +210,6 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 	}
 
 	dim.x += 1;
-	dim.y += 3;
+	dim.y += 2;
 	return dim;
 }
