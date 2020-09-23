@@ -6,44 +6,30 @@
 //Engine headers
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
-#include "../Gameplay/filelist.h"
 
 #include "Pointer.hpp"
+#include "Menus/PlayMenu.hpp"
 
 #include <X11/Xlib.h>
 
 int main(int argc, char const *argv[]) {
 	XInitThreads();
 
-	int game_number = 0;
-	if(argc > 1) {
-		cout << "Game number = " << argv[1] << "\n";
-		game_number = argv[1][0] - '0';
-	} else {
-		cout << "Game number = 0\n";
-		//std::cin >> game_number;
-	}
-
-	//Initialize game
-	Solisp::Game game;
-	Solisp::Builder *builder = new Solisp::Builder(rule_files[game_number]);
-	game.setup(builder);
-	game.update();
-
+	//Load important resources
 	if(!cardset.loadFromFile("res/base_deck.png"))
 		throw std::invalid_argument("Card texture not found");
+	if(!font.loadFromFile("/usr/share/fonts/TTF/DejaVuSerif.ttf"))
+		throw std::invalid_argument("Font file not found");
 
-	//Set up slots
-	STACKCOUNT = game.get_stack_count();
-	stacks.reserve(STACKCOUNT);
-	stacks.emplace_back(game.get_stack(0), 0);
-	for(int i = 1; i < STACKCOUNT; i++)
-		stacks.emplace_back(game.get_stack(i), i);
+	//Draw background
+	sf::RectangleShape rect(sf::Vector2f(1930, 1090));
+	rect.setFillColor(sf::Color(7, 99, 36));
+	DrawNode background(rect, BACKGROUND);
+	UpdateList::addNode(&background);
 
-	//Set up mouse
-	Pointer mouse(&(stacks[0]), &game);
-	UpdateList::setPointer(&mouse);
-	UpdateList::addNode(&mouse);
+	//Add menu
+	PlayMenu menu;
+	UpdateList::addNode(&menu);
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
 }

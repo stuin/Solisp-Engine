@@ -1,6 +1,7 @@
 #include "StackRenderer.hpp"
 
 std::vector<StackRenderer> stacks;
+Solisp::Game game;
 int STACKCOUNT;
 
 class Pointer : public Node {
@@ -26,6 +27,8 @@ public:
 		this->game = game;
 		collideWith(STACKS);
 		stack->setParent(this);
+
+		//Set up rectangle
 		rect.setSize(sf::Vector2f(150, 232));
 		rect.setOutlineColor(sf::Color::Cyan);
 		rect.setFillColor(sf::Color::Transparent);
@@ -101,7 +104,7 @@ public:
 			selectionTime = 2;
 	}
 
-	void recieveEvent(sf::Event event) {
+	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
 		if(event.mouseButton.button == sf::Mouse::Left)
 			pressed = true;
 		else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
