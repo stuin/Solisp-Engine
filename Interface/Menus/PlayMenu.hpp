@@ -13,7 +13,7 @@ public:
 	PlayMenu() : DrawNode(fade, FADE) {
 
 		//Set up faded background
-		fade.setSize(sf::Vector2f(450, 1090));
+		fade.setSize(sf::Vector2f(700, 1090));
 		fade.setFillColor(sf::Color(0, 0, 0, 50));
 
 		//Set up game list

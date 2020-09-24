@@ -42,6 +42,9 @@ void CardEnviroment::build_library_cards() {
 		standard.push_back(cell("N" + std::to_string(i), CARD));
 	set("Standard", cell(standard, DECK));
 
+	sexpr jokers = {cell("J1"), cell("J1") };
+	set("Jokers", cell(jokers, DECK));
+
 	//Read dealer structure in as string
 	string dealer = "(HLayout (Slot Start-Extra BUTTON INPUT (On-Grab(Flip 3 (+ this 1) (+ this 2)) ";
 	dealer += "(If (== (Count this) 0) (Move-All (+ this 2) this)) (Flip 3 (+ this 1) (+ this 2))))";

@@ -10,19 +10,25 @@ private:
 	std::string file;
 
 public:
-	StartButton(std::string file, int y, Node *parent) : ButtonNode(NULL, rect, MENU, sf::Vector2i(400, 60), parent) {
+	StartButton(std::string file, int y, Node *parent) : ButtonNode(NULL, rect, MENU, sf::Vector2i(600, 60), parent) {
 		this->file = file;
-		setPosition(225, y);
+		setPosition(350, y);
 		std::cout << file << "\n";
 
 		//Set up button outline
-		rect.setSize(sf::Vector2f(400, 60));
+		rect.setSize(sf::Vector2f(600, 60));
 		rect.setFillColor(sf::Color(0, 0, 0, 200));
 
+		//Read game title
+		std::ifstream input(file);
+		std::string title;
+		std::getline(input, title);
+
 		//Set up text
-		text.setString(file);
+		text.setString(title);
 		text.setFont(font);
-		textNode = new DrawNode(text, TEXT, sf::Vector2i(400,60), this);
+		textNode = new DrawNode(text, TEXT, sf::Vector2i(600,60), this);
+		textNode->setPosition(25, 0);
 
 		UpdateList::addNode(textNode);
 		UpdateList::addNode(this);
@@ -41,12 +47,8 @@ public:
 		for(int i = 1; i < STACKCOUNT; i++)
 			stacks.emplace_back(game.get_stack(i), i);
 
-		//Set up mouse
-		Pointer *mouse = new Pointer(&(stacks[0]), &game);
-		UpdateList::setPointer(mouse);
-		UpdateList::addNode(mouse);
-
-		//Hide menu
+		//Final setup
+		UpdateList::addNode(new Pointer(&(stacks[0]), &game));
 		getParent()->setHidden(true);
 	}
 };

@@ -19,6 +19,7 @@ private:
 
 	void build_library_game();
 
+	int stack = 0;
 	char STACKCOUNT;
 	Solisp::Stack *stacks;
 	Move *current;
@@ -51,7 +52,9 @@ public:
 		//Update enviroment
 		bool output = true;
 		this->current = current;
+		set("prev", this->stack);
 		set("this", stack);
+		this->stack = stack;
 
 		//Attempt evaluation
 		try {

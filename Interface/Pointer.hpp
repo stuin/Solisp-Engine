@@ -33,6 +33,9 @@ public:
 		rect.setOutlineColor(sf::Color::Cyan);
 		rect.setFillColor(sf::Color::Transparent);
 		rect.setOutlineThickness(5);
+
+		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+		UpdateList::addListener(this, sf::Event::MouseMoved);
 	}
 
 	void update(double time) {
@@ -59,7 +62,6 @@ public:
 					count = stack->checkOffset(getPosition() - stack->getPosition());
 					count = stack->stack->get_count() - count;
 				}
-				std::cout << "Count: " << count << "\n";
 
 				//Pick up cards
 				if(game->grab(count, stack->getIndex())) {
@@ -105,18 +107,21 @@ public:
 	}
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		if(event.mouseButton.button == sf::Mouse::Left)
-			pressed = true;
-		else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
-			game->cancel();
-			from->reload();
-			from = NULL;
-			to = NULL;
-			mouse->setPosition(0, 0);
-			mouse->setParent(this);
-			mouse->setHidden(true);
-			holding = false;
-		}
+		if(event.type == sf::Event::MouseButtonPressed) {
+			if(event.mouseButton.button == sf::Mouse::Left)
+				pressed = true;
+			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
+				game->cancel();
+				from->reload();
+				from = NULL;
+				to = NULL;
+				mouse->setPosition(0, 0);
+				mouse->setParent(this);
+				mouse->setHidden(true);
+				holding = false;
+			}
+		} else if(event.type == sf::Event::MouseMoved)
+			setPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
 	}
 
 	void reloadAll() {

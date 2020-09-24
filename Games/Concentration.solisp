@@ -1,0 +1,34 @@
+Concentration, Normal
+
+(Append (Hearts Standard) (Diamonds Standard) Jokers)
+{(Max 1)}
+
+(HLayout
+	(HLayout (Clone 7
+		(VLayout (Clone 4
+			(Slot
+				BUTTON
+				(Start 1 0)
+				(Filter (Append
+					Jokers
+					(Map card (Seq 1 13)
+						(Red {card card})
+					)
+				))
+				(On-Grab
+					(Flip this this)
+					(If (* (Count this) (Count prev))
+						(If (Not (Hidden prev))
+							(If (Soft-Move this prev)
+								(Move 2 prev 29)
+								(Flip prev prev)
+							)
+						)
+						(Flip prev prev)
+					)
+				)
+			)
+		))
+	))
+	(Slot INPUT OUTPUT GOAL)
+)

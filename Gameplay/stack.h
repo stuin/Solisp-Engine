@@ -15,7 +15,7 @@ namespace Solisp {
 
 using std::bitset;
 
-#define MAXSTACKCOUNT 30
+#define MAXSTACKCOUNT 60
 #define STACKTAGCOUNT 9
 #define STACKFUNCOUNT 6
 
