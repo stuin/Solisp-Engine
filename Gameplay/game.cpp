@@ -29,7 +29,7 @@ void Game::update() {
 		for(int i = 1; i < STACKCOUNT; i++) {
 			cell c = stack[i].get_function(ONSTART);
 			if(c.type == EXPR)
-				env.run(c, i, current);
+				env.run(c, i, -1, current);
 		}
 		started = true;
 		update();
@@ -103,13 +103,13 @@ void Game::apply(Move *move, bool reverse) {
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {
 			//cout << "Running " << env.str_eval(c, true) << "on stack " << from << "\n";
-			env.run(c, from, move);
+			env.run(c, from, to, move);
 		}
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
 		if(c.type == EXPR)
-			env.run(c, to, move);
+			env.run(c, to, from, move);
 	}
 }
 
@@ -205,7 +205,7 @@ bool Game::grab(int num, int from) {
 
 	//Check if stack has function defined
 	cell c = stack[from].get_function(GRABIF);
-	if(c.type == EXPR && !env.run(c, from, current))
+	if(c.type == EXPR && !env.run(c, from, -1, current))
 		return false;
 
 	//Set picked cards
@@ -230,7 +230,7 @@ bool Game::test(int to) {
 	if(to == from || stack[to].matches(count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
-		if(c.type == EXPR && !env.run(c, to, current))
+		if(c.type == EXPR && !env.run(c, to, from, current))
 			return false;
 
 		tested = to;

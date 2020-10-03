@@ -10,6 +10,7 @@ Streets and Alleys, Normal
 			(Start 0 7)
 			(Filter-Open (Reverse Standard))
 			(On-Grab (Map st GOAL (Soft-Move this st)))
+			(On-Start (Map st GOAL (Soft-Move this st)))
 		}))
 	)
 	(Apply {GOAL OUTPUT} (VLayout
@@ -23,6 +24,8 @@ Streets and Alleys, Normal
 			(Start 0 6)
 			(Filter-Open (Reverse Standard))
 			(On-Grab (Map st GOAL (Soft-Move this st)))
+			(On-Start (Map st GOAL (Soft-Move this st)))
 		}))
 	)
+	(Slot {(Max 1)})
 )

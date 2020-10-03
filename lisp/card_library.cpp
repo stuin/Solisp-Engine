@@ -28,8 +28,6 @@ cell CardEnviroment::buildLayout(layout_type index) {
 		while(pos != end)
 			output.push_back(*pos++);
 
-		//output.push_back(cell(array, LIST));
-
 		return cell(output, LAYOUT);
 	});
 }

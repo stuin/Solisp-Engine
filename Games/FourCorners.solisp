@@ -1,0 +1,123 @@
+Four Corners, Normal
+
+(Four-Suit Standard)
+{(Max 1)}
+
+(VLayout
+	(HLayout
+		(Slot
+			GOAL
+			(Place-If
+				(If (> (Count this) 0)
+					(If (>= (Mutate :x (- (Value this) (Value from))) -2)
+						(If (== (Suit this) (Suit from))
+							(<= x 2)
+							(* (>= x -1) (<= x 1))
+						)
+						false
+					)
+					true
+				)
+			)
+			(On-Grab
+				(If (> (Count this) 0)
+					(Move-All this to)
+				)
+			)
+		)
+		(HStack
+			INPUT
+			(Start 0 6)
+			(Max 7)
+			(Grab-If true)
+			(On-Grab
+				(If (< (+ (Count this) 1) (Count (+ this 4)))
+					(Move (+ this 4) this)
+				)
+			)
+		)
+		(Slot
+			(Place-If
+				(If (> (Count this) 0)
+					(If (>= (Mutate :x (- (Value this) (Value from))) -2)
+						(If (== (Suit this) (Suit from))
+							(<= x 2)
+							(* (>= x -1) (<= x 1))
+						)
+						false
+					)
+					true
+				)
+			)
+			(On-Grab
+				(If (> (Count this) 0)
+					(Move-All this to)
+				)
+			)
+		)
+		(Slot
+			Start-Extra
+			BUTTON
+			INPUT
+			(On-Grab
+				(If (> (Count this) 0)
+					(+
+						(Flip this (- this 2))
+						(Flip this (+ this 2))
+					)
+				)
+			)
+		)
+	)
+	(HLayout
+		(Slot
+			(Place-If
+				(If (> (Count this) 0)
+					(If (>= (Mutate :x (- (Value this) (Value from))) -2)
+						(If (== (Suit this) (Suit from))
+							(<= x 2)
+							(* (>= x -1) (<= x 1))
+						)
+						false
+					)
+					true
+				)
+			)
+			(On-Grab
+				(If (> (Count this) 0)
+					(Move-All this to)
+				)
+			)
+		)
+		(HStack
+			INPUT
+			(Start 0 6)
+			(Max 7)
+			(Grab-If true)
+			(On-Grab
+				(If (< (+ (Count this) 1) (Count (- this 4)))
+					(Move (- this 4) this)
+				)
+			)
+		)
+		(Slot
+			(Place-If
+				(If (> (Count this) 0)
+					(If (>= (Mutate :x (- (Value this) (Value from))) -2)
+						(If (== (Suit this) (Suit from))
+							(<= x 2)
+							(* (>= x -1) (<= x 1))
+						)
+						false
+					)
+					true
+				)
+			)
+			(On-Grab
+				(If (> (Count this) 0)
+					(Move-All this to)
+				)
+			)
+		)
+	)
+)

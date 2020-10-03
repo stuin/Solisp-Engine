@@ -1,7 +1,11 @@
 Devil's Grip, Challenge
 
 (Clone 2 (Four-Suit {2 3 4 5 6 7 8 9 10 11 12 13}))
-{(Max 1)}
+(Filter-Open (Append
+	(Four-Suit {2 5 8 11})
+	(Four-Suit {3 6 9 12})
+	(Four-Suit {4 7 10 13})
+)
 
 (HLayout
 	(VLayout
@@ -14,7 +18,7 @@ Devil's Grip, Challenge
 					(Four-Suit {2 5 8 11})
 					(Four-Suit {3 6 9 12})
 					(Four-Suit {4 7 10 13})
-				))
+				)
 				(On-Grab
 					(If (== (Count this) 0)
 						(If (> (Count 24) 0)

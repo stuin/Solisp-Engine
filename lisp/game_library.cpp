@@ -69,6 +69,23 @@ void GameEnviroment::build_library_game() {
 		return cell(genv->get_stack(stack)->get_count());
 	}));
 
+	set("Value", cell([](Enviroment *env, marker pos, marker end) {
+		int stack = env->num_eval(*pos++);
+		DONE;
+		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		if(card != NULL)
+			return cell(card->get_data().value);
+		return cell(0);
+	}));
+	set("Suit", cell([](Enviroment *env, marker pos, marker end) {
+		int stack = env->num_eval(*pos++);
+		DONE;
+		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		if(card != NULL)
+			return cell(card->get_data().suit);
+		return cell(0);
+	}));
+
 	//Check if top card is hidden
 	set("Hidden", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);

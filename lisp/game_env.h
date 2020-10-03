@@ -45,13 +45,15 @@ public:
 	}
 
 	//Set this value before evaluating
-	bool run(cell c, int stack, Move *current) {
+	bool run(cell c, int stack, int from, Move *current) {
 		if(std::get<sexpr>(c.content).size() == 0)
 			return false;
 
 		//Update enviroment
 		bool output = true;
 		this->current = current;
+		set("from", from);
+		set("to", from);
 		set("prev", this->stack);
 		set("this", stack);
 		this->stack = stack;
