@@ -6,6 +6,7 @@ Streets and Alleys, Normal
 (HLayout
 	(VLayout
 		(Clone 4 (HStack {
+			CUSTOM
 			MIRRORED
 			(Start 0 7)
 			(Filter-Open (Reverse Standard))
@@ -13,14 +14,20 @@ Streets and Alleys, Normal
 			(On-Start (Map st GOAL (Soft-Move this st)))
 		}))
 	)
-	(Apply {GOAL OUTPUT} (VLayout
-		(Slot (Filter (Clubs Standard)))
-		(Slot (Filter (Hearts Standard)))
-		(Slot (Filter (Spades Standard)))
-		(Slot (Filter (Diamonds Standard)))
+	(Apply {
+			GOAL
+			OUTPUT
+			(On-Place (Map st CUSTOM (Soft-Move st this)))
+		} (VLayout
+			(Slot (Filter (Clubs Standard)))
+			(Slot (Filter (Hearts Standard)))
+			(Slot (Filter (Spades Standard)))
+			(Slot (Filter (Diamonds Standard))
+		)
 	))
 	(VLayout
 		(Clone 4 (HStack {
+			CUSTOM
 			(Start 0 6)
 			(Filter-Open (Reverse Standard))
 			(On-Grab (Map st GOAL (Soft-Move this st)))

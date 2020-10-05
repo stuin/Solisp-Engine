@@ -1,5 +1,4 @@
-#include "Skyrmion/Node.h"
-#include "enums.h"
+#include "main.h"
 
 #include <algorithm>
 

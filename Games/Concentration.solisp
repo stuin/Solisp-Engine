@@ -1,6 +1,6 @@
 Concentration, Normal
 
-(Append (Hearts Standard) (Diamonds Standard) Jokers)
+(Append (Hearts Standard) (Spades Standard) Jokers)
 {(Max 1)}
 
 (HLayout

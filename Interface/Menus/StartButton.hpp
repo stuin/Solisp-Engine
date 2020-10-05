@@ -1,37 +1,23 @@
-#include "../Skyrmion/UtilNodes.hpp"
+//Engine headers
+#include "../Skyrmion/UpdateList.h"
+#include "../../Gameplay/game.h"
 
-sf::Font font;
+#include "Button.hpp"
 
-class StartButton : public ButtonNode {
+class StartButton : public Button {
 private:
-	sf::Text text;
-	DrawNode *textNode;
-	sf::RectangleShape rect;
-	std::string file;
+	string file;
 
 public:
-	StartButton(std::string file, int y, Node *parent) : ButtonNode(NULL, rect, MENU, sf::Vector2i(600, 60), parent) {
+	StartButton(string file, int y, Node *parent) : Button(file, y, parent) {
 		this->file = file;
-		setPosition(350, y);
 		std::cout << file << "\n";
-
-		//Set up button outline
-		rect.setSize(sf::Vector2f(600, 60));
-		rect.setFillColor(sf::Color(0, 0, 0, 200));
 
 		//Read game title
 		std::ifstream input(file);
 		std::string title;
 		std::getline(input, title);
-
-		//Set up text
-		text.setString(title);
-		text.setFont(font);
-		textNode = new DrawNode(text, TEXT, sf::Vector2i(600,60), this);
-		textNode->setPosition(25, 0);
-
-		UpdateList::addNode(textNode);
-		UpdateList::addNode(this);
+		setText(title);
 	}
 
 	void click() override {
@@ -49,6 +35,6 @@ public:
 
 		//Final setup
 		UpdateList::addNode(new Pointer(&(stacks[0]), &game));
-		getParent()->setHidden(true);
+		getParent()->getParent()->setHidden(true);
 	}
 };
