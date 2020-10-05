@@ -28,6 +28,8 @@ private:
 	int to = -1;
 	int count = 0;
 	int tested = -1;
+
+	//Other values
 	bool started = false;
 
 	//Apply current moves to stack array
@@ -49,10 +51,10 @@ public:
 	Card *setup(Builder *builder);
 	void update();
 
-	//General place method
-	bool grab(int num, int from);
-	bool test(int to);
-	bool place(int to);
+	//General interaction methods
+	bool grab(int num, int from, int user=0);
+	bool test(int to, int user=0);
+	bool place(int to, int user=0);
 
 	//Clear hand
 	void cancel();
@@ -60,6 +62,9 @@ public:
 	//History management
 	void undo();
 	void redo();
+	Move *get_current() {
+		return current;
+	}
 
 	//Stack access
 	int get_stack_count() {

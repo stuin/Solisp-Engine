@@ -166,7 +166,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 }
 
 //Pick up cards from stack
-bool Game::grab(int num, int from) {
+bool Game::grab(int num, int from, int user) {
 	this->to = -1;
 	this->from = -1;
 	this->count = -1;
@@ -219,7 +219,7 @@ bool Game::grab(int num, int from) {
 }
 
 //Test placement of cards from selected hand
-bool Game::test(int to) {
+bool Game::test(int to, int user) {
 	//Check if cards are in hand
 	if(this->from == -1 || this->count == -1 || this->to != -1 || to > STACKCOUNT) {
 		cancel();
@@ -241,7 +241,7 @@ bool Game::test(int to) {
 	return false;
 }
 
-bool Game::place(int to) {
+bool Game::place(int to, int user) {
 	//Check for proper move
 	if(to != from && (tested == to || test(to))) {
 		*current += new Move(count, from, to, true, false, current);

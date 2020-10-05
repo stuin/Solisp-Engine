@@ -4,6 +4,10 @@ namespace Solisp {
 
 #include <bitset>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/bitset.hpp>
+
 /*
  * Created by Stuart Irwin on 4/9/2019.
  * History of solitare game
@@ -13,8 +17,16 @@ namespace Solisp {
 
 enum move_tags { PLAYER, FLIP, VALID, LOOP };
 
+static unsigned int max_id = 0;
+
 class Solisp::Move {
 private:
+	friend class boost::serialization::access;
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        ar & count & from & to & tags & id;
+    }
+
 	//Card movements
 	int count;
 	int from;
@@ -24,6 +36,7 @@ private:
 	//List references
 	Move *next = NULL;
 	Move *last;
+	unsigned int id;
 
 	//Check for circular card movement
 	bool check_loop(Move *other) {
@@ -37,6 +50,8 @@ private:
 	}
 
 public:
+	Move() { }
+
 	//Build new move
 	Move(int count, int from, int to, bool player, bool flip, Move *last) {
 		//Set general move
@@ -51,6 +66,7 @@ public:
 
 		//Link to previous
 		this->last = last;
+		this->id = ++max_id;
 		//tags[LOOP] = check_loop(last);
 	}
 
@@ -124,6 +140,10 @@ public:
 
 	int get_to() {
 		return to;
+	}
+
+	unsigned int get_id() {
+		return id;
 	}
 
 	Move *get_next() {
