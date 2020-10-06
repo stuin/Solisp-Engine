@@ -28,9 +28,9 @@ public:
 
 		//Set up slots
 		STACKCOUNT = game.get_stack_count();
-		stacks.reserve(STACKCOUNT);
+		stacks.reserve((int)STACKCOUNT);
 		stacks.emplace_back(game.get_stack(0), 0);
-		for(int i = 1; i < STACKCOUNT; i++)
+		for(unc i = 1; i < STACKCOUNT; i++)
 			stacks.emplace_back(game.get_stack(i), i);
 
 		//Final setup

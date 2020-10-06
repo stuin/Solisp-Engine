@@ -10,7 +10,7 @@ public:
 	bool spread;
 
 private:
-	int index;
+	unc index;
 
 	//Graphical variables
 	sf::VertexArray vertices;
@@ -33,7 +33,7 @@ private:
 	}
 
 public:
-	StackRenderer(Solisp::Stack *stack, int index) : Node(index == 0 ? POINTER : STACKS) {
+	StackRenderer(Solisp::Stack *stack, unc index) : Node(index == 0 ? POINTER : STACKS) {
 		this->stack = stack;
 		this->index = index;
 
@@ -67,13 +67,13 @@ public:
 		reload();
 	}
 
-	void reload(int count = -1, int skip = 0) {
+	void reload(int count = 0, int skip = 0) {
 		//Calculate proper count
 		if(!spread)
 			count = 1;
 		else {
-			if(count == -1)
-				count = stack->get_count();
+			if(count == 0)
+				count = (int)stack->get_count();
 			count -= skip;
 		}
 
@@ -159,7 +159,7 @@ public:
 		setTexture(buffer->getTexture());*/
 	}
 
-	int getIndex() {
+	unc getIndex() {
 		return index;
 	}
 
@@ -178,7 +178,7 @@ public:
 	int checkOffset(sf::Vector2f pos) {
 		if(!spread)
 			return 0;
-		int count = std::max(stack->get_count() - 1, 0);
+		int count = std::max((int)stack->get_count() - 1, 0);
 		if(overlapY != 0)
 			return bet(0, (int)(pos.y / offsetY), count);
 		if(stack->get_tag(SPREAD_REVERSE))

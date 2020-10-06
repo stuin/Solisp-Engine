@@ -25,7 +25,7 @@ public:
 
 		//Send initial setup message
 		boost::asio::async_write(socket_, boost::asio::buffer(setup),
-			boost::bind(&tcp_connection::handle_read, shared_from_this(),
+			boost::bind(&tcp_connection::handle_write, shared_from_this(),
 			boost::asio::placeholders::error));
 	}
 
@@ -45,15 +45,6 @@ private:
 
 	void handle_read(const boost::system::error_code& error) {
 		if(!error) {
-			//Read player move
-			boost::asio::async_read(socket_, boost::asio::buffer(inbound),
-	        	boost::bind(&tcp_connection::handle_read, shared_from_this(),
-	            boost::asio::placeholders::error));
-		}
-	}
-
-	void handle_update(const boost::system::error_code& error) {
-		if(!error) {
 			if(inbound[0] == -1)
 				game->place(inbound[1], user);
 			else
@@ -63,17 +54,17 @@ private:
 		}
 	}
 
-	void send_update() {
-		if(current == game->get_current()) {
-			syncing = false;
-			return;
-		}
+	void handle_update(const boost::system::error_code& error) {
+		if(!error)
+			send_update();
+	}
 
+	void send_update() {
 		//Shift backwards if needed
-		while(!current->get_tag(VALID))
+		while(current != NULL && !current->get_tag(VALID))
 			current = current->get_last();
 
-		if(current->get_next() != NULL) {
+		if(current->get_next() != NULL && current != game->get_current()) {
 			current = current->get_next();
 
 			//Serialize
@@ -81,10 +72,17 @@ private:
 			boost::archive::text_oarchive archive(archive_stream);
 			//archive << *current;
 
-			//Send
+			//Send move
 			boost::asio::async_write(socket_, boost::asio::buffer(archive_stream.str()),
 				boost::bind(&tcp_connection::handle_update, shared_from_this(),
 				boost::asio::placeholders::error));
+		} else {
+			syncing = false;
+
+			//Read
+			boost::asio::async_read(socket_, boost::asio::buffer(inbound),
+	        	boost::bind(&tcp_connection::handle_read, shared_from_this(),
+	            boost::asio::placeholders::error));
 		}
 	}
 
@@ -98,36 +96,4 @@ private:
 	bool syncing = false;
 	Solisp::Move *current = NULL;
 	Solisp::Game *game = NULL;
-};
-
-class tcp_server {
-public:
-	tcp_server(boost::asio::io_context& io_context, Solisp::Game *game, string setup)
-		: io_context_(io_context), acceptor_(io_context, tcp::endpoint(tcp::v4(), 23))	{
-
-		this->game = game;
-		this->setup = setup;
-    	start_accept();
-  	}
-
-private:
-	void start_accept() {
-	    tcp_connection::pointer new_connection = tcp_connection::create(io_context_);
-    	acceptor_.async_accept(new_connection->socket(),
-    		boost::bind(&tcp_server::handle_accept, this, new_connection,
-    		boost::asio::placeholders::error));
-	}
-
-	void handle_accept(tcp_connection::pointer new_connection, const boost::system::error_code& error) {
-		if(!error) {
-			new_connection->start(game, ++users, setup);
-		}
-		start_accept();
-	}
-
-	boost::asio::io_context& io_context_;
-	tcp::acceptor acceptor_;
-	Solisp::Game *game;
-	string setup;
-	int users = 0;
 };

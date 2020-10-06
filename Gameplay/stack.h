@@ -30,16 +30,16 @@ private:
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
 	cell functions[STACKFUNCOUNT];
-	int max = -1;
+	unsigned int max = 0;
 
 	//Current state
 	Card *stack = NULL;
-	int count = 0;
+	unsigned int count = 0;
 
 public:
 	//Starting count
-	int start_hidden = 0;
-	int start_shown = 0;
+	unsigned int start_hidden = 0;
+	unsigned int start_shown = 0;
 
 	int x = -1;
 	int y = -1;
@@ -65,12 +65,12 @@ public:
 		start_hidden = hidden;
 		start_shown = shown;
 	}
-	void add_count(int count) {
+	void add_count(unsigned int count) {
 		this->count += count;
 	}
 
 	//General variable setters
-	void set_max(int max) {
+	void set_max(unsigned int max) {
 		this->max = max;
 	}
 	void set_card(Card *card) {
@@ -85,7 +85,7 @@ public:
 	}
 
 	//Check if new cards can be placed on stack
-	bool matches(int count, Card *newCard) {
+	bool matches(unsigned int count, Card *newCard) {
 		//Check if INPUT or if inserting multiple into single stack
 		if(tags[INPUT] || (!tags[SPREAD] && !tags[SPREAD_FAKE] && count > 1))
 			return false;
@@ -106,10 +106,10 @@ public:
 	}
 
 	//General variable getters
-	int get_max() {
+	unsigned int get_max() {
 		return max;
 	}
-	int get_count() {
+	unsigned int get_count() {
 		return count;
 	}
 	Card *get_card() {

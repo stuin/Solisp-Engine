@@ -49,7 +49,7 @@ Card *Builder::make_card(const cell &source, bool shuffled) {
 	sexpr deck = env.deck_eval(source);
 	//shuffled = false;
 
-	for(int i = deck.size(); i > 0; i--) {
+	for(unsigned int i = deck.size(); i > 0; i--) {
 		cell card = deck[i - 1];
 
 		//Initial card
@@ -194,7 +194,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 			dim.x = 7;
 
 			//Adjust for maximum
-			if(stack.get_max() != -1)
+			if(stack.get_max() != 0)
 				dim.x = stack.get_max();
 			break;
 		case VStack:
@@ -202,7 +202,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 			dim.y = 7;
 
 			//Adjust for maximum
-			if(stack.get_max() != -1)
+			if(stack.get_max() != 0)
 				dim.y = stack.get_max();
 			break;
 		default:

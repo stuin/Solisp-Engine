@@ -66,7 +66,7 @@ void GameEnviroment::build_library_game() {
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
 		DONE;
-		return cell(genv->get_stack(stack)->get_count());
+		return cell((int)genv->get_stack(stack)->get_count());
 	}));
 
 	set("Value", cell([](Enviroment *env, marker pos, marker end) {

@@ -26,7 +26,7 @@ void Game::update() {
 
 	//Check for game start functions
 	if(!started) {
-		for(int i = 1; i < STACKCOUNT; i++) {
+		for(unc i = 1; i < STACKCOUNT; i++) {
 			cell c = stack[i].get_function(ONSTART);
 			if(c.type == EXPR)
 				env.run(c, i, -1, current);
@@ -38,12 +38,12 @@ void Game::update() {
 
 //Apply single card move
 void Game::apply(Move *move, bool reverse) {
-	int from = move->get_from();
-	int to = move->get_to();
-	int count = move->get_count();
+	unc from = move->get_from();
+	unc to = move->get_to();
+	unsigned int count = move->get_count();
 	bool flip = move->get_tag(FLIP);
 
-	int realCount = 1;
+	unsigned int realCount = 1;
 
 	//Swap destinations for undo
 	if(reverse) {
@@ -98,11 +98,10 @@ void Game::apply(Move *move, bool reverse) {
 	}
 
 	//Check for additional functions and moves
-	if(move->get_tag(PLAYER) && !reverse) {
+	if(move->is_player() && !reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {
-			//cout << "Running " << env.str_eval(c, true) << "on stack " << from << "\n";
 			env.run(c, from, to, move);
 		}
 
@@ -116,39 +115,37 @@ void Game::apply(Move *move, bool reverse) {
 //Deal out cards to starting positions
 void Game::deal() {
 	int remaining = 0;
-	int overflowSlot = -1;
+	unc overflowSlot = 0;
 
 	//Initial check of slots
-	for(int i = 1; i < STACKCOUNT; i++) {
-		if(stack[i].start_hidden == -1)
+	for(unc i = 1; i < STACKCOUNT; i++) {
+		if(stack[i].start_hidden == (unsigned int)-1)
 			overflowSlot = i;
 		else
 			remaining += stack[i].start_hidden + stack[i].start_shown;
 	}
-	//std::cout << "Overflow slot: " << overflowSlot << "\n";
 
 	//Loop until all placed
 	while(remaining > 0) {
 		//For each slot
-		for(int j = 1; j < STACKCOUNT; j++) {
+		for(unc j = 1; j < STACKCOUNT; j++) {
 			if(j != overflowSlot && stack[j].start_hidden + stack[j].start_shown > 0) {
 				remaining--;
 
 				if(stack[j].start_hidden > 0) {
 					stack[j].start_hidden--;
-					*current += new Move(1, 0, j, false, false, current);
+					*current += new Move(0, j, 1, 0, false, current);
 				} else if(stack[j].start_shown > 0) {
 					stack[j].start_shown--;
-					*current += new Move(1, 0, j, false, true, current);
+					*current += new Move(0, j, 1, 0, true, current);
 				}
 			}
 		}
-		//std::cout << remaining << " cards left\n";
 	}
 
 	//Move remaining cards to overflow
-	if(overflowSlot != -1)
-		*current += new Move(1000, 0, overflowSlot, false, false, current);
+	if(overflowSlot != 0)
+		*current += new Move(0, overflowSlot, -1, 0, false, current);
 }
 
 //Call all setup functions
@@ -166,35 +163,32 @@ Solisp::Card *Game::setup(Builder *builder) {
 }
 
 //Pick up cards from stack
-bool Game::grab(int num, int from, int user) {
-	this->to = -1;
-	this->from = -1;
-	this->count = -1;
-	this->tested = -1;
+bool Game::grab(unsigned int num, unc from, unc user) {
+	users[user] = { 0, 0, 0, 0 };
 
-	if(from > STACKCOUNT)
+	if(from > STACKCOUNT || from == 0)
 		return false;
 
 	//Check if stack is button
 	if(stack[from].get_tag(BUTTON)) {
-		*current += new Move(0, from, from, true, false, current);
+		*current += new Move(from, from, 0, user, false, current);
 		update();
 		return false;
 	}
 
-	//Fail if stack marked as output
-	if(stack[from].get_tag(OUTPUT) || num < 1)
+	//Fail if stack empty or marked as output
+	if(stack[from].get_card() == NULL || stack[from].get_tag(OUTPUT) || num < 1)
 		return false;
 
 	//Flip one card if top hidden
 	if(stack[from].get_card()->is_hidden()) {
-		*current += new Move(1, from, from, true, true, current);
+		*current += new Move(from, from, 1, user, true, current);
 		update();
 		return false;
 	}
 
 	//Check for null or hidden card in stack
-	int i = 1;
+	unsigned int i = 1;
 	Card *card = stack[from].get_card();
 	while(i < num && card != NULL) {
 	 	card = card->get_next();
@@ -210,61 +204,54 @@ bool Game::grab(int num, int from, int user) {
 
 	//Set picked cards
 	if(stack[0].matches(num, stack[from].get_card())) {
-		this->from = from;
-		this->count = num;
+		users[user] = { from, 0, 0, num };
 		return true;
 	}
 
 	return false;
 }
 
-//Test placement of cards from selected hand
-bool Game::test(int to, int user) {
-	//Check if cards are in hand
-	if(this->from == -1 || this->count == -1 || this->to != -1 || to > STACKCOUNT) {
-		cancel();
+//Test placement of cards from selected slot
+bool Game::test(unc to, unc user) {
+	//Check if position and users is valid
+	if(to > STACKCOUNT || to == 0 || users[user].from == 0 || users[user].count == 0) {
+		cancel(user);
 		return false;
 	}
 
 	//Check for proper move
-	if(to == from || stack[to].matches(count, stack[from].get_card())) {
+	unc from = users[user].from;
+	if(to == from || stack[to].matches(users[user].count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
 		if(c.type == EXPR && !env.run(c, to, from, current))
 			return false;
 
-		tested = to;
+		users[user].tested = to;
 		return true;
 	}
 
-	tested = -1;
+	users[user].tested = 0;
 	return false;
 }
 
-bool Game::place(int to, int user) {
+bool Game::place(unc to, unc user) {
 	//Check for proper move
-	if(to != from && (tested == to || test(to))) {
-		*current += new Move(count, from, to, true, false, current);
-
-		//Set hand
-		this->to = to;
-		this->count = -1;
-		tested = -1;
+	if(to != users[user].from && (users[user].tested == to || test(to, user))) {
+		*current += new Move(users[user].from, to, users[user].count, user, false, current);
 
 		update();
+		cancel(user);
 		return true;
 	}
 
-	cancel();
+	cancel(user);
 	return false;
 }
 
 //Clear hand
-void Game::cancel() {
-	to = -1;
-	from = -1;
-	count = -1;
-	tested = -1;
+void Game::cancel(unc user) {
+	users[user] = { 0, 0, 0, 0 };
 }
 
 //Move history manipulation

@@ -13,23 +13,25 @@ namespace Solisp {
  * Game rules and management.
  */
 
+struct Hand {
+	unc from = 0;
+	unc to = 0;
+	unc tested = 0;
+	unsigned int count = 0;
+};
+
 class Solisp::Game {
 private:
 	//Game definition
-	char STACKCOUNT = MAXSTACKCOUNT;
+	unc STACKCOUNT = MAXSTACKCOUNT;
 	GameEnviroment env;
 
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];
 	Move *current = new Move(0, 0, 0, false, false, NULL);
 
-	//Current move
-	int from = -1;
-	int to = -1;
-	int count = 0;
-	int tested = -1;
-
 	//Other values
+	Hand users[MAXSTACKCOUNT];
 	bool started = false;
 
 	//Apply current moves to stack array
@@ -52,12 +54,12 @@ public:
 	void update();
 
 	//General interaction methods
-	bool grab(int num, int from, int user=0);
-	bool test(int to, int user=0);
-	bool place(int to, int user=0);
+	bool grab(unsigned int num, unc from, unc user);
+	bool test(unc to, unc user);
+	bool place(unc to, unc user);
 
 	//Clear hand
-	void cancel();
+	void cancel(unc user);
 
 	//History management
 	void undo();
@@ -70,7 +72,7 @@ public:
 	int get_stack_count() {
 		return STACKCOUNT;
 	}
-	Stack *get_stack(int i) {
+	Stack *get_stack(unc i) {
 		if(i >= STACKCOUNT)
 			return NULL;
 		return &stack[i];

@@ -13,30 +13,31 @@ namespace Solisp {
  * History of solitare game
  */
 
-#define MOVETAGCOUNT 4
-
-enum move_tags { PLAYER, FLIP, VALID, LOOP };
-
+#define MOVETAGCOUNT 3
 static unsigned int max_id = 0;
+
+using unc = unsigned char;
+enum move_tags { FLIP, VALID, LOOP };
 
 class Solisp::Move {
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
     void serialize(Archive & ar, const unsigned int version) {
-        ar & count & from & to & tags & id;
+        ar & from & to & user & count & tags & id;
     }
 
 	//Card movements
-	int count;
-	int from;
-	int to;
+	unc from;
+	unc to;
+	unc user;
+	unsigned int count;
 	bitset<MOVETAGCOUNT> tags;
 
 	//List references
+	unsigned int id;
 	Move *next = NULL;
 	Move *last;
-	unsigned int id;
 
 	//Check for circular card movement
 	bool check_loop(Move *other) {
@@ -53,14 +54,14 @@ public:
 	Move() { }
 
 	//Build new move
-	Move(int count, int from, int to, bool player, bool flip, Move *last) {
+	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last) {
 		//Set general move
 		this->count = count;
 		this->from = from;
 		this->to = to;
+		this->user = user;
 
 		//Set special tags
-		tags[PLAYER] = player;
 		tags[FLIP] = flip;
 		tags[VALID] = true;
 
@@ -101,7 +102,7 @@ public:
 	//Set move to invalid
 	void undo() {
 		tags[VALID] = false;
-		if(!tags[PLAYER] && from != 0 && last != NULL)
+		if(user == 0 && from != 0 && last != NULL)
 			last->undo();
 	}
 
@@ -109,7 +110,7 @@ public:
 	void redo(bool first=true) {
 		if(tags[VALID] && next != NULL)
 			next->redo(true);
-		else if(first || !tags[PLAYER]) {
+		else if(first || user == 0) {
 			tags[VALID] = true;
 			if(next != NULL)
 				next->redo(false);
@@ -117,7 +118,7 @@ public:
 	}
 
 	//Set actual card count if move-all used
-	void correct_count(int count) {
+	void correct_count(unsigned int count) {
 		if(count < this->count)
 			this->count = count;
 	}
@@ -129,17 +130,21 @@ public:
 		return false;
 	}
 
-	//Normal getters
-	int get_count() {
-		return count;
+	bool is_player() {
+		return user != 0;
 	}
 
-	int get_from() {
+	//Normal getters
+	unc get_from() {
 		return from;
 	}
 
-	int get_to() {
+	unc get_to() {
 		return to;
+	}
+
+	unsigned int get_count() {
+		return count;
 	}
 
 	unsigned int get_id() {

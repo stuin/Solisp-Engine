@@ -12,7 +12,7 @@ namespace Solisp {
 struct layout {
 	int x = 1;
 	int y = 2;
-	int count = 1;
+	unsigned char count = 1;
 };
 
 class Solisp::Builder {

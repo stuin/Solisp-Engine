@@ -12,6 +12,7 @@ private:
 	sf::RectangleShape rect;
 
 	Solisp::Game *game;
+	unc user = 1;
 	bool pressed = false;
 	bool holding = false;
 	double selectionTime = 0;
@@ -57,16 +58,16 @@ public:
 				std::cout << stack->stack->get_card()->print_stack() << "\n";
 			if(!holding) {
 				//Get card count
-				int count = 1;
+				unsigned int count = 1;
 				if(stack->spread) {
 					count = stack->checkOffset(getPosition() - stack->getPosition());
 					count = stack->stack->get_count() - count;
 				}
 
 				//Pick up cards
-				if(game->grab(count, stack->getIndex())) {
+				if(game->grab(count, stack->getIndex(), user)) {
 					from = stack;
-					stack->reload(-1, count);
+					stack->reload(0, count);
 					mouse->stack = stack->stack;
 					mouse->reload(1);
 					mouse->setParent(this);
@@ -76,7 +77,7 @@ public:
 					reloadAll();
 			} else {
 				//Place down cards
-				if(game->place(stack->getIndex()))
+				if(game->place(stack->getIndex(), user))
 					reloadAll();
 				else
 					from->reload();
@@ -89,7 +90,7 @@ public:
 		} else if(holding && to != stack) {
 			//Display possible placement
 			to = stack;
-			if(game->test(stack->getIndex())) {
+			if(game->test(stack->getIndex(), user)) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count()));
 			} else {
@@ -111,7 +112,7 @@ public:
 			if(event.mouseButton.button == sf::Mouse::Left)
 				pressed = true;
 			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
-				game->cancel();
+				game->cancel(user);
 				from->reload();
 				from = NULL;
 				to = NULL;
@@ -125,7 +126,7 @@ public:
 	}
 
 	void reloadAll() {
-		for(int i = 1; i < STACKCOUNT; i++)
+		for(unc i = 1; i < STACKCOUNT; i++)
 			stacks[i].reload();
 	}
 };
