@@ -1,3 +1,5 @@
+#include "../Gameplay/stack.h"
+#include "../Gameplay/move.h"
 #include "game_env.h"
 
 /*

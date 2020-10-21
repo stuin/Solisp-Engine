@@ -9,18 +9,18 @@ private:
 	sf::RectangleShape rect;
 
 public:
-	Button(string title, int y, Node *parent) : DrawNode(rect, MENU, sf::Vector2i(600, 60), parent) {
-		setPosition(350, y);
+	Button(string title, int y, int width, Node *parent) : DrawNode(rect, MENU, sf::Vector2i(width, 50), parent) {
+		setPosition(width / 2 + 50, y);
 
 		//Set up button outline
-		rect.setSize(sf::Vector2f(600, 60));
+		rect.setSize(sf::Vector2f(width, 50));
 		rect.setFillColor(sf::Color(0, 0, 0, 200));
 
 		//Set up text
 		text.setString(title);
 		text.setFont(font);
-		textNode = new DrawNode(text, TEXT, sf::Vector2i(600,60), this);
-		textNode->setPosition(25, 0);
+		textNode = new DrawNode(text, TEXT, sf::Vector2i(width,50), this);
+		textNode->setPosition(25, 5);
 
 		//Add to game
 		UpdateList::addNode(textNode);
@@ -47,7 +47,7 @@ private:
 	int i;
 
 public:
-	SubMenu(int i, string title, Node *menu, Node *parent) : Button(title, (i + 1) * 70, parent) {
+	SubMenu(int i, string title, Node *menu, Node *parent) : Button(title, (i + 1) * 60, 200, parent) {
 		this->menu = menu;
 		this->i = i;
 	}

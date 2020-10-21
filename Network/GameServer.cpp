@@ -1,5 +1,5 @@
 #include "../Gameplay/filelist.h"
-#include "TCP.hpp"
+#include "TCP_Connection.hpp"
 
 #include <iostream>
 

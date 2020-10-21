@@ -12,7 +12,7 @@ private:
 
 public:
 	GameMenu(Node *parent) : DrawNode(fade, FADE, sf::Vector2i(700, 1090), parent) {
-		setPosition(700, 0);
+		setPosition(300, 0);
 		setOrigin(0, 0);
 		setHidden(true);
 		UpdateList::addNode(this);

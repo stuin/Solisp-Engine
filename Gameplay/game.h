@@ -2,11 +2,12 @@ namespace Solisp {
 	class Game;
 }
 
+#include "../Gameplay/builder.h"
+#include "../Gameplay/move.h"
+
 #include <vector>
 #include <queue>
 #include <stdexcept>
-
-#include "../Lisp/game_env.h"
 
 /*
  * Created by Stuart Irwin on 29/6/2019.
@@ -24,7 +25,6 @@ class Solisp::Game {
 private:
 	//Game definition
 	unc STACKCOUNT = MAXSTACKCOUNT;
-	GameEnviroment env;
 
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];

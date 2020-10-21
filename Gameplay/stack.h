@@ -6,6 +6,7 @@ namespace Solisp {
 
 #include <bitset>
 
+#include "../Lisp/Solisp/src/lisp.h"
 #include "filter.h"
 
 /*
@@ -43,6 +44,9 @@ public:
 
 	int x = -1;
 	int y = -1;
+
+	static std::map<string, stack_tags> tag_map;
+	static std::map<string, func_tag> func_map;
 
 	Stack() {
 		for(int i = 0; i < STACKFUNCOUNT; i++)

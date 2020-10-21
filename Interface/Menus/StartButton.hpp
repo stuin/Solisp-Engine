@@ -9,7 +9,7 @@ private:
 	string file;
 
 public:
-	StartButton(string file, int y, Node *parent) : Button(file, y, parent) {
+	StartButton(string file, int y, Node *parent) : Button(file, y, 600, parent) {
 		this->file = file;
 		std::cout << file << "\n";
 

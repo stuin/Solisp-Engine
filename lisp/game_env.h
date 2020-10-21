@@ -1,7 +1,3 @@
-#include "Solisp/src/lisp.h"
-#include "../Gameplay/builder.h"
-#include "../Gameplay/move.h"
-
 /*
  * Created by Stuart Irwin on 28/1/2020.
  * Lisp structures for moving cards during game
@@ -83,8 +79,8 @@ public:
 		}
 
 		//Link strings to stack tags
-		auto it = Solisp::Builder::tag_map.begin();
-		while(it != Solisp::Builder::tag_map.end()) {
+		auto it = Solisp::Stack::tag_map.begin();
+		while(it != Solisp::Stack::tag_map.end()) {
 			set(it->first, cell(tags[it->second], LIST));
 			it++;
 		}

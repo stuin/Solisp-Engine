@@ -9,7 +9,7 @@ private:
 public:
 	MainMenu() : DrawNode(fade, FADE) {
 		//Set up faded background
-		fade.setSize(sf::Vector2f(700, 1090));
+		fade.setSize(sf::Vector2f(300, 1090));
 		fade.setFillColor(sf::Color(0, 0, 0, 50));
 
 		menus[0] = new GameMenu(this);

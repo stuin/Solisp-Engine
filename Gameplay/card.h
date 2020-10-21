@@ -4,7 +4,7 @@ namespace Solisp {
 	class Filter;
 }
 
-#include "../Lisp/card_env.h"
+#include "../Lisp/card.h"
 #include <cstddef>
 #include <string>
 
@@ -14,6 +14,7 @@ namespace Solisp {
  */
 
 using std::string;
+using Solisp::cardData;
 
 class Solisp::Card {
 private:

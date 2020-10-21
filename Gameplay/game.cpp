@@ -1,4 +1,5 @@
 #include "game.h"
+#include "../Lisp/game_env.h"
 
 #include <iostream>
 #include <exception>
@@ -9,6 +10,8 @@
  */
 
 using Solisp::Game;
+
+GameEnviroment game_env;
 
 //Apply current moves to stack array
 void Game::update() {
@@ -29,7 +32,7 @@ void Game::update() {
 		for(unc i = 1; i < STACKCOUNT; i++) {
 			cell c = stack[i].get_function(ONSTART);
 			if(c.type == EXPR)
-				env.run(c, i, -1, current);
+				game_env.run(c, i, -1, current);
 		}
 		started = true;
 		update();
@@ -102,13 +105,13 @@ void Game::apply(Move *move, bool reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {
-			env.run(c, from, to, move);
+			game_env.run(c, from, to, move);
 		}
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
 		if(c.type == EXPR)
-			env.run(c, to, from, move);
+			game_env.run(c, to, from, move);
 	}
 }
 
@@ -155,7 +158,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 	Card *card = stack[0].get_card();
 
 	STACKCOUNT = builder->set_stacks(stack);
-	env.setup(stack, STACKCOUNT);
+	game_env.setup(stack, STACKCOUNT);
 
 	deal();
 
@@ -199,7 +202,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack has function defined
 	cell c = stack[from].get_function(GRABIF);
-	if(c.type == EXPR && !env.run(c, from, -1, current))
+	if(c.type == EXPR && !game_env.run(c, from, -1, current))
 		return false;
 
 	//Set picked cards
@@ -224,7 +227,7 @@ bool Game::test(unc to, unc user) {
 	if(to == from || stack[to].matches(users[user].count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
-		if(c.type == EXPR && !env.run(c, to, from, current))
+		if(c.type == EXPR && !game_env.run(c, to, from, current))
 			return false;
 
 		users[user].tested = to;
