@@ -1,5 +1,6 @@
 namespace Solisp {
 	class Game;
+	struct Hand;
 }
 
 #include "../Gameplay/builder.h"
@@ -14,7 +15,7 @@ namespace Solisp {
  * Game rules and management.
  */
 
-struct Hand {
+struct Solisp::Hand {
 	unc from = 0;
 	unc to = 0;
 	unc tested = 0;
@@ -25,14 +26,14 @@ class Solisp::Game {
 private:
 	//Game definition
 	unc STACKCOUNT = MAXSTACKCOUNT;
+	Hand users[MAXSTACKCOUNT];
+	bool started = false;
 
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];
 	Move *current = new Move(0, 0, 0, false, false, NULL);
 
 	//Other values
-	Hand users[MAXSTACKCOUNT];
-	bool started = false;
 
 	//Apply current moves to stack array
 	void apply(Move *move, bool reverse);
@@ -42,6 +43,7 @@ private:
 	void deal();
 
 public:
+	unc players = 1;
 
 	Game() {}
 	~Game() {

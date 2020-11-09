@@ -247,3 +247,8 @@ int Builder::set_stacks(Stack *stack) {
 	}
 	return 0;
 }
+
+//Delete builder
+Builder::~Builder() {
+	rule_file.close();
+}

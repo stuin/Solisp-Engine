@@ -32,11 +32,18 @@ private:
 
 
 public:
-	Builder(std::string file) {
+	Builder(std::string file, unsigned int seed=0) {
+		if(seed == 0)
+			srand(time(NULL));
+		else
+			srand(seed);
+
 		rule_file.open(file);
 		std::getline(rule_file, name);
 		std::cout << "Builder initialized with game: " << name << "\n";
 	}
+
+	~Builder();
 
 	Card *get_deck();
 	int set_stacks(Stack *stack);

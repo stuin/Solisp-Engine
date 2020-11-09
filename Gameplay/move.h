@@ -1,12 +1,9 @@
 namespace Solisp {
 	class Move;
+	struct MovePacket;
 }
 
 #include <bitset>
-
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/serialization/bitset.hpp>
 
 /*
  * Created by Stuart Irwin on 4/9/2019.
@@ -19,33 +16,30 @@ static unsigned int max_id = 0;
 using unc = unsigned char;
 enum move_tags { FLIP, VALID, LOOP };
 
-class Solisp::Move {
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-    void serialize(Archive & ar, const unsigned int version) {
-        ar & from & to & user & count & tags & id;
-    }
-
-	//Card movements
+struct Solisp::MovePacket {
 	unc from;
 	unc to;
 	unc user;
 	unsigned int count;
-	bitset<MOVETAGCOUNT> tags;
-
-	//List references
 	unsigned int id;
+	bitset<MOVETAGCOUNT> tags;
+};
+
+class Solisp::Move {
+private:
+	//List references
+	struct MovePacket data;
 	Move *next = NULL;
 	Move *last;
 
 	//Check for circular card movement
 	bool check_loop(Move *other) {
-		if(this->from == other->from || this->to == other->to || other->from == 0)
+		if(data.from == other->get_from() || data.to == other->get_to() ||
+				other->get_from() == 0)
 			return false;
 
-		if(this->from == other->to && this->to == other->from)
-			return this->count == other->count;
+		if(data.from == other->get_to() && data.to == other->get_from())
+			return data.count == other->get_count();
 
 		return check_loop(other->last);
 	}
@@ -53,21 +47,26 @@ private:
 public:
 	Move() { }
 
+	Move(struct MovePacket data, Move *last) {
+		this->data = data;
+		this->last = last;
+	}
+
 	//Build new move
 	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last) {
 		//Set general move
-		this->count = count;
-		this->from = from;
-		this->to = to;
-		this->user = user;
+		data.count = count;
+		data.from = from;
+		data.to = to;
+		data.user = user;
 
 		//Set special tags
-		tags[FLIP] = flip;
-		tags[VALID] = true;
+		data.tags[FLIP] = flip;
+		data.tags[VALID] = true;
 
 		//Link to previous
 		this->last = last;
-		this->id = ++max_id;
+		data.id = ++max_id;
 		//tags[LOOP] = check_loop(last);
 	}
 
@@ -88,11 +87,11 @@ public:
 	//Add new move to history
 	void operator+=(Move *other) {
 		//Check if state is valid
-		if(!tags[VALID])
+		if(!data.tags[VALID])
 			return;
 
 		//If next move is not current
-		if(next == NULL || !next->tags[VALID]) {
+		if(next == NULL || !next->get_tag(VALID)) {
 			clear_forward();
 			next = other;
 		} else
@@ -101,17 +100,17 @@ public:
 
 	//Set move to invalid
 	void undo() {
-		tags[VALID] = false;
-		if(user == 0 && from != 0 && last != NULL)
+		data.tags[VALID] = false;
+		if(data.user == 0 && data.from != 0 && last != NULL)
 			last->undo();
 	}
 
 	//Revalidate next move
 	void redo(bool first=true) {
-		if(tags[VALID] && next != NULL)
+		if(data.tags[VALID] && next != NULL)
 			next->redo(true);
-		else if(first || user == 0) {
-			tags[VALID] = true;
+		else if(first || data.user == 0) {
+			data.tags[VALID] = true;
 			if(next != NULL)
 				next->redo(false);
 		}
@@ -119,36 +118,40 @@ public:
 
 	//Set actual card count if move-all used
 	void correct_count(unsigned int count) {
-		if(count < this->count)
-			this->count = count;
+		if(count < data.count)
+			data.count = count;
+	}
+
+	struct MovePacket *get_data() {
+		return &data;
 	}
 
 	//Get tag value
 	bool get_tag(int tag) {
 		if(tag >= 0 && tag < MOVETAGCOUNT)
-			return tags[tag];
+			return data.tags[tag];
 		return false;
 	}
 
 	bool is_player() {
-		return user != 0;
+		return data.user != 0;
 	}
 
 	//Normal getters
 	unc get_from() {
-		return from;
+		return data.from;
 	}
 
 	unc get_to() {
-		return to;
+		return data.to;
 	}
 
 	unsigned int get_count() {
-		return count;
+		return data.count;
 	}
 
 	unsigned int get_id() {
-		return id;
+		return data.id;
 	}
 
 	Move *get_next() {

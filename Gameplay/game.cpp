@@ -153,7 +153,6 @@ void Game::deal() {
 
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
-	srand(time(NULL));
 	stack[0].set_card(builder->get_deck());
 	Card *card = stack[0].get_card();
 
