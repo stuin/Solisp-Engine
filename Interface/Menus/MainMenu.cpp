@@ -31,7 +31,7 @@ void SubMenu::click() {
 
 void buildMenus() {
 	//Load important resources
-	if(!cardset.loadFromFile("res/base_deck.png"))
+	if(!cardset.loadFromFile("res/minimal.png"))
 		throw std::invalid_argument("Card texture not found");
 	if(!font.loadFromFile("/usr/share/fonts/TTF/DejaVuSerif.ttf"))
 		throw std::invalid_argument("Font file not found");

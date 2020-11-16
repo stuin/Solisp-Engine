@@ -30,7 +30,7 @@ public:
 		stack->setParent(this);
 
 		//Set up rectangle
-		rect.setSize(sf::Vector2f(150, 232));
+		rect.setSize(stack->getCardSize() + sf::Vector2f(1, 1));
 		rect.setOutlineColor(sf::Color::Cyan);
 		rect.setFillColor(sf::Color::Transparent);
 		rect.setOutlineThickness(5);

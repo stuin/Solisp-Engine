@@ -67,7 +67,7 @@ int main(int argc, char const *argv[]) {
 	game.players = 0;
 
 	//Server
-	int port = atoi("23");
+	int port = atoi("1234");
 	auto mainLoop = std::make_shared<EventLoop>();
 	auto service = TcpService::Create();
 

@@ -17,8 +17,12 @@ private:
 	sf::RenderTexture *buffer;
 
 	//Card image sizes
-	const int tileX = 148;
-	const int tileY = 230;
+	const int tileX = 103;
+	const int tileY = 142;
+	const int gapX = 80;
+	const int gapY = 57;
+	const float scaleX = 1.5;
+	const float scaleY = 1.5;
 
 	//Card rendering adjusters
 	int offsetX = tileX;
@@ -37,8 +41,8 @@ public:
 		this->stack = stack;
 		this->index = index;
 
-		//setScale(1, 0.75);
-		setPosition(stack->x * 75 + 50, stack->y * 60 + 30);
+		setScale(scaleX, scaleY);
+		setPosition(stack->x * gapX + 50, stack->y * gapY + 30);
 		UpdateList::addNode(this);
 
 		spread = stack->get_tag(SPREAD);
@@ -51,7 +55,7 @@ public:
 			if(stack->get_tag(SPREAD_REVERSE)) {
 				offsetX *= -1;
 				overlapX *= -1;
-				setPosition((stack->x + 3) * 75 + 50, stack->y * 60 + 30);
+				setPosition((stack->x + 3) * gapX + 50, stack->y * gapY + 30);
 			}
 		} else if(!spread) {
 			offsetY = tileY;
@@ -80,7 +84,7 @@ public:
 		//Apply sizing
 		int i = (std::abs(offsetX) == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
-		setSize(sf::Vector2i(tileX + std::abs(offsetX) * i, tileY + offsetY * j));
+		setSize(sf::Vector2i((tileX + std::abs(offsetX) * i) * scaleX, (tileY + offsetY * j) * scaleY));
 		vertices.resize(4 * std::max(count, 1));
 		setOrigin(0, 0);
 
@@ -93,9 +97,9 @@ public:
 			// get the current tile
 			int tileNumber = card->get_frame();
 			if(card->is_hidden())
-				tileNumber = 54;
-			int tu = tileNumber % 13;
-			int tv = tileNumber / 13;
+				tileNumber = 41;
+			int tu = tileNumber % 14;
+			int tv = tileNumber / 14;
 			int shiftX = (offsetX < 0) ? tileX : 0;
 
 			//Display on vertex
@@ -123,9 +127,9 @@ public:
 				// get the current tile
 				tileNumber = card->get_frame();
 				if(card->is_hidden())
-					tileNumber = 54;
-				tu = tileNumber % 13;
-				tv = tileNumber / 13;
+					tileNumber = 41;
+				tu = tileNumber % 14;
+				tv = tileNumber / 14;
 
 				if(offsetX < 0)
 					tu += 1;
@@ -168,11 +172,11 @@ public:
 			count = 0;
 		if(stack->get_tag(SPREAD_REVERSE))
 			return sf::Vector2f(
-				(offsetX % tileX) * count + tileX,
-				(offsetY % tileY) * count);
+				(offsetX % tileX) * count * scaleX + tileX,
+				(offsetY % tileY) * count * scaleY);
 		return sf::Vector2f(
-				(offsetX % tileX) * count,
-				(offsetY % tileY) * count);
+				(offsetX % tileX) * count * scaleX,
+				(offsetY % tileY) * count * scaleY);
 	}
 
 	int checkOffset(sf::Vector2f pos) {
@@ -180,10 +184,10 @@ public:
 			return 0;
 		int count = std::max((int)stack->get_count() - 1, 0);
 		if(overlapY != 0)
-			return bet(0, (int)(pos.y / offsetY), count);
+			return bet(0, pos.y / (offsetY * scaleY), count);
 		if(stack->get_tag(SPREAD_REVERSE))
-			return bet(0, count - 1 + (int)((pos.x - tileX - offsetX) / offsetX), count);
-		return bet(0, (int)(pos.x / offsetX), count);
+			return bet(0, count - 1 + (pos.x - tileX - offsetX) / (offsetX * scaleX), count);
+		return bet(0, pos.x / (offsetX * scaleX), count);
 	}
 
 	int bet(int min, int value, int max) {
@@ -192,5 +196,9 @@ public:
 		if(value > max)
 			return max;
 		return value;
+	}
+
+	sf::Vector2f getCardSize() {
+		return sf::Vector2f(tileX * scaleX, tileY * scaleY);
 	}
 };

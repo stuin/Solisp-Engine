@@ -2,6 +2,7 @@ namespace Solisp {
 	class Builder;
 }
 
+#include <time.h>
 #include "stack.h"
 
 /*

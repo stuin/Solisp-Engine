@@ -3,3 +3,4 @@ __*
 *.o
 res/
 */vgcore.*
+*.exe

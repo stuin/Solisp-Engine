@@ -1,10 +1,15 @@
 #include "Skyrmion/UpdateList.h"
 #include "main.h"
 
-#include <X11/Xlib.h>
+#if __linux__
+	#include <X11/Xlib.h>
+	#define init XInitThreads();
+#else
+	#define init
+#endif
 
 int main(int argc, char const *argv[]) {
-	XInitThreads();
+	init
 
 	//Draw background
 	sf::RectangleShape rect(sf::Vector2f(1930, 1090));

@@ -71,6 +71,8 @@ public:
 	}
 	void add_count(unsigned int count) {
 		this->count += count;
+		if(this->count > 1000000)
+			this->count = 0;
 	}
 
 	//General variable setters

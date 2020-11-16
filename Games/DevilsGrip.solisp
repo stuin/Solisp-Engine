@@ -5,7 +5,7 @@ Devil's Grip, Challenge
 	(Four-Suit {2 5 8 11})
 	(Four-Suit {3 6 9 12})
 	(Four-Suit {4 7 10 13})
-)
+))
 
 (HLayout
 	(VLayout
@@ -18,12 +18,12 @@ Devil's Grip, Challenge
 					(Four-Suit {2 5 8 11})
 					(Four-Suit {3 6 9 12})
 					(Four-Suit {4 7 10 13})
-				)
+				))
 				(On-Grab
 					(If (== (Count this) 0)
-						(If (> (Count 24) 0)
-							(Flip 24 this)
-							(Move 26 this)
+						(If (> (Count 25) 0)
+							(Flip 25 this)
+							(Move 27 this)
 						)
 					)
 				)

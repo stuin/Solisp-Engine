@@ -63,14 +63,14 @@ public:
 	//Get animation frame for card
 	int get_frame() {
 		switch((char)data.suit) {
-			case 'C':
-				return data.value - 1;
 			case 'D':
-				return 12 + data.value;
-			case 'H':
-				return 25 + data.value;
+				return data.value - 1;
 			case 'S':
-				return 38 + data.value;
+				return 13 + data.value;
+			case 'H':
+				return 27 + data.value;
+			case 'C':
+				return 41 + data.value;
 		}
 		return 0;
 	}
