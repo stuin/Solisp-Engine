@@ -5,13 +5,13 @@
 
 #if __linux__
 	#include <X11/Xlib.h>
-	#define init XInitThreads();
+	#define init XInitThreads
 #else
-	#define init void();
+	#define init void
 #endif
 
 int main(int argc, char const *argv[]) {
-	init
+	init();
 
 	//Draw background
 	sf::RectangleShape rect(sf::Vector2f(1930, 1090));
@@ -19,11 +19,9 @@ int main(int argc, char const *argv[]) {
 	DrawNode background(rect, BACKGROUND);
 	UpdateList::addNode(&background);
 
+	//Load defaults
 	buildMenus();
-
-	//Load default deck
-	if(!cardset.loadFromFile("res/faces/minimal.png"))
-		throw std::invalid_argument("Card texture not found");
+	changeCardset("res/faces/minimal.png");
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
 }

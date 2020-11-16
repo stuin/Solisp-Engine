@@ -41,7 +41,7 @@ public:
 
 void buildMenus() {
 	//Load important resources
-	if(!font.loadFromFile("/usr/share/fonts/TTF/DejaVuSerif.ttf"))
+	if(!font.loadFromFile("res/RomanAntique.ttf"))
 		throw std::invalid_argument("Font file not found");
 
 	MainMenu *menu = new MainMenu();

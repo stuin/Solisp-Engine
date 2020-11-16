@@ -1,3 +1,9 @@
+#if __linux__
+	#define slash "/"
+#else
+	#define slash "\\"
+#endif
+
 //Read game title from file
 string GameNamer(string file) {
 	std::ifstream input(file);
@@ -16,7 +22,7 @@ clickptr GameFunc(string file, Node *parent) {
 
 //Format file name
 string ThemeNamer(string file) {
-	file = file.substr(file.find_last_of("/") + 1, file.length() - 4);
+	file = file.substr(file.find_last_of(slash) + 1, file.length() - 4);
 
 	bool space = true;
 	for(int i = 0; i < (int)file.length(); i++) {
