@@ -17,4 +17,5 @@ else
 	cp -r Games $output
 
 	rm "$output/Games/Pyramid.solisp"
+	rm "$output/Games/StreetsAlleys.solisp"
 fi

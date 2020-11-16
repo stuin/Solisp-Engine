@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
 	buildMenus();
 
 	//Load default deck
-	if(!cardset.loadFromFile("res/minimal.png"))
+	if(!cardset.loadFromFile("res/faces/minimal.png"))
 		throw std::invalid_argument("Card texture not found");
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
@@ -43,4 +43,9 @@ void startGame(string file) {
 
 	//Final setup
 	UpdateList::addNode(new Pointer(&(stacks[0]), &game));
+}
+
+void changeCardset(string file) {
+	if(!cardset.loadFromFile(file))
+		throw std::invalid_argument("Card texture not found");
 }

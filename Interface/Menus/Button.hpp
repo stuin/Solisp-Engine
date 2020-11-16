@@ -1,17 +1,22 @@
-#include "../Skyrmion/Node.h"
+#include "../Skyrmion/UpdateList.h"
 #include "../main.h"
 
 sf::Font font;
+
+using std::function;
+typedef function<void(void)> clickptr;
 
 class Button : public DrawNode {
 private:
 	sf::Text text;
 	DrawNode *textNode;
 	sf::RectangleShape rect;
+	clickptr func = NULL;
 
 public:
-	Button(string title, int y, int width, Node *parent) : DrawNode(rect, MENU, sf::Vector2i(width, 50), parent) {
+	Button(string title, int y, int width, Node *parent, clickptr func) : DrawNode(rect, MENU, sf::Vector2i(width, 50), parent) {
 		setPosition(width / 2 + 50, y);
+		this->func = func;
 
 		//Set up button outline
 		rect.setSize(sf::Vector2f(width, 50));
@@ -36,22 +41,7 @@ public:
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
 		sf::Vector2i pos(event.mouseButton.x * shiftX, event.mouseButton.y * shiftY);
 		if(event.mouseButton.button == sf::Mouse::Left && getRect().contains(pos))
-			click();
+			if(func != NULL)
+				func();
 	}
-
-	virtual void click() {}
-};
-
-class SubMenu : public Button {
-private:
-	Node *menu;
-	int i;
-
-public:
-	SubMenu(int i, string title, Node *menu, Node *parent) : Button(title, (i + 1) * 60, 200, parent) {
-		this->menu = menu;
-		this->i = i;
-	}
-
-	void click();
 };

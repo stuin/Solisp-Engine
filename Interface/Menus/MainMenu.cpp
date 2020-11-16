@@ -1,9 +1,12 @@
-#include "GameMenu.hpp"
+#include "FolderMenu.hpp"
+#include "menus.h"
+
+#define MENUCOUNT 2
 
 class MainMenu : public DrawNode {
 private:
-	Node *menus[2];
-	SubMenu *buttons[2];
+	Node *menus[MENUCOUNT];
+	Button *buttons[MENUCOUNT];
 	sf::RectangleShape fade;
 
 public:
@@ -12,22 +15,29 @@ public:
 		fade.setSize(sf::Vector2f(300, 1090));
 		fade.setFillColor(sf::Color(0, 0, 0, 50));
 
-		menus[0] = new GameMenu(this);
-		buttons[0] = new SubMenu(0, "Solitaire", menus[0], this);
+		menus[0] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, this);
+		buttons[0] = new Button("Solitaire", 60, 200, this, selectMenu(0));
+		menus[1] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, this);
+		buttons[1] = new Button("Themes", 120, 200, this, selectMenu(1));
 	}
 
 	void hideOthers(int selected) {
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < MENUCOUNT; i++) {
 			if(i != selected)
 				menus[i]->setHidden(true);
 		}
 	}
-};
 
-void SubMenu::click() {
-	menu->setHidden(!menu->isHidden());
-	((MainMenu *)getParent())->hideOthers(i);
-}
+	clickptr selectMenu(int i) {
+		Node *menu = menus[i];
+		MainMenu *parent = this;
+
+		return [menu, i, parent]() {
+			menu->setHidden(!menu->isHidden());
+			parent->hideOthers(i);
+		};
+	}
+};
 
 void buildMenus() {
 	//Load important resources
