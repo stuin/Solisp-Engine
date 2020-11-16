@@ -1,4 +1,5 @@
-#include "../Pointer.hpp"
+#include "../Skyrmion/Node.h"
+#include "../main.h"
 
 sf::Font font;
 

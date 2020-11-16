@@ -1,6 +1,7 @@
-__*
 *.os
 *.o
-res/
-*/vgcore.*
 *.exe
+vgcore.*
+
+res/
+builds/

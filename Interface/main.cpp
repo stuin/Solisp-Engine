@@ -1,11 +1,13 @@
 #include "Skyrmion/UpdateList.h"
+#include "../Gameplay/game.h"
+#include "Pointer.hpp"
 #include "main.h"
 
 #if __linux__
 	#include <X11/Xlib.h>
 	#define init XInitThreads();
 #else
-	#define init
+	#define init void();
 #endif
 
 int main(int argc, char const *argv[]) {
@@ -19,5 +21,26 @@ int main(int argc, char const *argv[]) {
 
 	buildMenus();
 
+	//Load default deck
+	if(!cardset.loadFromFile("res/minimal.png"))
+		throw std::invalid_argument("Card texture not found");
+
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
+}
+
+void startGame(string file) {
+	//Initialize game
+	Solisp::Builder builder(file);
+	game.setup(&builder);
+	game.update();
+
+	//Set up slots
+	STACKCOUNT = game.get_stack_count();
+	stacks.reserve((int)STACKCOUNT);
+	stacks.emplace_back(game.get_stack(0), 0);
+	for(unc i = 1; i < STACKCOUNT; i++)
+		stacks.emplace_back(game.get_stack(i), i);
+
+	//Final setup
+	UpdateList::addNode(new Pointer(&(stacks[0]), &game));
 }

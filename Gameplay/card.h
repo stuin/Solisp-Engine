@@ -71,6 +71,8 @@ public:
 				return 27 + data.value;
 			case 'C':
 				return 41 + data.value;
+			case 'J':
+				return (data.value == 1) ? 13 : 27;
 		}
 		return 0;
 	}

@@ -1,7 +1,6 @@
-//Engine headers
-#include "../Skyrmion/UpdateList.h"
-#include "../../Gameplay/game.h"
+#include <fstream>
 
+#include "../Skyrmion/UpdateList.h"
 #include "Button.hpp"
 
 class StartButton : public Button {
@@ -21,20 +20,7 @@ public:
 	}
 
 	void click() override {
-		//Initialize game
-		Solisp::Builder builder(file);
-		game.setup(&builder);
-		game.update();
-
-		//Set up slots
-		STACKCOUNT = game.get_stack_count();
-		stacks.reserve((int)STACKCOUNT);
-		stacks.emplace_back(game.get_stack(0), 0);
-		for(unc i = 1; i < STACKCOUNT; i++)
-			stacks.emplace_back(game.get_stack(i), i);
-
-		//Final setup
-		UpdateList::addNode(new Pointer(&(stacks[0]), &game));
+		startGame(file);
 		getParent()->getParent()->setHidden(true);
 	}
 };

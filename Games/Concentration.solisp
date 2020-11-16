@@ -1,6 +1,6 @@
 Concentration, Normal
 
-(Append (Hearts Standard) (Spades Standard) Jokers)
+(Append (Hearts Standard) (Hearts Standard) {J2 J2})
 {(Max 1)}
 
 (HLayout
@@ -10,14 +10,14 @@ Concentration, Normal
 				BUTTON
 				(Start 1 0)
 				(Filter (Append
-					Jokers
+					{{J2 J2}}
 					(Map card (Seq 1 13)
 						(Red {card card})
 					)
 				))
 				(On-Grab
 					(Flip this this)
-					(If (* (Count this) (Count prev))
+					(If (* (!= this prev) (Count this) (Count prev))
 						(If (Not (Hidden prev))
 							(If (Soft-Move this prev)
 								(Move 2 prev 29)

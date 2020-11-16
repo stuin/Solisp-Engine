@@ -198,7 +198,7 @@ public:
 		return value;
 	}
 
-	sf::Vector2f getCardSize() {
+	sf::Vector2f getCardSize() const {
 		return sf::Vector2f(tileX * scaleX, tileY * scaleY);
 	}
 };

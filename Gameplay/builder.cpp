@@ -81,7 +81,7 @@ Filter *Builder::make_filter(const cell &source) {
 	array = builder_env.filter_eval(array[0]);
 	Filter *output = new Filter(open);
 
-	cout << "\tFilter by: " << builder_env.str_eval(cell(array, FILTER), true) << "with code: " << open << "\n";
+	//cout << "\tFilter by: " << builder_env.str_eval(cell(array, FILTER), true) << "with code: " << open << "\n";
 
 	//Pass each deck to filter
 	for(cell deck : array)
@@ -132,7 +132,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 			array = tag_eval(list, true);
 			array.insert(array.end(), tags.begin(), tags.end());
 
-			cout << "Slot " << (int)current.count << ":\n";
+			//cout << "Slot " << (int)current.count << ":\n";
 			try {
 				added = make_slot(stack[current.count], array, builder_env.num_eval(list[0]), current.x, current.y);
 			} catch(std::exception &e) {
@@ -167,7 +167,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 
 			if(func != Stack::func_map.end()) {
 				stack.set_function(list, func->second);
-				cout << "\tFunction set: " << builder_env.str_eval(c, true) << "\n";
+				//cout << "\tFunction set: " << builder_env.str_eval(c, true) << "\n";
 			} else if(builder_env.str_eval(list[0]) == "Start")
 				stack.set_start(builder_env.num_eval(list[1]), builder_env.num_eval(list[2]));
 			else if(builder_env.str_eval(list[0]) == "Max")
@@ -183,7 +183,7 @@ layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int
 				//Base boolean tag
 				stack.set_tag(tag->second);
 			} else if(builder_env.str_eval(c, false) == "Start-Extra") {
-				cout << "\tStart-Extra\n";
+				//cout << "\tStart-Extra\n";
 				stack.set_start(-1, 0);
 			} else
 				cout << "Unhandled tag: " << builder_env.str_eval(c, true) << "\n";
@@ -231,7 +231,7 @@ int Builder::set_stacks(Stack *stack) {
 	cell c;
 
 	try {
-		std::cout << "Slot 0: \n";
+		//std::cout << "Slot 0: \n";
 		c = builder_env.read_stream(rule_file, EXPR);
 
 		sexpr array;
