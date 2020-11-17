@@ -18,7 +18,6 @@ else
 	cp -r Games $output
 
 	rm "$output/Games/Pyramid.solisp"
-	rm "$output/Games/StreetsAlleys.solisp"
 
 	zip -r "$output.zip" "$output"
 fi

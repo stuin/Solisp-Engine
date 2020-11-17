@@ -52,7 +52,7 @@ void startGame(string file) {
 		stacks.emplace_back(game.get_stack(i), i);
 
 	//Final setup
-	themeView->setHidden(true);
+	themeView->setDelete();
 	UpdateList::addNode(new Pointer(&(stacks[0]), &game));
 }
 
