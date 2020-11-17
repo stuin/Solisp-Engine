@@ -73,7 +73,8 @@ public:
 
 	//Recursizely delete backward
 	~Move() {
-		delete last;
+		if(last != NULL)
+			delete last;
 	}
 
 	//Add new move to history
@@ -97,6 +98,7 @@ public:
 		if(next != NULL)
 			next->last = last;
 		next = NULL;
+		last = NULL;
 	}
 
 	//Unmark soft move

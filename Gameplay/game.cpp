@@ -24,19 +24,21 @@ void Game::update() {
 	//Apply new moves
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
 		Move *move = current->get_next();
-		if(move->get_tag(SOFT)) {
+		/*if(move->get_tag(SOFT)) {
 			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
 				cout << "Soft move\n";
 				move->validate();
 
 				current = move;
 				apply(current, false);
-			} else
+			} else {
 				move->invalidate();
-		} else {
+				delete move;
+			}
+		} else {*/
 			current = move;
 			apply(current, false);
-		}
+		//}
 	}
 
 	//Check for game start functions
@@ -168,7 +170,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 	Card *card = stack[0].get_card();
 
 	STACKCOUNT = builder->set_stacks(stack);
-	game_env.setup(stack, STACKCOUNT);
+	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 
 	deal();
 

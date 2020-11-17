@@ -19,6 +19,7 @@ private:
 	char STACKCOUNT;
 	Solisp::Stack *stacks;
 	Move *current;
+	std::function<void(void)> update;
 
 public:
 	//Check if both slots in range
@@ -27,16 +28,18 @@ public:
 			from < STACKCOUNT && to < STACKCOUNT;
 	}
 
-	bool test_move(int count, int from, int to) {
-		return stacks[to].matches(count, stacks[from].get_card());
-	}
-
 	//Add new move to game
-	void add_move(int count, int from, int to, bool player, bool flip) {
-		if(!player)
-			cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+	bool add_move(int count, int from, int to, bool player, bool flip) {
+		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 
-		*current += new Move(from, to, count, player ? 1 : 0, flip, current, player);
+		if(player) {
+			if(stacks[to].matches(count, stacks[from].get_card()))
+				*current += new Move(from, to, count, 1, flip, current);
+			else
+				return false;
+		} else
+			*current += new Move(from, to, count, 0, flip, current);
+		return true;
 	}
 
 	//Retrieve stack properties
@@ -70,9 +73,10 @@ public:
 	}
 
 	//Build up lisp enviroment
-	void setup(Solisp::Stack *stacks, int STACKCOUNT) {
+	void setup(Solisp::Stack *stacks, int STACKCOUNT, std::function<void(void)> update) {
 		this->STACKCOUNT = STACKCOUNT;
 		this->stacks = stacks;
+		this->update = update;
 
 		//Build tag stack lists
 		sexpr tags[STACKTAGCOUNT];

@@ -22,10 +22,7 @@ cell GameEnviroment::general_move(int num, bool player, bool flip) {
 
 		DONE;
 		if(genv->both_valid(from, to)) {
-			genv->add_move(count, from, to, player, flip);
-
-			//Predict if successful
-			if(!player || genv->test_move(count, from, to))
+			if(genv->add_move(count, from, to, player, flip))
 				return cell(count);
 		}
 		return cell(0);
