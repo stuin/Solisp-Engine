@@ -18,6 +18,7 @@ else
 	cp -r Games $output
 
 	rm "$output/Games/Pyramid.solisp"
+	rm "$output/Games/Concentration.solisp"
 
 	zip -r "$output.zip" "$output"
 fi
