@@ -34,7 +34,7 @@ private:
 	}
 
 public:
-	StackRenderer(Solisp::Stack *stack, unc index) : Node(index == 0 ? POINTER : STACKS) {
+	StackRenderer(Solisp::Stack *stack, unc index, float offsetDiv=4.5) : Node(index == 0 ? POINTER : STACKS) {
 		this->stack = stack;
 		this->index = index;
 
@@ -46,7 +46,7 @@ public:
 		//Edit offset values for spreading
 		spread = stack->get_tag(SPREAD);
 		if(stack->get_tag(SPREAD_HORIZONTAL)) {
-			offsetX /= 4.5;
+			offsetX /= offsetDiv;
 			overlapX = 5;
 			offsetY = tileY;
 			overlapY = 0;

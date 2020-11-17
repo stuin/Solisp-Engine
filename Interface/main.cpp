@@ -3,6 +3,8 @@
 #include "Pointer.hpp"
 #include "main.h"
 
+StackRenderer *themeView;
+
 #if __linux__
 	#include <X11/Xlib.h>
 	#define init XInitThreads
@@ -23,6 +25,16 @@ int main(int argc, char const *argv[]) {
 	buildMenus();
 	changeCardset("res/faces/minimal.png");
 
+	//Add decorational Cards
+	Solisp::Stack *stack = new Solisp::Stack();
+	stack->set_max(5);
+	stack->add_count(5);
+	stack->set_tag(SPREAD);
+	stack->set_tag(SPREAD_HORIZONTAL);
+	stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
+	themeView = new StackRenderer(stack, 1, 1.3);
+	themeView->setPosition(700, 400);
+
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
 }
 
@@ -40,6 +52,7 @@ void startGame(string file) {
 		stacks.emplace_back(game.get_stack(i), i);
 
 	//Final setup
+	themeView->setHidden(true);
 	UpdateList::addNode(new Pointer(&(stacks[0]), &game));
 }
 

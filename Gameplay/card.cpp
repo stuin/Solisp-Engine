@@ -11,12 +11,13 @@ using Solisp::Card;
 using Solisp::Filter;
 
 //Constructor for full list of cards
-Card::Card(char start, char end, char suit) {
-	data.value = start;
-	data.suit = suit;
+Card::Card(std::vector<char> values, int i) {
+	data.value = values[i];
+	data.suit = values[i + 1];
+	hidden = false;
 
-	if(start < end)
-		next = new Card(start+1, end, suit);
+	if(i > 0)
+		next = new Card(values, i - 2);
 }
 
 //Copy list of cards

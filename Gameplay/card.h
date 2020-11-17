@@ -7,6 +7,7 @@ namespace Solisp {
 #include "../Lisp/card.h"
 #include <cstddef>
 #include <string>
+#include <vector>
 
 /*
  * Created by Stuart Irwin on 9/9/2019.
@@ -116,7 +117,7 @@ public:
 	}
 
 	//Card setup functions
-	Card(char start, char end, char suit);
+	Card(std::vector<char> values, int i);
 	Card *clone();
 	Card *reverse(int index=0, Card *last=NULL);
 	Card *shuffle(Card *next);
