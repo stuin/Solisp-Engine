@@ -14,7 +14,7 @@ namespace Solisp {
 static unsigned int max_id = 0;
 
 using unc = unsigned char;
-enum move_tags { FLIP, VALID, LOOP };
+enum move_tags { FLIP, VALID, LOOP, SOFT };
 
 struct Solisp::MovePacket {
 	unc from;
@@ -53,7 +53,7 @@ public:
 	}
 
 	//Build new move
-	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last) {
+	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last, bool soft=false) {
 		//Set general move
 		data.count = count;
 		data.from = from;
@@ -62,6 +62,7 @@ public:
 
 		//Set special tags
 		data.tags[FLIP] = flip;
+		data.tags[SOFT] = soft;
 		data.tags[VALID] = true;
 
 		//Link to previous
@@ -73,15 +74,6 @@ public:
 	//Recursizely delete backward
 	~Move() {
 		delete last;
-	}
-
-	//Recursizely delete forward
-	void clear_forward() {
-		if(next != NULL) {
-			next->last = NULL;
-			next->clear_forward();
-			delete next;
-		}
 	}
 
 	//Add new move to history
@@ -96,6 +88,37 @@ public:
 			next = other;
 		} else
 			*next += other;
+	}
+
+	//Skip invalid move
+	Move *validate(bool valid) {
+		if(valid) {
+			data.tags[SOFT] = false;
+			return this;
+		}
+
+		data.tags[VALID] = false;
+		last->invalidate3();
+		next->invalidate2();
+		next = NULL;
+		return last;
+	}
+
+	void invalidate2() {
+		last = last->get_last();
+	}
+
+	void invalidate3() {
+		next = next->get_next();
+	}
+
+	//Recursizely delete forward
+	void clear_forward() {
+		if(next != NULL) {
+			next->last = NULL;
+			next->clear_forward();
+			delete next;
+		}
 	}
 
 	//Set move to invalid
@@ -133,8 +156,8 @@ public:
 		return false;
 	}
 
-	bool is_player() {
-		return data.user != 0;
+	unc get_player() {
+		return data.user;
 	}
 
 	//Normal getters

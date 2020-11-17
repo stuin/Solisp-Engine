@@ -47,3 +47,11 @@ void changeCardset(string file) {
 	if(!cardset.loadFromFile(file))
 		throw std::invalid_argument("Card texture not found");
 }
+
+int bet(int min, int value, int max) {
+	if(value < min)
+		return min;
+	if(value > max)
+		return max;
+	return value;
+}

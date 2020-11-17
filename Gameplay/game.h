@@ -33,8 +33,6 @@ private:
 	Stack stack[MAXSTACKCOUNT];
 	Move *current = new Move(0, 0, 0, false, false, NULL);
 
-	//Other values
-
 	//Apply current moves to stack array
 	void apply(Move *move, bool reverse);
 
@@ -43,7 +41,7 @@ private:
 	void deal();
 
 public:
-	unc players = 1;
+	unc players = 2;
 
 	Game() {}
 	~Game() {

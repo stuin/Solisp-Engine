@@ -23,8 +23,16 @@ void Game::update() {
 
 	//Apply new moves
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
-		apply(current->get_next(), false);
 		current = current->get_next();
+		if(current->get_tag(SOFT)) {
+			bool valid = stack[current->get_to()].matches(current->get_count(),
+				stack[current->get_from()].get_card());
+			current = current->validate(valid);
+
+			if(valid)
+				apply(current, false);
+		} else
+			apply(current, false);
 	}
 
 	//Check for game start functions
@@ -101,7 +109,7 @@ void Game::apply(Move *move, bool reverse) {
 	}
 
 	//Check for additional functions and moves
-	if(move->is_player() && !reverse) {
+	if(move->get_player() > 1 && !reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR) {

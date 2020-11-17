@@ -32,7 +32,8 @@ public:
 		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 		if(stacks[to].get_card() != NULL)
 			cout << "To = " << stacks[to].get_card()->print_stack() << "\n";
-		*current += new Move(from, to, count, player ? 1 : 0, flip, current);
+
+		*current += new Move(from, to, count, player ? 1 : 0, flip, current, player);
 	}
 
 	//Retrieve stack properties

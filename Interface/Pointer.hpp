@@ -12,7 +12,7 @@ private:
 	sf::RectangleShape rect;
 
 	Solisp::Game *game;
-	unc user = 1;
+	unc user = 2;
 	bool pressed = false;
 	bool holding = false;
 	double selectionTime = 0;
@@ -90,9 +90,12 @@ public:
 		} else if(holding && to != stack) {
 			//Display possible placement
 			to = stack;
-			if(game->test(stack->getIndex(), user)) {
+			if(to == from) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count()));
+			} else if(game->test(stack->getIndex(), user)) {
+				mouse->setParent(to);
+				mouse->setPosition(to->getOffset(to->stack->get_count() + 1));
 			} else {
 				mouse->setPosition(0, 0);
 				mouse->setParent(this);
