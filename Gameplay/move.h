@@ -10,7 +10,7 @@ namespace Solisp {
  * History of solitare game
  */
 
-#define MOVETAGCOUNT 3
+#define MOVETAGCOUNT 4
 static unsigned int max_id = 0;
 
 using unc = unsigned char;
@@ -90,26 +90,18 @@ public:
 			*next += other;
 	}
 
-	//Skip invalid move
-	Move *validate(bool valid) {
-		if(valid) {
-			data.tags[SOFT] = false;
-			return this;
-		}
-
+	//Skip soft move
+	void invalidate() {
 		data.tags[VALID] = false;
-		last->invalidate3();
-		next->invalidate2();
+		last->next = next;
+		if(next != NULL)
+			next->last = last;
 		next = NULL;
-		return last;
 	}
 
-	void invalidate2() {
-		last = last->get_last();
-	}
-
-	void invalidate3() {
-		next = next->get_next();
+	//Unmark soft move
+	void validate() {
+		data.tags[SOFT] = false;
 	}
 
 	//Recursizely delete forward

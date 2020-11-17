@@ -29,9 +29,10 @@ public:
 
 	//Add new move to game
 	void add_move(int count, int from, int to, bool player, bool flip) {
-		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
-		if(stacks[to].get_card() != NULL)
-			cout << "To = " << stacks[to].get_card()->print_stack() << "\n";
+		if(!player)
+			cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+		//if(stacks[to].get_card() != NULL)
+		//	cout << "To = " << stacks[to].get_card()->print_stack() << "\n";
 
 		*current += new Move(from, to, count, player ? 1 : 0, flip, current, player);
 	}

@@ -23,16 +23,20 @@ void Game::update() {
 
 	//Apply new moves
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
-		current = current->get_next();
-		if(current->get_tag(SOFT)) {
-			bool valid = stack[current->get_to()].matches(current->get_count(),
-				stack[current->get_from()].get_card());
-			current = current->validate(valid);
+		Move *move = current->get_next();
+		if(move->get_tag(SOFT)) {
+			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
+				cout << "Soft move\n";
+				move->validate();
 
-			if(valid)
+				current = move;
 				apply(current, false);
-		} else
+			} else
+				move->invalidate();
+		} else {
+			current = move;
 			apply(current, false);
+		}
 	}
 
 	//Check for game start functions
@@ -112,9 +116,8 @@ void Game::apply(Move *move, bool reverse) {
 	if(move->get_player() > 1 && !reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
-		if(c.type == EXPR) {
+		if(c.type == EXPR)
 			game_env.run(c, from, to, move);
-		}
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
