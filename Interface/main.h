@@ -8,4 +8,5 @@ void buildMenus();
 //Main side
 void startGame(string file);
 void changeCardset(string file);
+void showWin();
 int bet(int min, int value, int max);

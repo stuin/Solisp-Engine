@@ -32,6 +32,7 @@ private:
 	//Current game state
 	Stack stack[MAXSTACKCOUNT];
 	Move *current = new Move(0, 0, 0, false, false, NULL);
+	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array
 	void apply(Move *move, bool reverse);
@@ -76,5 +77,8 @@ public:
 		if(i >= STACKCOUNT)
 			return NULL;
 		return &stack[i];
+	}
+	unsigned int cards_remaining() {
+		return cardsLeft;
 	}
 };

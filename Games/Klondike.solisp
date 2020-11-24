@@ -30,7 +30,7 @@ Klondike, Classic
 						(Flip-All (+ this 2) this)
 					)
 					(Flip 3 this (+ this 1))
-					(+ (Map st GOAL (Soft-Move (+ this 1) st)))
+					#(+ (Map st GOAL (Soft-Move (+ this 1) st)))
 				)
 			)
 			(HStack

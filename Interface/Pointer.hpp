@@ -80,6 +80,12 @@ public:
 					holding = true;
 				} else
 					reloadAll();
+
+				//Check for win
+				if(game->cards_remaining() <= 0) {
+					showWin();
+					setHidden(true);
+				}
 			} else {
 				//Place down cards
 				if(game->place(stack->getIndex(), user))
@@ -89,6 +95,13 @@ public:
 				from = NULL;
 				holding = false;
 				mouse->setHidden(true);
+
+				//Check for win
+				if(game->cards_remaining() <= 0) {
+					showWin();
+					setHidden(true);
+				}
+
 			}
 			to = NULL;
 			pressed = false;

@@ -34,7 +34,7 @@ private:
 	}
 
 public:
-	StackRenderer(Solisp::Stack *stack, unc index, float offsetDiv=4.5) : Node(index == 0 ? POINTER : STACKS) {
+	StackRenderer(Solisp::Stack *stack, unc index, Layer layer=STACKS, float offsetDiv=4.5) : Node(layer) {
 		this->stack = stack;
 		this->index = index;
 

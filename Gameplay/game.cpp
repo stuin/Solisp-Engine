@@ -78,6 +78,7 @@ void Game::apply(Move *move, bool reverse) {
 		}
 		source->set_slot(to);
 
+		//Update card counts
 		if(to == from)
 			destination = source->get_next();
 		else {
@@ -89,6 +90,17 @@ void Game::apply(Move *move, bool reverse) {
 		//Record proper card count
 		if(count > 1)
 			move->correct_count(realCount);
+
+		//Update win counter
+		if(!started && from == 0 && !stack[to].get_tag(GOAL))
+			cardsLeft += realCount;
+		else if(stack[from].get_tag(GOAL) && !stack[to].get_tag(GOAL))
+			cardsLeft += realCount;
+		else if(!stack[from].get_tag(GOAL) && stack[to].get_tag(GOAL)) {
+			cardsLeft -= realCount;
+			if(cardsLeft <= 0)
+				cout << "YOU WIN!!\n";
+		}
 
 		//Reverse cards properly
 		if(flip) {
