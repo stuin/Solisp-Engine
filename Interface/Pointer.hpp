@@ -4,6 +4,11 @@ std::vector<StackRenderer> stacks;
 Solisp::Game game;
 int STACKCOUNT;
 
+void reloadAll() {
+	for(unc i = 1; i < STACKCOUNT; i++)
+		stacks[i].reload();
+}
+
 class Pointer : public Node {
 private:
 	StackRenderer *mouse;
@@ -108,6 +113,9 @@ public:
 			selectionTime = 2;
 		} else if(to == stack)
 			selectionTime = 2;
+
+		if(pressed)
+			pressed = false;
 	}
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
@@ -126,10 +134,5 @@ public:
 			}
 		} else if(event.type == sf::Event::MouseMoved)
 			setPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
-	}
-
-	void reloadAll() {
-		for(unc i = 1; i < STACKCOUNT; i++)
-			stacks[i].reload();
 	}
 };

@@ -1,6 +1,7 @@
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
 #include "Pointer.hpp"
+#include "ActionButton.hpp"
 #include "main.h"
 
 StackRenderer *themeView;
@@ -50,6 +51,20 @@ void startGame(string file) {
 	stacks.emplace_back(game.get_stack(0), 0);
 	for(unc i = 1; i < STACKCOUNT; i++)
 		stacks.emplace_back(game.get_stack(i), i);
+
+	//Add undo/redo buttons
+	ActionButton *undo = new ActionButton([&game]() {
+		game.undo(2);
+		game.update();
+		reloadAll();
+	});
+	undo->setPosition(40, 40);
+	ActionButton *redo = new ActionButton([&game]() {
+		game.redo(2);
+		game.update();
+		reloadAll();
+	});
+	redo->setPosition(40, 100);
 
 	//Final setup
 	themeView->setDelete();

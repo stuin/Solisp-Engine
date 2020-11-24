@@ -62,8 +62,8 @@ public:
 	void cancel(unc user);
 
 	//History management
-	void undo();
-	void redo();
+	void undo(unc user);
+	void redo(unc user);
 	Move *get_current() {
 		return current;
 	}

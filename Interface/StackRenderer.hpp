@@ -39,7 +39,7 @@ public:
 		this->index = index;
 
 		setScale(scaleX, scaleY);
-		setPosition(stack->x * gapX + 50, stack->y * gapY + 30);
+		setPosition(stack->x * gapX + 100, stack->y * gapY + 30);
 		vertices.setPrimitiveType(sf::Quads);
 		UpdateList::addNode(this);
 
@@ -54,7 +54,7 @@ public:
 			if(stack->get_tag(SPREAD_REVERSE)) {
 				offsetX *= -1;
 				overlapX *= -1;
-				setPosition((stack->x + 4) * gapX + 15, stack->y * gapY + 30);
+				setPosition((stack->x + 4) * gapX + 65, stack->y * gapY + 30);
 			}
 		} else if(!spread) {
 			offsetY = tileY;

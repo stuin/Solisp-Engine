@@ -23,22 +23,11 @@ void Game::update() {
 
 	//Apply new moves
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
-		Move *move = current->get_next();
-		/*if(move->get_tag(SOFT)) {
-			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
-				cout << "Soft move\n";
-				move->validate();
+		current = current->get_next();
+		apply(current, false);
 
-				current = move;
-				apply(current, false);
-			} else {
-				move->invalidate();
-				delete move;
-			}
-		} else {*/
-			current = move;
-			apply(current, false);
-		//}
+		if(!started)
+			current->setup();
 	}
 
 	//Check for game start functions
@@ -115,7 +104,7 @@ void Game::apply(Move *move, bool reverse) {
 	}
 
 	//Check for additional functions and moves
-	if(move->get_player() > 1 && !reverse) {
+	if(move->get_user() > 0 && !reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR)
@@ -270,9 +259,13 @@ void Game::cancel(unc user) {
 }
 
 //Move history manipulation
-void Game::undo() {
+void Game::undo(unc user) {
+	cancel(user);
 	current->undo();
 }
-void Game::redo() {
-	current->redo();
+void Game::redo(unc user) {
+	cancel(user);
+
+	if(current->get_next() != NULL)
+		current->redo();
 }

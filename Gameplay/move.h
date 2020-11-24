@@ -14,7 +14,7 @@ namespace Solisp {
 static unsigned int max_id = 0;
 
 using unc = unsigned char;
-enum move_tags { FLIP, VALID, LOOP, SOFT };
+enum move_tags { FLIP, VALID, SETUP, LOOP, SOFT };
 
 struct Solisp::MovePacket {
 	unc from;
@@ -53,7 +53,7 @@ public:
 	}
 
 	//Build new move
-	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last, bool soft=false) {
+	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last) {
 		//Set general move
 		data.count = count;
 		data.from = from;
@@ -62,7 +62,8 @@ public:
 
 		//Set special tags
 		data.tags[FLIP] = flip;
-		data.tags[SOFT] = soft;
+		data.tags[SETUP] = false;
+		data.tags[SOFT] = false;
 		data.tags[VALID] = true;
 
 		//Link to previous
@@ -106,29 +107,38 @@ public:
 		data.tags[SOFT] = false;
 	}
 
+	void setup() {
+		data.tags[SETUP] = true;
+	}
+
 	//Recursizely delete forward
 	void clear_forward() {
 		if(next != NULL) {
 			next->last = NULL;
 			next->clear_forward();
 			delete next;
+			next = NULL;
 		}
 	}
 
 	//Set move to invalid
 	void undo() {
-		data.tags[VALID] = false;
-		if(data.user == 0 && data.from != 0 && last != NULL)
-			last->undo();
+		if(!data.tags[SETUP]) {
+			data.tags[VALID] = false;
+			cout << "Undo move " << data.id << "\n";
+			if(data.user == 0 && last != NULL)
+				last->undo();
+		}
 	}
 
 	//Revalidate next move
 	void redo(bool first=true) {
 		if(data.tags[VALID] && next != NULL)
 			next->redo(true);
-		else if(first || data.user == 0) {
+		else {
+			cout << "Redo move " << data.id << "\n";
 			data.tags[VALID] = true;
-			if(next != NULL)
+			if(next != NULL && next->get_user() == 0)
 				next->redo(false);
 		}
 	}
@@ -150,7 +160,7 @@ public:
 		return false;
 	}
 
-	unc get_player() {
+	unc get_user() {
 		return data.user;
 	}
 
