@@ -167,15 +167,41 @@ void Game::deal() {
 
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder) {
+	if(users != NULL || current != NULL)
+		clear();
+
 	stack[0].set_card(builder->get_deck());
 	Card *card = stack[0].get_card();
 
 	STACKCOUNT = builder->set_stacks(stack);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
+	users = (Hand*)malloc(3 * sizeof(Hand));
+	current = new Move(0, 0, 0, false, false, NULL);
 
 	deal();
 
 	return card;
+}
+
+//Delete all data specific to game
+void Game::clear() {
+	for(int i = 0; i < STACKCOUNT; ++i)
+		stack[i] = Stack();
+
+	STACKCOUNT = 0;
+	players = 2;
+	started = false;
+	cardsLeft = 0;
+
+	//stack.clear();
+	if(current != NULL) {
+		current->clear_forward();
+		delete current;
+		free(users);
+	}
+
+	current = NULL;
+	users = NULL;
 }
 
 //Pick up cards from stack

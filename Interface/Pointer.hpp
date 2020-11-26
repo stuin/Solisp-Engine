@@ -1,12 +1,12 @@
 #include "StackRenderer.hpp"
 
-std::vector<StackRenderer> stacks;
+std::vector<StackRenderer*> stacks;
 Solisp::Game game;
 int STACKCOUNT;
 
 void reloadAll() {
 	for(unc i = 1; i < STACKCOUNT; i++)
-		stacks[i].reload();
+		stacks[i]->reload();
 }
 
 class Pointer : public Node {
@@ -16,7 +16,6 @@ private:
 	StackRenderer *to = NULL;
 	sf::RectangleShape rect;
 
-	Solisp::Game *game;
 	unc user = 2;
 	bool pressed = false;
 	bool holding = false;
@@ -28,9 +27,8 @@ private:
 	}
 
 public:
-	Pointer(StackRenderer *stack, Solisp::Game *game) : Node(POINTER, sf::Vector2i(2, 2)) {
+	Pointer(StackRenderer *stack) : Node(POINTER, sf::Vector2i(2, 2)) {
 		this->mouse = stack;
-		this->game = game;
 		collideWith(STACKS);
 		stack->setParent(this);
 
@@ -42,6 +40,17 @@ public:
 
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
 		UpdateList::addListener(this, sf::Event::MouseMoved);
+	}
+
+	void reset(StackRenderer *stack) {
+		from = NULL;
+		to = NULL;
+		pressed = false;
+		holding = false;
+
+		this->mouse = stack;
+		stack->setParent(this);
+		setHidden(false);
 	}
 
 	void update(double time) {
@@ -58,7 +67,7 @@ public:
 
 	void collide(Node *object) override {
 		StackRenderer *stack = (StackRenderer *)object;
-		if(pressed) {
+		if(pressed && !isHidden()) {
 			if(stack->stack->get_card() != NULL)
 				std::cout << stack->stack->get_card()->print_stack() << "\n";
 			if(!holding) {
@@ -70,7 +79,7 @@ public:
 				}
 
 				//Pick up cards
-				if(game->grab(count, stack->getIndex(), user)) {
+				if(game.grab(count, stack->getIndex(), user)) {
 					from = stack;
 					stack->reload(0, count);
 					mouse->stack = stack->stack;
@@ -82,13 +91,13 @@ public:
 					reloadAll();
 
 				//Check for win
-				if(game->cards_remaining() <= 0) {
+				if(game.cards_remaining() <= 0) {
 					showWin();
 					setHidden(true);
 				}
 			} else {
 				//Place down cards
-				if(game->place(stack->getIndex(), user))
+				if(game.place(stack->getIndex(), user))
 					reloadAll();
 				else
 					from->reload();
@@ -97,7 +106,7 @@ public:
 				mouse->setHidden(true);
 
 				//Check for win
-				if(game->cards_remaining() <= 0) {
+				if(game.cards_remaining() <= 0) {
 					showWin();
 					setHidden(true);
 				}
@@ -111,7 +120,7 @@ public:
 			if(to == from) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count()));
-			} else if(game->test(stack->getIndex(), user)) {
+			} else if(game.test(stack->getIndex(), user)) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count() + 1));
 			} else {
@@ -132,11 +141,11 @@ public:
 	}
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		if(event.type == sf::Event::MouseButtonPressed) {
+		if(event.type == sf::Event::MouseButtonPressed && !isHidden()) {
 			if(event.mouseButton.button == sf::Mouse::Left)
 				pressed = true;
 			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
-				game->cancel(user);
+				game.cancel(user);
 				from->reload();
 				from = NULL;
 				to = NULL;

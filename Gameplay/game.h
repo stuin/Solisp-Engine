@@ -6,8 +6,6 @@ namespace Solisp {
 #include "../Gameplay/builder.h"
 #include "../Gameplay/move.h"
 
-#include <vector>
-#include <queue>
 #include <stdexcept>
 
 /*
@@ -25,13 +23,13 @@ struct Solisp::Hand {
 class Solisp::Game {
 private:
 	//Game definition
-	unc STACKCOUNT = MAXSTACKCOUNT;
-	Hand users[MAXSTACKCOUNT];
+	unc STACKCOUNT = 0;
+	Hand *users = NULL;
 	bool started = false;
 
 	//Current game state
-	Stack stack[MAXSTACKCOUNT];
-	Move *current = new Move(0, 0, 0, false, false, NULL);
+	Stack stack[64];
+	Move *current = NULL;
 	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array
@@ -46,12 +44,12 @@ public:
 
 	Game() {}
 	~Game() {
-		current->clear_forward();
-		delete current;
+		clear();
 	}
 
 	//Setup functions
 	Card *setup(Builder *builder);
+	void clear();
 	void update();
 
 	//General interaction methods

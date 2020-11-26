@@ -16,7 +16,6 @@ namespace Solisp {
 
 using std::bitset;
 
-#define MAXSTACKCOUNT 60
 #define STACKTAGCOUNT 9
 #define STACKFUNCOUNT 6
 
@@ -30,7 +29,7 @@ private:
 	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
-	cell functions[STACKFUNCOUNT];
+	cell *functions[STACKFUNCOUNT];
 	unsigned int max = 0;
 
 	//Current state
@@ -49,8 +48,9 @@ public:
 	static std::map<string, func_tag> func_map;
 
 	Stack() {
+		cell *c = new cell(0);
 		for(int i = 0; i < STACKFUNCOUNT; i++)
-			functions[i] = cell(0);
+			functions[i] = c;
 	}
 	~Stack() {
 		delete filter;
@@ -87,7 +87,7 @@ public:
 	}
 	void set_function(sexpr function, func_tag type) {
 		function[0] = cell("+");
-		functions[type] = cell(function, EXPR);
+		functions[type] = new cell(function, EXPR);
 	}
 
 	//Check if new cards can be placed on stack
@@ -122,6 +122,6 @@ public:
 		return stack;
 	}
 	cell get_function(func_tag func) {
-		return functions[func];
+		return *functions[func];
 	}
 };

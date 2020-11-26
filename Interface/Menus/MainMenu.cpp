@@ -39,11 +39,18 @@ public:
 	}
 };
 
+MainMenu *menu;
+
 void buildMenus() {
 	//Load important resources
 	if(!font.loadFromFile("res/RomanAntique.ttf"))
 		throw std::invalid_argument("Font file not found");
 
-	MainMenu *menu = new MainMenu();
+	menu = new MainMenu();
 	UpdateList::addNode(menu);
+}
+
+void showMenu() {
+	menu->hideOthers(MENUCOUNT + 1);
+	menu->setHidden(false);
 }

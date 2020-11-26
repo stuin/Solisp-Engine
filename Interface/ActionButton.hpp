@@ -9,7 +9,8 @@ private:
 	clickptr func = NULL;
 
 public:
-	ActionButton(clickptr func) : DrawNode(rect, MENU, sf::Vector2i(50, 50)) {
+	ActionButton(int y, clickptr func) : DrawNode(rect, MENU, sf::Vector2i(50, 50)) {
+		setPosition(40, y);
 		this->func = func;
 
 		//Set up button outline

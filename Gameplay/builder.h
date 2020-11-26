@@ -2,8 +2,13 @@ namespace Solisp {
 	class Builder;
 }
 
-#include <time.h>
 #include "stack.h"
+
+#include <time.h>
+#include <vector>
+
+using Solisp::Stack;
+using std::vector;
 
 /*
  * Created by Stuart Irwin on 4/10/2019.
@@ -28,8 +33,8 @@ private:
 	Filter *make_filter(const cell &source);
 
 	//Layout interpreting functions
-	layout make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y);
-	layout make_layout(Solisp::Stack *stack, cell layout, sexpr tags={}, struct layout current={0,0,1});
+	layout make_slot(Stack &stack, sexpr data, int type, int x, int y);
+	layout make_layout(Stack *stack, cell layout, sexpr tags={}, struct layout current={0,0,1});
 
 
 public:

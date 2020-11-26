@@ -4,7 +4,13 @@
 #include "ActionButton.hpp"
 #include "main.h"
 
-StackRenderer *themeView;
+StackRenderer *themeView = NULL;
+Pointer *pointer = NULL;
+
+//Side buttons
+ActionButton *menuButton = NULL;
+ActionButton *undoButton = NULL;
+ActionButton *redoButton = NULL;
 
 #if __linux__
 	#include <X11/Xlib.h>
@@ -40,6 +46,7 @@ int main(int argc, char const *argv[]) {
 }
 
 void startGame(string file) {
+
 	//Initialize game
 	Solisp::Builder builder(file);
 	game.setup(&builder);
@@ -47,29 +54,44 @@ void startGame(string file) {
 
 	//Set up slots
 	STACKCOUNT = game.get_stack_count();
+	stacks.clear();
 	stacks.reserve((int)STACKCOUNT);
-	stacks.emplace_back(game.get_stack(0), 0, POINTER);
+	stacks.push_back(new StackRenderer(game.get_stack(0), 0, POINTER));
 	for(unc i = 1; i < STACKCOUNT; i++)
-		stacks.emplace_back(game.get_stack(i), i);
+		stacks.push_back(new StackRenderer(game.get_stack(i), i));
 
-	//Add undo/redo buttons
-	Solisp::Game *gameptr = &game;
-	ActionButton *undo = new ActionButton([gameptr]() {
-		gameptr->undo(2);
-		gameptr->update();
-		reloadAll();
-	});
-	undo->setPosition(40, 40);
-	ActionButton *redo = new ActionButton([gameptr]() {
-		gameptr->redo(2);
-		gameptr->update();
-		reloadAll();
-	});
-	redo->setPosition(40, 100);
+	if(menuButton == NULL) {
+		//Add quit button
+		Solisp::Game *gameptr = &game;
+		menuButton = new ActionButton(40, [gameptr]() {
+			showWin();
+		});
+
+		//Add undo/redo buttons
+		undoButton = new ActionButton(100, [gameptr]() { //"Undo", 40, 50, NULL,
+			gameptr->undo(2);
+			gameptr->update();
+			reloadAll();
+		});
+		redoButton = new ActionButton(160, [gameptr]() {
+			gameptr->redo(2);
+			gameptr->update();
+			reloadAll();
+		});
+		redoButton->setHidden(true);
+	} else {
+		menuButton->setHidden(false);
+		undoButton->setHidden(false);
+	}
 
 	//Final setup
 	themeView->setHidden(true);
-	UpdateList::addNode(new Pointer(&(stacks[0]), &game));
+
+	if(pointer == NULL) {
+		pointer = new Pointer(stacks[0]);
+		UpdateList::addNode(pointer);
+	} else
+		pointer->reset(stacks[0]);
 }
 
 void changeCardset(string file) {
@@ -78,14 +100,19 @@ void changeCardset(string file) {
 }
 
 void showWin() {
-	sf::RectangleShape rect;
-	rect.setSize(sf::Vector2f(200, 160));
-	rect.setFillColor(sf::Color::Green);
-	DrawNode *winscreen = new DrawNode(rect, STACKS, sf::Vector2i(200, 100));
-	winscreen->setPosition(700 + 100, 400 + 20);
-	//UpdateList::addNode(winscreen);
+	//Reset menu buttons
+	menuButton->setHidden(true);
+	undoButton->setHidden(true);
+	redoButton->setHidden(true);
 
+	for(StackRenderer *s : stacks)
+		s->setDelete();
+	game.clear();
+
+	//Show menu
+	pointer->setHidden(true);
 	themeView->setHidden(false);
+	showMenu();
 }
 
 int bet(int min, int value, int max) {

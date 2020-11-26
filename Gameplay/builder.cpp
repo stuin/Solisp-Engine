@@ -8,7 +8,6 @@
 
 using Solisp::Builder;
 using Solisp::Card;
-using Solisp::Stack;
 using Solisp::Filter;
 using std::bitset;
 using std::cout;
@@ -91,7 +90,7 @@ Filter *Builder::make_filter(const cell &source) {
 }
 
 //Recursively build stack objects from lisp structure
-layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, layout current) {
+layout Builder::make_layout(Stack *stack, cell layout_c, sexpr tags, layout current) {
 	//cout << "Next layer = " << str_eval(layout, true) << "\n";
 	sexpr list = builder_env.layout_eval(layout_c);
 	sexpr array;
@@ -134,6 +133,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 
 			//cout << "Slot " << (int)current.count << ":\n";
 			try {
+				//stack.emplace_back();
 				added = make_slot(stack[current.count], array, builder_env.num_eval(list[0]), current.x, current.y);
 			} catch(std::exception &e) {
 				std::cerr << "Slot Error: " << e.what() << std::endl;
@@ -151,7 +151,7 @@ layout Builder::make_layout(Solisp::Stack *stack, cell layout_c, sexpr tags, lay
 }
 
 //Set internal values of stack
-layout Builder::make_slot(Solisp::Stack &stack, sexpr data, int type, int x, int y) {
+layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 	layout dim = {1, 2, 1};
 	stack.set_cords(x, y);
 
