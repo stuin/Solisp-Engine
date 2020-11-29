@@ -1,7 +1,7 @@
 #if __linux__
-	#define slash "/"
+	#define slash '/'
 #else
-	#define slash "\\"
+	#define slash '\\'
 #endif
 
 //Read game title from file
@@ -22,11 +22,14 @@ clickptr GameFunc(string file, Node *parent) {
 
 //Format file name
 string ThemeNamer(string file) {
-	file = file.substr(file.find_last_of(slash) + 1, file.length() - 4);
-
 	bool space = true;
+	int startI = 0;
+
 	for(int i = 0; i < (int)file.length(); i++) {
-		if(file[i] == '_') {
+		if(file[i] == slash) {
+			startI = i + 1;
+			space = true;
+		} else if(file[i] == '_') {
 			space = true;
 			file[i] = ' ';
 		} else if(space) {
@@ -34,7 +37,7 @@ string ThemeNamer(string file) {
 			file[i] = toupper(file[i]);
 		}
 	}
-	return file;
+	return file.substr(startI, file.length() - startI - 4);
 }
 
 //Function to start new game

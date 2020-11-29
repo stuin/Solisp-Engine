@@ -2,20 +2,19 @@
 
 using std::function;
 typedef function<void(void)> clickptr;
+sf::Texture actionTexture;
 
-class ActionButton : public DrawNode {
+class ActionButton : public Node {
 private:
-	sf::RectangleShape rect;
 	clickptr func = NULL;
 
 public:
-	ActionButton(int y, clickptr func) : DrawNode(rect, MENU, sf::Vector2i(50, 50)) {
+	ActionButton(int tindex, int y, clickptr func) : Node(MENU, sf::Vector2i(64, 64)) {
+		setScale(0.75, 0.75);
 		setPosition(40, y);
+		setTexture(actionTexture);
+		setTextureRect(sf::IntRect(0, tindex * 64, 64, (tindex + 1) * 64));
 		this->func = func;
-
-		//Set up button outline
-		rect.setSize(sf::Vector2f(50, 50));
-		rect.setFillColor(sf::Color(0, 0, 0, 200));
 
 		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);

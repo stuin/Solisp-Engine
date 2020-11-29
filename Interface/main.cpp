@@ -30,7 +30,9 @@ int main(int argc, char const *argv[]) {
 
 	//Load defaults
 	buildMenus();
-	changeCardset("res/faces/minimal.png");
+	changeCardset("res/faces/minimal_dark.png");
+	if(!actionTexture.loadFromFile("res/icons.png"))
+		throw std::invalid_argument("Button textures not found");
 
 	//Add decorational Cards
 	Solisp::Stack *stack = new Solisp::Stack();
@@ -63,17 +65,17 @@ void startGame(string file) {
 	if(menuButton == NULL) {
 		//Add quit button
 		Solisp::Game *gameptr = &game;
-		menuButton = new ActionButton(40, [gameptr]() {
+		menuButton = new ActionButton(2, 40, [gameptr]() {
 			showWin();
 		});
 
 		//Add undo/redo buttons
-		undoButton = new ActionButton(100, [gameptr]() { //"Undo", 40, 50, NULL,
+		undoButton = new ActionButton(0, 100, [gameptr]() { //"Undo", 40, 50, NULL,
 			gameptr->undo(2);
 			gameptr->update();
 			reloadAll();
 		});
-		redoButton = new ActionButton(160, [gameptr]() {
+		redoButton = new ActionButton(1, 160, [gameptr]() {
 			gameptr->redo(2);
 			gameptr->update();
 			reloadAll();
