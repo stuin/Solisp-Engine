@@ -25,6 +25,7 @@ class Solisp::Builder {
 private:
 	std::ifstream rule_file;
 	std::string name;
+	int seed;
 
 	sexpr tag_eval(sexpr list, bool layout);
 
@@ -40,9 +41,10 @@ private:
 public:
 	Builder(std::string file, unsigned int seed=0) {
 		if(seed == 0)
-			srand(time(NULL));
+			this->seed = time(NULL);
 		else
-			srand(seed);
+			this->seed = seed;
+		srand(this->seed);
 
 		rule_file.open(file);
 		std::getline(rule_file, name);
@@ -53,4 +55,7 @@ public:
 
 	Card *get_deck();
 	int set_stacks(Stack *stack);
+	int get_seed() {
+		return seed;
+	}
 };

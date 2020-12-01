@@ -66,6 +66,7 @@ void startGame(string file) {
 		//Add quit button
 		Solisp::Game *gameptr = &game;
 		menuButton = new ActionButton(2, 40, [gameptr]() {
+			gameptr->save("saved_game");
 			showWin();
 		});
 

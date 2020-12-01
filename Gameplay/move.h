@@ -3,26 +3,23 @@ namespace Solisp {
 	struct MovePacket;
 }
 
-#include <bitset>
-
 /*
  * Created by Stuart Irwin on 4/9/2019.
  * History of solitare game
  */
 
-#define MOVETAGCOUNT 4
 static unsigned int max_id = 0;
 
 using unc = unsigned char;
-enum move_tags { FLIP, VALID, SETUP, LOOP, SOFT };
+enum move_tag { VALID, FLIP, SETUP, LOOP, SOFT };
 
 struct Solisp::MovePacket {
 	unc from;
 	unc to;
 	unc user;
+	unc tags;
 	unsigned int count;
 	unsigned int id;
-	bitset<MOVETAGCOUNT> tags;
 };
 
 class Solisp::Move {
@@ -44,6 +41,13 @@ private:
 		return check_loop(other->last);
 	}
 
+	void set_tag(move_tag tag, bool value) {
+		if(value)
+			data.tags |= (1 << tag);
+		else
+			data.tags &= (1 << tag) ^ 0xff;
+	}
+
 public:
 	Move() { }
 
@@ -61,10 +65,9 @@ public:
 		data.user = user;
 
 		//Set special tags
-		data.tags[FLIP] = flip;
-		data.tags[SETUP] = false;
-		data.tags[SOFT] = false;
-		data.tags[VALID] = true;
+		data.tags = 0;
+		set_tag(VALID, true);
+		set_tag(FLIP, flip);
 
 		//Link to previous
 		this->last = last;
@@ -81,7 +84,7 @@ public:
 	//Add new move to history
 	void operator+=(Move *other) {
 		//Check if state is valid
-		if(!data.tags[VALID])
+		if(!get_tag(VALID))
 			return;
 
 		//If next move is not current
@@ -94,7 +97,7 @@ public:
 
 	//Skip soft move
 	void invalidate() {
-		data.tags[VALID] = false;
+		set_tag(VALID, false);
 		last->next = next;
 		if(next != NULL)
 			next->last = last;
@@ -104,11 +107,11 @@ public:
 
 	//Unmark soft move
 	void validate() {
-		data.tags[SOFT] = false;
+		set_tag(SOFT, false);
 	}
 
 	void setup() {
-		data.tags[SETUP] = true;
+		set_tag(SETUP, true);
 	}
 
 	//Recursizely delete forward
@@ -123,8 +126,8 @@ public:
 
 	//Set move to invalid
 	void undo() {
-		if(!data.tags[SETUP]) {
-			data.tags[VALID] = false;
+		if(!get_tag(SETUP)) {
+			set_tag(VALID, false);
 			cout << "Undo move " << data.id << "\n";
 			if(data.user == 0 && last != NULL)
 				last->undo();
@@ -133,11 +136,11 @@ public:
 
 	//Revalidate next move
 	void redo(bool first=true) {
-		if(data.tags[VALID] && next != NULL)
+		if(get_tag(VALID) && next != NULL)
 			next->redo(true);
 		else {
 			cout << "Redo move " << data.id << "\n";
-			data.tags[VALID] = true;
+			set_tag(VALID, true);
 			if(next != NULL && next->get_user() == 0)
 				next->redo(false);
 		}
@@ -154,10 +157,8 @@ public:
 	}
 
 	//Get tag value
-	bool get_tag(int tag) {
-		if(tag >= 0 && tag < MOVETAGCOUNT)
-			return data.tags[tag];
-		return false;
+	bool get_tag(move_tag tag) {
+		return data.tags & (1 << tag);
 	}
 
 	unc get_user() {

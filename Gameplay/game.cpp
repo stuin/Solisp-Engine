@@ -2,6 +2,7 @@
 #include "../Lisp/game_env.h"
 
 #include <iostream>
+#include <cstring>
 #include <exception>
 
 /*
@@ -176,7 +177,7 @@ Solisp::Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->set_stacks(stack);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
-	current = new Move(0, 0, 0, false, false, NULL);
+	current = new Move(0, 0, builder->get_seed(), false, false, NULL);
 
 	deal();
 
@@ -306,4 +307,31 @@ void Game::redo(unc user) {
 
 	if(current->get_next() != NULL)
 		current->redo();
+}
+
+//Save to file
+void Game::save(string file) {
+	//Get starting move
+	Move *first = current;
+	int count = 0;
+	while(first->get_last() != NULL) {
+		first = first->get_last();
+	}
+
+	//Open output file
+	FILE *outfile = fopen(file.c_str(), "wb");
+	size_t size = sizeof(struct MovePacket);
+
+	//struct MovePacket *data = first->get_data();
+	//printf("%2X %2X %2X %X %X %2X\n", data->from, data->to, data->user, data->count, data->id, data->tags);
+
+	//Save each move
+	while(first != NULL) {
+		fwrite(first->get_data(), size, 1, outfile);
+		first = first->get_next();
+		count++;
+	}
+
+	cout << size << ":" << count << "\n";
+	fclose(outfile);
 }

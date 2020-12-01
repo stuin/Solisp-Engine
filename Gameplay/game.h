@@ -67,6 +67,9 @@ public:
 		return current;
 	}
 
+	//File loading/saving
+	void save(string file);
+
 	//Stack access
 	int get_stack_count() {
 		return STACKCOUNT;
