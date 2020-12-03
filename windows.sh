@@ -16,6 +16,7 @@ else
 
 	cp -r res $output
 	cp -r Games $output
+	mkdir "$output/saves"
 
 	rm "$output/Games/Pyramid.solisp"
 

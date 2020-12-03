@@ -1,23 +1,9 @@
-#if __linux__
-	#define slash '/'
-#else
-	#define slash '\\'
-#endif
-
 //Read game title from file
 string GameNamer(string file) {
 	std::ifstream input(file);
 	std::string title;
 	std::getline(input, title);
 	return title.substr(0, title.find(','));
-}
-
-//Function to start new game
-clickptr GameFunc(string file, Node *parent) {
-	return [file, parent]() {
-		startGame(file);
-		parent->setHidden(true);
-	};
 }
 
 //Format file name
@@ -29,7 +15,7 @@ string ThemeNamer(string file) {
 		if(file[i] == slash) {
 			startI = i + 1;
 			space = true;
-		} else if(file[i] == '_') {
+		} else if(file[i] == '_' || file[i] == '.') {
 			space = true;
 			file[i] = ' ';
 		} else if(space) {
@@ -41,8 +27,28 @@ string ThemeNamer(string file) {
 }
 
 //Function to start new game
+clickptr GameFunc(string file, Node *parent) {
+	return [file, parent]() {
+		startGame(file);
+		parent->setHidden(true);
+	};
+}
+
+//Function to start new game
 clickptr ThemeFunc(string file, Node *parent) {
 	return [file]() {
 		changeCardset(file);
+	};
+}
+
+clickptr LoadFunc(string file, Node *parent) {
+	return [file, parent]() {
+		string rule_file = "Games";
+		int startI = file.find_last_of(slash);
+		rule_file += file.substr(startI, file.find_first_of(".") - startI);
+		rule_file += ".solisp";
+
+		startGame(rule_file, file);
+		parent->setHidden(true);
 	};
 }

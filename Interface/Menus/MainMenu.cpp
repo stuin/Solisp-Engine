@@ -1,7 +1,7 @@
 #include "FolderMenu.hpp"
 #include "menus.h"
 
-#define MENUCOUNT 2
+#define MENUCOUNT 3
 
 class MainMenu : public DrawNode {
 private:
@@ -17,8 +17,10 @@ public:
 
 		menus[0] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, this);
 		buttons[0] = new Button("Solitaire", 60, 200, this, selectMenu(0));
-		menus[1] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, this);
-		buttons[1] = new Button("Themes", 120, 200, this, selectMenu(1));
+		menus[1] = new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, this);
+		buttons[1] = new Button("Load Game", 120, 200, this, selectMenu(1));
+		menus[2] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, this);
+		buttons[2] = new Button("Themes", 180, 200, this, selectMenu(2));
 	}
 
 	void hideOthers(int selected) {
@@ -33,6 +35,8 @@ public:
 		MainMenu *parent = this;
 
 		return [menu, i, parent]() {
+			if(i == 1)
+				((FolderMenu *)menu)->reload();
 			menu->setHidden(!menu->isHidden());
 			parent->hideOthers(i);
 		};
@@ -53,4 +57,12 @@ void buildMenus() {
 void showMenu() {
 	menu->hideOthers(MENUCOUNT + 1);
 	menu->setHidden(false);
+}
+
+int bet(int min, int value, int max) {
+	if(value < min)
+		return min;
+	if(value > max)
+		return max;
+	return value;
 }

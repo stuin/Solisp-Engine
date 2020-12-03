@@ -6,6 +6,7 @@
 
 StackRenderer *themeView = NULL;
 Pointer *pointer = NULL;
+string next_save_file;
 
 //Side buttons
 ActionButton *menuButton = NULL;
@@ -44,15 +45,47 @@ int main(int argc, char const *argv[]) {
 	themeView = new StackRenderer(stack, 1, DISPLAY, 1.3);
 	themeView->setPosition(700, 400);
 
+	//Add quit button
+	Solisp::Game *gameptr = &game;
+	menuButton = new ActionButton(2, 40, [gameptr]() {
+		gameptr->save(next_save_file);
+		showWin();
+	});
+
+	//Add undo/redo buttons
+	undoButton = new ActionButton(0, 100, [gameptr]() { //"Undo", 40, 50, NULL,
+		gameptr->undo(2);
+		gameptr->update();
+		reloadAll();
+	});
+	redoButton = new ActionButton(1, 160, [gameptr]() {
+		gameptr->redo(2);
+		gameptr->update();
+		reloadAll();
+	});
+
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
 }
 
-void startGame(string file) {
+void startGame(string rule_file, string save_file) {
+	if(save_file == "") {
+		//Initialize game
+		Solisp::Builder builder(rule_file);
+		game.setup(&builder);
+		game.update();
+	} else {
+		game.load(save_file, rule_file);
+		std::remove(save_file.c_str());
+	}
 
-	//Initialize game
-	Solisp::Builder builder(file);
-	game.setup(&builder);
-	game.update();
+	//Get next save file name
+	int startI = rule_file.find_last_of(slash);
+	next_save_file = "saves/";
+	next_save_file += rule_file.substr(startI, rule_file.length() - startI - 6);
+	int n = 1;
+	while(std::filesystem::exists(next_save_file + std::to_string(n) + ".sav"))
+		++n;
+	next_save_file += std::to_string(n) + ".sav";
 
 	//Set up slots
 	STACKCOUNT = game.get_stack_count();
@@ -62,32 +95,9 @@ void startGame(string file) {
 	for(unc i = 1; i < STACKCOUNT; i++)
 		stacks.push_back(new StackRenderer(game.get_stack(i), i));
 
-	if(menuButton == NULL) {
-		//Add quit button
-		Solisp::Game *gameptr = &game;
-		menuButton = new ActionButton(2, 40, [gameptr]() {
-			gameptr->save("saved_game");
-			showWin();
-		});
-
-		//Add undo/redo buttons
-		undoButton = new ActionButton(0, 100, [gameptr]() { //"Undo", 40, 50, NULL,
-			gameptr->undo(2);
-			gameptr->update();
-			reloadAll();
-		});
-		redoButton = new ActionButton(1, 160, [gameptr]() {
-			gameptr->redo(2);
-			gameptr->update();
-			reloadAll();
-		});
-		redoButton->setHidden(true);
-	} else {
-		menuButton->setHidden(false);
-		undoButton->setHidden(false);
-	}
-
 	//Final setup
+	menuButton->setHidden(false);
+	undoButton->setHidden(false);
 	themeView->setHidden(true);
 
 	if(pointer == NULL) {
@@ -116,12 +126,4 @@ void showWin() {
 	pointer->setHidden(true);
 	themeView->setHidden(false);
 	showMenu();
-}
-
-int bet(int min, int value, int max) {
-	if(value < min)
-		return min;
-	if(value > max)
-		return max;
-	return value;
 }

@@ -48,7 +48,7 @@ public:
 	}
 
 	//Setup functions
-	Card *setup(Builder *builder);
+	Card *setup(Builder *builder, Move *saved=NULL);
 	void clear();
 	void update();
 
@@ -69,6 +69,7 @@ public:
 
 	//File loading/saving
 	void save(string file);
+	void load(string file, string rule_file);
 
 	//Stack access
 	int get_stack_count() {

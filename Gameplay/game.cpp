@@ -167,7 +167,7 @@ void Game::deal() {
 }
 
 //Call all setup functions
-Solisp::Card *Game::setup(Builder *builder) {
+Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	if(users != NULL || current != NULL)
 		clear();
 
@@ -177,9 +177,14 @@ Solisp::Card *Game::setup(Builder *builder) {
 	STACKCOUNT = builder->set_stacks(stack);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
-	current = new Move(0, 0, builder->get_seed(), false, false, NULL);
 
-	deal();
+	if(saved == NULL) {
+		current = new Move(0, 0, builder->get_seed(), false, false, NULL);
+		deal();
+	} else {
+		current = saved;
+		started = true;
+	}
 
 	return card;
 }
@@ -326,12 +331,46 @@ void Game::save(string file) {
 	//printf("%2X %2X %2X %X %X %2X\n", data->from, data->to, data->user, data->count, data->id, data->tags);
 
 	//Save each move
-	while(first != NULL) {
+	while(first != NULL && first->get_tag(VALID)) {
 		fwrite(first->get_data(), size, 1, outfile);
 		first = first->get_next();
-		count++;
+		++count;
 	}
 
 	cout << size << ":" << count << "\n";
 	fclose(outfile);
+}
+
+//Load game from file
+void Game::load(string file, string rule_file) {
+	//Open file
+	FILE *infile = fopen(file.c_str(), "rb");
+	if(infile == NULL) {
+		cout << "Error, unreadable save file\n";
+		return;
+	}
+
+	struct MovePacket data;
+	size_t size = sizeof(struct MovePacket);
+
+	//Read first move
+	fread(&data, size, 1, infile);
+	Move *first = new Move(data, NULL);
+	Move *added = first;
+	unsigned int seed = first->get_count();
+
+	//Read all other moves
+	int count = 1;
+	while(fread(&data, size, 1, infile)) {
+		*added += new Move(data, added);
+		added = added->get_next();
+		++count;
+	}
+
+	cout << count << " moves loaded with seed " << seed << "\n";
+
+	//Set game
+	Solisp::Builder builder(rule_file, seed);
+	setup(&builder, first);
+	update();
 }
