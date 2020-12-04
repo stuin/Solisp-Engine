@@ -10,7 +10,7 @@ using Solisp::Move;
 class GameEnviroment : public Enviroment {
 private:
 	//Generate base functions
-	cell general_move(int num, bool flip, bool player);
+	cell general_move(int num, bool flip, unc player);
 	cell soft_move(int num);
 
 	void build_library_game();
@@ -28,18 +28,17 @@ public:
 			from < STACKCOUNT && to < STACKCOUNT;
 	}
 
-	//Add new move to game
-	bool add_move(int count, int from, int to, bool player, bool flip) {
-		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+	bool check_move(int count, int from, int to) {
+		return both_valid(from, to) &&
+			(from == to || stacks[to].matches(count, stacks[from].get_card()));
+	}
 
-		if(player) {
-			if(stacks[to].matches(count, stacks[from].get_card()))
-				*current += new Move(from, to, count, 1, flip, current);
-			else
-				return false;
-		} else
-			*current += new Move(from, to, count, 0, flip, current);
-		return true;
+	//Add new move to game
+	void add_move(int count, int from, int to, unc user, bool flip) {
+		if(user == 0)
+			cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+
+		*current += new Move(from, to, count, user, flip, current);
 	}
 
 	//Retrieve stack properties

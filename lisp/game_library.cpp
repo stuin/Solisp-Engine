@@ -7,7 +7,7 @@
  * Lisp structures for moving cards during game
  */
 
-cell GameEnviroment::general_move(int num, bool player, bool flip) {
+cell GameEnviroment::general_move(int num, bool flip, unc player) {
 	return cell([num, player, flip](Enviroment *env, marker pos, marker end) {
 		int from = env->num_eval(*pos++);
 		int to = env->num_eval(*pos++);
@@ -22,8 +22,8 @@ cell GameEnviroment::general_move(int num, bool player, bool flip) {
 
 		DONE;
 		if(genv->both_valid(from, to)) {
-			if(genv->add_move(count, from, to, player, flip))
-				return cell(count);
+			genv->add_move(count, from, to, player, flip);
+			return cell(count);
 		}
 		return cell(0);
 	});
@@ -31,16 +31,16 @@ cell GameEnviroment::general_move(int num, bool player, bool flip) {
 
 void GameEnviroment::build_library_game() {
 	//Base moves
-	set("Move", general_move(1, false, false));
-	set("Move-All", general_move(1000, false, false));
+	set("Move", general_move(1, false, 0));
+	set("Move-All", general_move(1000, false, 0));
 
 	//Flip moves
-	set("Flip", general_move(1, false, true));
-	set("Flip-All", general_move(1000, false, true));
+	set("Flip", general_move(1, true, 0));
+	set("Flip-All", general_move(1000, true, 0));
 
 	//Soft moves
-	set("Soft-Move", general_move(1, true, false));
-	set("Soft-Move-All", general_move(1000, true, false));
+	set("Soft-Move", general_move(1, false, 1));
+	set("Soft-Move-All", general_move(1000, false, 1));
 
 	//Count cards in stack
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {
@@ -49,6 +49,7 @@ void GameEnviroment::build_library_game() {
 		return cell((int)genv->get_stack(stack)->get_count());
 	}));
 
+	//Read top card
 	set("Value", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
 		DONE;
@@ -73,5 +74,21 @@ void GameEnviroment::build_library_game() {
 		if(genv->get_stack(stack)->get_count() > 0)
 			return cell(genv->get_stack(stack)->get_card()->is_hidden());
 		return cell(0);
+	}));
+
+	set("Matches", cell([](Enviroment *env, marker pos, marker end) {
+		int from = env->num_eval(*pos++);
+		int to = env->num_eval(*pos++);
+		int count = 1;
+
+		//If number included
+		if(pos != end) {
+			count = from;
+			from = to;
+			to = env->num_eval(*pos++);
+		}
+
+		DONE;
+		return cell(genv->check_move(count, from, to));
 	}));
 }

@@ -68,6 +68,7 @@ public:
 		data.tags = 0;
 		set_tag(VALID, true);
 		set_tag(FLIP, flip);
+		set_tag(SOFT, user == 1);
 
 		//Link to previous
 		this->last = last;
