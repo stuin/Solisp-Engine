@@ -53,7 +53,6 @@ public:
 
 	Move(struct MovePacket data, Move *last) {
 		this->data = data;
-		this->last = last;
 	}
 
 	//Build new move
@@ -63,6 +62,7 @@ public:
 		data.from = from;
 		data.to = to;
 		data.user = user;
+		data.id = ++max_id;
 
 		//Set special tags
 		data.tags = 0;
@@ -70,9 +70,6 @@ public:
 		set_tag(FLIP, flip);
 		set_tag(SOFT, user == 1);
 
-		//Link to previous
-		this->last = last;
-		data.id = ++max_id;
 		//tags[LOOP] = check_loop(last);
 	}
 
@@ -86,18 +83,19 @@ public:
 	void operator+=(Move *other) {
 		//Check if state is valid
 		if(!get_tag(VALID))
-			return;
+			*last += other;
 
 		//If next move is not current
 		if(next == NULL || !next->get_tag(VALID)) {
 			clear_forward();
 			next = other;
+			next->last = this;
 		} else
 			*next += other;
 	}
 
 	//Skip soft move
-	void invalidate() {
+	void soft_invalidate() {
 		set_tag(VALID, false);
 		last->next = next;
 		if(next != NULL)
@@ -107,11 +105,11 @@ public:
 	}
 
 	//Unmark soft move
-	void validate() {
+	void soft_validate() {
 		set_tag(SOFT, false);
 	}
 
-	void setup() {
+	void mark_setup() {
 		set_tag(SETUP, true);
 	}
 

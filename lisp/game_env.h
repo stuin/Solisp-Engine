@@ -35,8 +35,9 @@ public:
 
 	//Add new move to game
 	void add_move(int count, int from, int to, unc user, bool flip) {
-		if(user == 0)
-			cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+		if(user == 1)
+			cout << "Try: ";
+		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 
 		*current += new Move(from, to, count, user, flip, current);
 	}

@@ -40,7 +40,7 @@ void GameEnviroment::build_library_game() {
 
 	//Soft moves
 	set("Soft-Move", general_move(1, false, 1));
-	set("Soft-Move-All", general_move(1000, false, 1));
+	set("Soft-Flip", general_move(1, true, 1));
 
 	//Count cards in stack
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {

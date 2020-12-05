@@ -23,12 +23,26 @@ void Game::update() {
 	}
 
 	//Apply new moves
-	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)) {
-		current = current->get_next();
-		apply(current, false);
+	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)
+			&& (!started ||cardsLeft > 0)) {
+		Move *move = current->get_next();
+		if(move->get_tag(SOFT)) {
+			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
+				cout << "Successful soft move: "<< move->get_id() << "\n";
+				move->soft_validate();
+				current = move;
+				apply(current, false);
+			} else {
+				move->soft_invalidate();
+				//delete move;
+			}
+		} else {
+			current = move;
+			apply(current, false);
 
-		if(!started)
-			current->setup();
+			if(!started)
+				current->mark_setup();
+		}
 	}
 
 	//Check for game start functions
@@ -93,9 +107,7 @@ void Game::apply(Move *move, bool reverse) {
 			move->correct_count(realCount);
 
 		//Update win counter
-		if(!started && from == 0 && !stack[to].get_tag(GOAL))
-			cardsLeft += realCount;
-		else if(stack[from].get_tag(GOAL) && !stack[to].get_tag(GOAL))
+		if((from == 0 || stack[from].get_tag(GOAL)) && !stack[to].get_tag(GOAL))
 			cardsLeft += realCount;
 		else if(!stack[from].get_tag(GOAL) && stack[to].get_tag(GOAL)) {
 			cardsLeft -= realCount;
@@ -183,7 +195,7 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 		deal();
 	} else {
 		current = saved;
-		started = true;
+		//started = true;
 	}
 
 	return card;
@@ -218,7 +230,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 		return false;
 
 	//Check if stack is button
-	if(stack[from].get_tag(BUTTON)) {
+	if(stack[from].get_tag(BUTTON) && user > 1) {
 		*current += new Move(from, from, 0, user, false, current);
 		update();
 		return false;
@@ -229,7 +241,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 		return false;
 
 	//Flip one card if top hidden
-	if(stack[from].get_card()->is_hidden()) {
+	if(stack[from].get_card()->is_hidden() && user > 1) {
 		*current += new Move(from, from, 1, user, true, current);
 		update();
 		return false;

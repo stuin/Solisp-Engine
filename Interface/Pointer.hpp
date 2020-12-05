@@ -68,8 +68,8 @@ public:
 	void collide(Node *object) override {
 		StackRenderer *stack = (StackRenderer *)object;
 		if(pressed && !isHidden()) {
-			if(stack->stack->get_card() != NULL)
-				std::cout << stack->stack->get_card()->print_stack() << "\n";
+			//if(stack->stack->get_card() != NULL)
+			//	std::cout << stack->stack->get_card()->print_stack() << "\n";
 			if(!holding) {
 				//Get card count
 				unsigned int count = 1;

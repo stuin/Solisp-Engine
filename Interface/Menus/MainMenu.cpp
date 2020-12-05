@@ -35,8 +35,8 @@ public:
 		MainMenu *parent = this;
 
 		return [menu, i, parent]() {
-			if(i == 1)
-				((FolderMenu *)menu)->reload();
+			//if(i == 1)
+			//	((FolderMenu *)menu)->reload();
 			menu->setHidden(!menu->isHidden());
 			parent->hideOthers(i);
 		};

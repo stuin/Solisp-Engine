@@ -13,8 +13,8 @@ Spider, Classic
 				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
 				(On-Place
-					(If (== (Count (- this 1)) 0)
-						(Soft-Move 13 this (- this 1))
+					(If (* (> this 0) (== (Count (- this 1)) 0))
+						(Move 13 this (- this 1))
 					)
 				)
 			}))
