@@ -55,6 +55,7 @@ public:
 		//Update enviroment
 		bool output = true;
 		this->current = current;
+		shift_env(true);
 		set("from", from);
 		set("to", from);
 		set("prev", this->stack);
@@ -68,6 +69,7 @@ public:
 			std::cerr << "Error: " << e.what() << std::endl;
 			std::cerr << str_eval(c, true) << "\n";
 		}
+		shift_env(false);
 
 		return output;
 	}

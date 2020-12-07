@@ -13,9 +13,15 @@ Spider, Classic
 				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
 				(On-Place
-					(If (* (> this 0) (== (Count (- this 1)) 0))
-						(Move 13 this (- this 1))
-					)
+					((Set shift {
+						{st}
+						(If (== (Count st) 0)
+							(Move 13 this st)
+							(If (> this st)
+								(shift (+ st 1))
+							)
+						)
+					}) 1)
 				)
 			}))
 		)

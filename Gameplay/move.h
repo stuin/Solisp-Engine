@@ -27,7 +27,7 @@ private:
 	//List references
 	struct MovePacket data;
 	Move *next = NULL;
-	Move *last;
+	Move *last = NULL;
 
 	//Check for circular card movement
 	bool check_loop(Move *other) {
@@ -81,17 +81,19 @@ public:
 
 	//Add new move to history
 	void operator+=(Move *other) {
-		//Check if state is valid
-		if(!get_tag(VALID))
-			*last += other;
+		//Find last valid state
+		Move *current = this;
+		while(!current->get_tag(VALID) && current->last != NULL)
+			current = current->last;
 
-		//If next move is not current
-		if(next == NULL || !next->get_tag(VALID)) {
-			clear_forward();
-			next = other;
-			next->last = this;
-		} else
-			*next += other;
+		//Find most recent valid move
+		while(current->next != NULL && current->next->get_tag(VALID))
+			current = current->next;
+
+		//Add new move
+		current->clear_forward();
+		current->next = other;
+		other->last = current;
 	}
 
 	//Skip soft move
