@@ -58,4 +58,7 @@ public:
 	int get_seed() {
 		return seed;
 	}
+	std::ifstream& get_stream() {
+		return rule_file;
+	}
 };

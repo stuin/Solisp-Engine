@@ -183,13 +183,23 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	if(users != NULL || current != NULL)
 		clear();
 
+	//Set up hand stack
 	stack[0].set_card(builder->get_deck());
 	Card *card = stack[0].get_card();
 
+	//Set up other stacks
 	STACKCOUNT = builder->set_stacks(stack);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
 
+	//Check for game variables
+	std::ifstream &rule_file = builder->get_stream();
+	if(!rule_file.eof()) {
+		game_env.shift_env(true);
+		game_env.read_stream(rule_file, EXPR);
+	}
+
+	//Start game history
 	if(saved == NULL) {
 		current = new Move(0, 0, builder->get_seed(), false, false, NULL);
 		deal();

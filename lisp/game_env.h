@@ -96,6 +96,5 @@ public:
 		}
 
 		build_library_game();
-		shift_env(true);
 	}
 };

@@ -66,6 +66,19 @@ void GameEnviroment::build_library_game() {
 			return cell(card->get_data().suit);
 		return cell(0);
 	}));
+	set("Color", cell([](Enviroment *env, marker pos, marker end) {
+		int stack = env->num_eval(*pos++);
+		DONE;
+		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		if(card != NULL) {
+			char suit = card->get_data().suit;
+			if(suit == 'H' || suit == 'D')
+				return cell('R');
+			else if(suit == 'C' || suit == 'S')
+				return cell('B');
+		}
+		return cell(0);
+	}));
 
 	//Check if top card is hidden
 	set("Hidden", cell([](Enviroment *env, marker pos, marker end) {
