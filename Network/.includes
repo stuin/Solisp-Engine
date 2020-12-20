@@ -1,7 +1,4 @@
 parent=../Gameplay/.baseincludes
 
-#files=./TestClient.cpp
-#output=./client
-
 files=./GameServer.cpp
 output=./server
