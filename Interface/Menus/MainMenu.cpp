@@ -5,6 +5,7 @@
 SubMenu *menus[MENUCOUNT];
 int openMenu = 0;
 
+//Show specific menu or sub menu
 void showMenu(int selected, bool toggle) {
 	openMenu = selected;
 	for(int i = 0; i < MENUCOUNT; i++) {
@@ -19,6 +20,7 @@ void showMenu(int selected, bool toggle) {
 	}
 }
 
+//Lambda function to open menu
 clickptr selectMenu(int i) {
 	return [i]() {
 		if(i > -1)

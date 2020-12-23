@@ -34,13 +34,14 @@ clickptr GameFunc(string file, Node *parent) {
 	};
 }
 
-//Function to start new game
+//Function to change card texture
 clickptr ThemeFunc(string file, Node *parent) {
 	return [file]() {
 		changeCardset(file);
 	};
 }
 
+//Function to open save file and start game
 clickptr LoadFunc(string file, Node *parent) {
 	return [file, parent]() {
 		string rule_file = "Games";
