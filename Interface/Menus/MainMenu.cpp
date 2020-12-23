@@ -1,7 +1,7 @@
 #include "FolderMenu.hpp"
 #include "menus.h"
 
-#define MENUCOUNT 5
+#define MENUCOUNT 6
 SubMenu *menus[MENUCOUNT];
 int openMenu = 0;
 
@@ -21,7 +21,8 @@ void showMenu(int selected, bool toggle) {
 
 clickptr selectMenu(int i) {
 	return [i]() {
-		//menu->reload();
+		if(i > -1)
+			menus[i]->reload();
 		showMenu(i, true);
 	};
 }
@@ -43,14 +44,17 @@ void buildMenus() {
 	menus[0]->setHidden(false);
 
 	//In game menu setup
-	menus[1] = new SubMenu(sf::Vector2i(300, 1090));
-	menus[1]->addButton("Resume", 60, 200, menus[1], selectMenu(-1));
-	menus[1]->addButton("Quit", 120, 200, menus[1], []() { quit(true); });
+	menus[1] = new SubMenu(sf::Vector2i(300, 1130));
+	menus[1]->addButton("Resume", 60, 220, menus[1], selectMenu(-1));
+	menus[1]->addButton("Save & Quit", 120, 220, menus[1], []() { quit(true); });
+	menus[1]->addButton("Abandon Game", 180, 220, menus[1], []() { quit(false); });
+	menus[1]->addButton("Themes", 240, 220, menus[1], selectMenu(5));
 
 	//Sub menus
 	menus[2] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, menus[0]);
 	menus[3] = new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, menus[0]);
 	menus[4] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[0]);
+	menus[5] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[1]);
 }
 
 int bet(int min, int value, int max) {

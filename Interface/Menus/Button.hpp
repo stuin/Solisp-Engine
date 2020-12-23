@@ -31,18 +31,15 @@ public:
 		//Add to game
 		UpdateList::addNode(textNode);
 		UpdateList::addNode(this);
-		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+	}
+
+	void run() {
+		if(func != NULL)
+			func();
 	}
 
 	void setText(string title) {
 		text.setString(title);
-	}
-
-	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		sf::Vector2i pos(event.mouseButton.x * shiftX, event.mouseButton.y * shiftY);
-		if(event.mouseButton.button == sf::Mouse::Left && getRect().contains(pos))
-			if(func != NULL)
-				func();
 	}
 };
 
@@ -60,6 +57,17 @@ public:
 		setOrigin(0, 0);
 		setHidden(true);
 		UpdateList::addNode(this);
+		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
+	}
+
+	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
+		sf::Vector2i pos(event.mouseButton.x * shiftX, event.mouseButton.y * shiftY);
+		if(event.mouseButton.button == sf::Mouse::Left && getRect().contains(pos)) {
+			for(Button *b : contents) {
+				if(b->getRect().contains(pos))
+					b->run();
+			}
+		}
 	}
 
 	void addButton(string title, int y, int width, Node *parent, clickptr func) {

@@ -13,6 +13,8 @@ private:
 	function<string(string)> name;
 	function<clickptr(string, Node*)> func;
 
+	fs::file_time_type edited;
+
 public:
 	FolderMenu(string dir, string ext, function<string(string)> name,
 			function<clickptr(string, Node*)> func, Node *parent)
@@ -24,12 +26,15 @@ public:
 		this->ext = ext;
 		this->name = name;
 		this->func = func;
-
-		reload();
 	}
 
 	void reload() {
+		if(fs::last_write_time(dir) == edited)
+			return;
+
+		//Reset list and mark time
 		clearContents();
+		edited = fs::last_write_time(dir);
 
 		//Set up game list
 		int y = 0;
