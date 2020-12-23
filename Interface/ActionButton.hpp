@@ -9,7 +9,7 @@ private:
 	clickptr func = NULL;
 
 public:
-	ActionButton(int tindex, int y, clickptr func) : Node(MENU, sf::Vector2i(64, 64), true) {
+	ActionButton(int tindex, int y, clickptr func) : Node(ACTIONS, sf::Vector2i(64, 64), true) {
 		setScale(0.75, 0.75);
 		setPosition(40, y);
 		setTexture(actionTexture);

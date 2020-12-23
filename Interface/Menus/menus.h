@@ -30,7 +30,7 @@ string ThemeNamer(string file) {
 clickptr GameFunc(string file, Node *parent) {
 	return [file, parent]() {
 		startGame(file);
-		parent->setHidden(true);
+		showMenu(-1);
 	};
 }
 
@@ -49,6 +49,6 @@ clickptr LoadFunc(string file, Node *parent) {
 		rule_file += ".solisp";
 
 		startGame(rule_file, file);
-		parent->setHidden(true);
+		showMenu(-1);
 	};
 }

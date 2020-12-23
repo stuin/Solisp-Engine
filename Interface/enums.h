@@ -4,6 +4,7 @@ enum CollisionLayers {
 	BACKGROUND,
 	STACKS,
 	DISPLAY,
+	ACTIONS,
 	FADE,
 	MENU,
 	TEXT,

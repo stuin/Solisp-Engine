@@ -92,7 +92,7 @@ public:
 
 				//Check for win
 				if(game.cards_remaining() <= 0) {
-					showWin();
+					quit(false);
 					setHidden(true);
 				}
 			} else {
@@ -107,7 +107,7 @@ public:
 
 				//Check for win
 				if(game.cards_remaining() <= 0) {
-					showWin();
+					quit(false);
 					setHidden(true);
 				}
 
@@ -140,21 +140,34 @@ public:
 			pressed = false;
 	}
 
+	void drop() {
+		game.cancel(user);
+		from->reload();
+		from = NULL;
+		to = NULL;
+		mouse->setPosition(0, 0);
+		mouse->setParent(this);
+		mouse->setHidden(true);
+		holding = false;
+		pressed = false;
+	}
+
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
+		if(checkOpen() != -1) {
+			if(holding)
+				drop();
+			rect.setPosition(-300, 0);
+			return;
+		}
+
 		if(event.type == sf::Event::MouseButtonPressed && !isHidden()) {
 			if(event.mouseButton.button == sf::Mouse::Left)
 				pressed = true;
-			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right) {
-				game.cancel(user);
-				from->reload();
-				from = NULL;
-				to = NULL;
-				mouse->setPosition(0, 0);
-				mouse->setParent(this);
-				mouse->setHidden(true);
-				holding = false;
-			}
+			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right)
+				drop();
 		} else if(event.type == sf::Event::MouseMoved)
 			setPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
+		else if(event.type == sf::Event::MouseButtonReleased)
+			pressed = false;
 	}
 };

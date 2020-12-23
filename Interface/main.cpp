@@ -47,21 +47,25 @@ int main(int argc, char const *argv[]) {
 
 	//Add quit button
 	Solisp::Game *gameptr = &game;
-	menuButton = new ActionButton(2, 40, [gameptr]() {
-		gameptr->save(next_save_file);
-		showWin();
+	menuButton = new ActionButton(2, 40, []() {
+		if(checkOpen() == -1)
+			showMenu(1);
 	});
 
 	//Add undo/redo buttons
-	undoButton = new ActionButton(0, 100, [gameptr]() { //"Undo", 40, 50, NULL,
-		gameptr->undo(2);
-		gameptr->update();
-		reloadAll();
+	undoButton = new ActionButton(0, 100, [gameptr]() {
+		if(checkOpen() == -1) {
+			gameptr->undo(2);
+			gameptr->update();
+			reloadAll();
+		}
 	});
 	redoButton = new ActionButton(1, 160, [gameptr]() {
-		gameptr->redo(2);
-		gameptr->update();
-		reloadAll();
+		if(checkOpen() == -1) {
+			gameptr->redo(2);
+			gameptr->update();
+			reloadAll();
+		}
 	});
 
 	UpdateList::startEngine("Solitaire", sf::VideoMode(1920, 1080), POINTER);
@@ -112,7 +116,10 @@ void changeCardset(string file) {
 		throw std::invalid_argument("Card texture not found");
 }
 
-void showWin() {
+void quit(bool save) {
+	if(save)
+		game.save(next_save_file);
+
 	//Reset menu buttons
 	menuButton->setHidden(true);
 	undoButton->setHidden(true);
@@ -125,5 +132,5 @@ void showWin() {
 	//Show menu
 	pointer->setHidden(true);
 	themeView->setHidden(false);
-	showMenu();
+	showMenu(0);
 }

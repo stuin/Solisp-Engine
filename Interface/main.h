@@ -13,12 +13,13 @@ using std::string;
 
 //Menus side
 void buildMenus();
-void showMenu();
+void showMenu(int selected, bool toggle=false);
+int checkOpen();
 
 //Main side
 void startGame(string rule_file, string save_file="");
 void changeCardset(string file);
-void showWin();
+void quit(bool save);
 
 //Random helpers
 int bet(int min, int value, int max);
