@@ -24,7 +24,7 @@ void Game::update() {
 
 	//Apply new moves
 	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)
-			&& (!started ||cardsLeft > 0)) {
+			&& (stage != PLAYING || cardsLeft > 0)) {
 		Move *move = current->get_next();
 		if(move->get_tag(SOFT)) {
 			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
@@ -40,21 +40,22 @@ void Game::update() {
 			current = move;
 			apply(current, false);
 
-			if(!started)
+			if(stage == STARTING)
 				current->mark_setup();
 		}
 	}
 
 	//Check for game start functions
-	if(!started) {
+	if(stage == STARTING) {
 		for(unc i = 1; i < STACKCOUNT; i++) {
 			cell c = stack[i].get_function(ONSTART);
 			if(c.type == EXPR)
 				game_env.run(c, i, -1, current);
 		}
-		started = true;
+		stage = PLAYING;
 		update();
-	}
+	} else if(stage == LOADING)
+		stage = PLAYING;
 }
 
 //Apply single card move
@@ -129,7 +130,7 @@ void Game::apply(Move *move, bool reverse) {
 	}
 
 	//Check for additional functions and moves
-	if(move->get_user() > 0 && !reverse) {
+	if(move->get_user() > 0 && !reverse && stage != LOADING) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR)
@@ -203,9 +204,10 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	if(saved == NULL) {
 		current = new Move(0, 0, builder->get_seed(), false, false, NULL);
 		deal();
+		stage = STARTING;
 	} else {
 		current = saved;
-		//started = true;
+		stage = LOADING;
 	}
 
 	return card;
@@ -218,7 +220,7 @@ void Game::clear() {
 
 	STACKCOUNT = 0;
 	players = 2;
-	started = false;
+	stage = NONE;
 	cardsLeft = 0;
 
 	//stack.clear();

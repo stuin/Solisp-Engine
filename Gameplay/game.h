@@ -20,12 +20,19 @@ struct Solisp::Hand {
 	unsigned int count = 0;
 };
 
+enum Stage {
+	NONE,
+	STARTING,
+	LOADING,
+	PLAYING
+};
+
 class Solisp::Game {
 private:
 	//Game definition
 	unc STACKCOUNT = 0;
 	Hand *users = NULL;
-	bool started = false;
+	Stage stage = NONE;
 
 	//Current game state
 	Stack stack[64];
@@ -80,7 +87,12 @@ public:
 			return NULL;
 		return &stack[i];
 	}
+
+	//Current game state
 	unsigned int cards_remaining() {
 		return cardsLeft;
+	}
+	Stage get_stage() {
+		return stage;
 	}
 };

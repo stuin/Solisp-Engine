@@ -43,6 +43,7 @@ void buildMenus() {
 	menus[0]->addButton("Solitaire", 60, 200, menus[0], selectMenu(2));
 	menus[0]->addButton("Load Game", 120, 200, menus[0], selectMenu(3));
 	menus[0]->addButton("Themes", 180, 200, menus[0], selectMenu(4));
+	menus[0]->addButton("Quit", 240, 200, menus[0], []() { UpdateList::stopEngine(); });
 	menus[0]->setHidden(false);
 
 	//In game menu setup

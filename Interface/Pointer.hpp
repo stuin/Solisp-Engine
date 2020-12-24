@@ -67,7 +67,7 @@ public:
 
 	void collide(Node *object) override {
 		StackRenderer *stack = (StackRenderer *)object;
-		if(pressed && !isHidden()) {
+		if(pressed && !isHidden() && game.get_stage() == PLAYING) {
 			//if(stack->stack->get_card() != NULL)
 			//	std::cout << stack->stack->get_card()->print_stack() << "\n";
 			if(!holding) {
