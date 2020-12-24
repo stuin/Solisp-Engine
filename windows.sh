@@ -19,6 +19,7 @@ else
 	mkdir "$output/saves"
 
 	rm "$output/Games/Pyramid.solisp"
+	rm "$output/Games/Gridcannon.solisp"
 
 	zip -r "$output.zip" "$output"
 fi
