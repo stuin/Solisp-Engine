@@ -21,6 +21,15 @@ struct layout {
 	unsigned char count = 1;
 };
 
+struct setup {
+	int seed;
+	int width;
+	int height;
+	unsigned char count;
+	std::ifstream *file;
+	Solisp::Card *deck;
+};
+
 class Solisp::Builder {
 private:
 	std::ifstream rule_file;
@@ -53,12 +62,5 @@ public:
 
 	~Builder();
 
-	Card *get_deck();
-	int set_stacks(Stack *stack);
-	int get_seed() {
-		return seed;
-	}
-	std::ifstream& get_stream() {
-		return rule_file;
-	}
+	struct setup build_ruleset(Stack *stack);
 };

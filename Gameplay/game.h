@@ -39,6 +39,10 @@ private:
 	Move *current = NULL;
 	unsigned int cardsLeft = 0;
 
+	//Game size
+	int width;
+	int height;
+
 	//Apply current moves to stack array
 	void apply(Move *move, bool reverse);
 
@@ -94,5 +98,13 @@ public:
 	}
 	Stage get_stage() {
 		return stage;
+	}
+
+	//Board size
+	int get_width() {
+		return width;
+	}
+	int get_height() {
+		return height;
 	}
 };

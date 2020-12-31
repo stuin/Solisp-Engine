@@ -184,25 +184,32 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	if(users != NULL || current != NULL)
 		clear();
 
-	//Set up hand stack
-	stack[0].set_card(builder->get_deck());
-	Card *card = stack[0].get_card();
+	//Read rules file
+	struct setup output = builder->build_ruleset(stack);
+	if(output.count == 0)
+		return NULL;
 
-	//Set up other stacks
-	STACKCOUNT = builder->set_stacks(stack);
+	//Set random variables
+	STACKCOUNT = output.count;
+	width = output.width;
+	height = output.height;
+	cout << output.width << ", " << output.height << "\n";
+
+	//Build other structures
+	stack[0].set_card(output.deck);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
 
 	//Check for game variables
-	std::ifstream &rule_file = builder->get_stream();
-	if(!rule_file.eof()) {
+	std::ifstream *rule_file = output.file;
+	if(!rule_file->eof()) {
 		game_env.shift_env(true);
-		game_env.read_stream(rule_file, EXPR);
+		game_env.read_stream(*rule_file, EXPR);
 	}
 
 	//Start game history
 	if(saved == NULL) {
-		current = new Move(0, 0, builder->get_seed(), false, false, NULL);
+		current = new Move(0, 0, output.seed, false, false, NULL);
 		deal();
 		stage = STARTING;
 	} else {
@@ -210,7 +217,7 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 		stage = LOADING;
 	}
 
-	return card;
+	return stack[0].get_card();
 }
 
 //Delete all data specific to game
