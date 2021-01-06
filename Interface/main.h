@@ -20,6 +20,7 @@ int checkOpen();
 void startGame(string rule_file, string save_file="");
 void changeCardset(string file);
 void quit(bool save);
+sf::RectangleShape *getGameRect();
 
 //Random helpers
 int bet(int min, int value, int max);

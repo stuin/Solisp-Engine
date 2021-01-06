@@ -153,7 +153,6 @@ layout Builder::make_layout(Stack *stack, cell layout_c, sexpr tags, layout curr
 //Set internal values of stack
 layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 	layout dim = {1, 2, 1};
-	stack.set_cords(x, y);
 
 	//Read connected tags
 	for(cell c : data) {
@@ -215,6 +214,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 
 	dim.x += 1;
 	dim.y += 2;
+	stack.set_cords(x, y, dim.x, dim.y);
 	return dim;
 }
 

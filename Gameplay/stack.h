@@ -43,6 +43,8 @@ public:
 
 	int x = -1;
 	int y = -1;
+	int width = -1;
+	int height = -1;
 
 	static std::map<string, stack_tags> tag_map;
 	static std::map<string, func_tag> func_map;
@@ -58,9 +60,11 @@ public:
 	}
 
 	//Unique variable setters
-	void set_cords(int x, int y) {
+	void set_cords(int x, int y, int width, int height) {
 		this->x = x;
 		this->y = y;
+		this->width = x + width;
+		this->height = y + height;
 	}
 	void set_tag(int tag, bool value=true) {
 		tags[tag] = value;

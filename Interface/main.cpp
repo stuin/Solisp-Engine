@@ -7,6 +7,7 @@
 StackRenderer *themeView = NULL;
 Pointer *pointer = NULL;
 string next_save_file;
+sf::RectangleShape gameSize;
 
 //Side buttons
 ActionButton *menuButton = NULL;
@@ -35,6 +36,13 @@ int main(int argc, char const *argv[]) {
 	stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
 	themeView = new StackRenderer(stack, 1, DISPLAY, 1.3);
 	themeView->setPosition(700, 400);
+
+	//Setup game outline
+	gameSize.setOutlineColor(sf::Color::Green);
+	gameSize.setFillColor(sf::Color::Transparent);
+	gameSize.setOutlineThickness(5);
+	gameSize.setPosition(100, 30);
+	UpdateList::addNode(new DrawNode(gameSize, DISPLAY));
 
 	//Add quit button
 	Solisp::Game *gameptr = &game;
@@ -124,4 +132,8 @@ void quit(bool save) {
 	pointer->setHidden(true);
 	themeView->setHidden(false);
 	showMenu(0);
+}
+
+sf::RectangleShape *getGameRect() {
+	return &gameSize;
 }

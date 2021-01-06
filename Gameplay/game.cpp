@@ -189,13 +189,8 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	if(output.count == 0)
 		return NULL;
 
-	//Set random variables
+	//Build game structures
 	STACKCOUNT = output.count;
-	width = output.width;
-	height = output.height;
-	cout << output.width << ", " << output.height << "\n";
-
-	//Build other structures
 	stack[0].set_card(output.deck);
 	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
