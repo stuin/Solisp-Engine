@@ -1,13 +1,14 @@
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
 #include "Pointer.hpp"
+#include "Camera.hpp"
 #include "ActionButton.hpp"
 #include "main.h"
 
 StackRenderer *themeView = NULL;
 Pointer *pointer = NULL;
+Camera *camera = NULL;
 string next_save_file;
-sf::RectangleShape gameSize;
 
 //Side buttons
 ActionButton *menuButton = NULL;
@@ -23,9 +24,15 @@ int main(int argc, char const *argv[]) {
 
 	//Load defaults
 	buildMenus();
+	camera = new Camera();
 	changeCardset("res/faces/minimal_dark.png");
 	if(!actionTexture.loadFromFile("res/icons.png"))
 		throw std::invalid_argument("Button textures not found");
+
+	//Set root node for stack positioning
+	root = new Node(BACKGROUND);
+	root->setPosition(100, 30);
+	root->scale(0.75, 0.75);
 
 	//Add decorational Cards
 	Solisp::Stack *stack = new Solisp::Stack();
@@ -36,13 +43,6 @@ int main(int argc, char const *argv[]) {
 	stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
 	themeView = new StackRenderer(stack, 1, DISPLAY, 1.3);
 	themeView->setPosition(700, 400);
-
-	//Setup game outline
-	gameSize.setOutlineColor(sf::Color::Green);
-	gameSize.setFillColor(sf::Color::Transparent);
-	gameSize.setOutlineThickness(5);
-	gameSize.setPosition(100, 30);
-	UpdateList::addNode(new DrawNode(gameSize, DISPLAY));
 
 	//Add quit button
 	Solisp::Game *gameptr = &game;
@@ -134,6 +134,6 @@ void quit(bool save) {
 	showMenu(0);
 }
 
-sf::RectangleShape *getGameRect() {
-	return &gameSize;
+void setGameSize(int width, int height) {
+	camera->setGameSize(width, height);
 }

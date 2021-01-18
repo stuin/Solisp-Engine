@@ -3,6 +3,7 @@
 #include <algorithm>
 
 sf::Texture cardset;
+Node *root = NULL;
 
 class StackRenderer : public Node {
 public:
@@ -34,20 +35,15 @@ private:
 	}
 
 public:
-	StackRenderer(Solisp::Stack *stack, unc index, Layer layer=STACKS, float offsetDiv=4.5) : Node(layer) {
+	StackRenderer(Solisp::Stack *stack, unc index, Layer layer=STACKS, float offsetDiv=4.5) : Node(layer, sf::Vector2i(1, 1), false, root) {
 		this->stack = stack;
 		this->index = index;
 
 		setScale(scaleX, scaleY);
-		setPosition(stack->x * gapX + 100, stack->y * gapY + 30);
+		setPosition(stack->x * gapX, stack->y * gapY);
+		setGameSize(stack->width * gapX + 10, stack->height * gapY + 10);
 		vertices.setPrimitiveType(sf::Quads);
 		UpdateList::addNode(this);
-
-		//Calculate game boundaries
-		if(stack->width * gapX > getGameRect()->getSize().x)
-			getGameRect()->setSize(sf::Vector2f(stack->width * gapX + 10, getGameRect()->getSize().y));
-		if(stack->height * gapY > getGameRect()->getSize().y)
-			getGameRect()->setSize(sf::Vector2f(getGameRect()->getSize().x, stack->height * gapY + 10));
 
 		//Edit offset values for spreading
 		spread = stack->get_tag(SPREAD);

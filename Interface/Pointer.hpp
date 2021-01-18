@@ -27,7 +27,7 @@ private:
 	}
 
 public:
-	Pointer(StackRenderer *stack) : Node(POINTER, sf::Vector2i(2, 2)) {
+	Pointer(StackRenderer *stack) : Node(POINTER, sf::Vector2i(2, 2), false, root) {
 		this->mouse = stack;
 		collideWith(STACKS);
 		stack->setParent(this);
@@ -166,7 +166,7 @@ public:
 			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right)
 				drop();
 		} else if(event.type == sf::Event::MouseMoved)
-			setPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
+			setGPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
 		else if(event.type == sf::Event::MouseButtonReleased)
 			pressed = false;
 	}
