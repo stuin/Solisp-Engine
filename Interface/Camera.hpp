@@ -1,18 +1,14 @@
-#include "Skyrmion/Node.h"
+#include "Pointer.hpp"
 
 class Camera : public Node {
-	sf::RectangleShape gameSize;
+	float gameWidth = 0;
+	float gameHeight = 0;
+	float screenWidth = 0;
+	float screenHeight = 0;
 
 public:
 	Camera() : Node(POINTER, sf::Vector2i(1920, 1080)) {
 		setPosition(1920 / 2, 1080 / 2);
-
-		//Setup game outline
-		gameSize.setOutlineColor(sf::Color::Green);
-		gameSize.setFillColor(sf::Color::Transparent);
-		gameSize.setOutlineThickness(5);
-		gameSize.setPosition(100, 30);
-		UpdateList::addNode(new DrawNode(gameSize, DISPLAY));
 
 		UpdateList::addNode(this);
 		UpdateList::addListener(this, sf::Event::Resized);
@@ -20,23 +16,41 @@ public:
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
 		std::cout << event.size.width << ", " << event.size.height << "\n";
-		sf::Vector2f size(event.size.width, event.size.height);
+		screenWidth = event.size.width;
+		screenHeight = event.size.height;
 
-		setPosition(size.x / 2, size.y / 2);
-		UpdateList::setCamera(this, sf::Vector2f(size.x, size.y));
+		//Resize game field
+		if(gameWidth > 0) {
+			float scaleX = screenWidth / gameWidth;
+			float scaleY = screenHeight / gameHeight;
+			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
+			std::cout << "Scaling = " << cardScaling << "\n";
+			reloadAll();
+		}
+
+		setPosition(screenWidth / 2, screenHeight / 2);
+		UpdateList::setCamera(this, sf::Vector2f(screenWidth, screenHeight));
 	}
 
 	void setGameSize(int width, int height) {
-		if(width == -1 && height == -1)
-			gameSize.setSize(sf::Vector2f(0, 0));
-		else {
-
+		if(width == -1 && height == -1) {
+			gameWidth = 0;
+			gameHeight = 0;
+		} else {
 			//Calculate game boundaries
-			if(width > gameSize.getSize().x)
-				gameSize.setSize(sf::Vector2f(width, gameSize.getSize().y));
-			if(height > gameSize.getSize().y)
-				gameSize.setSize(sf::Vector2f(gameSize.getSize().x, height));
-		}
+			if(width > gameWidth)
+				gameWidth = width;
+			if(height > gameHeight)
+				gameHeight = height;
 
+			float scaleX = screenWidth / gameWidth;
+			float scaleY = screenHeight / gameHeight;
+			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
+		}
 	}
 };
+
+Camera *camera = NULL;
+void setGameSize(int width, int height) {
+	camera->setGameSize(width, height);
+}

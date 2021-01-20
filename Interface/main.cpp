@@ -1,13 +1,12 @@
 #include "Skyrmion/UpdateList.h"
+#include "main.h"
+
 #include "../Gameplay/game.h"
-#include "Pointer.hpp"
 #include "Camera.hpp"
 #include "ActionButton.hpp"
-#include "main.h"
 
 StackRenderer *themeView = NULL;
 Pointer *pointer = NULL;
-Camera *camera = NULL;
 string next_save_file;
 
 //Side buttons
@@ -32,7 +31,6 @@ int main(int argc, char const *argv[]) {
 	//Set root node for stack positioning
 	root = new Node(BACKGROUND);
 	root->setPosition(100, 30);
-	root->scale(0.75, 0.75);
 
 	//Add decorational Cards
 	Solisp::Stack *stack = new Solisp::Stack();
@@ -97,6 +95,7 @@ void startGame(string rule_file, string save_file) {
 	stacks.push_back(new StackRenderer(game.get_stack(0), 0, POINTER));
 	for(unc i = 1; i < STACKCOUNT; i++)
 		stacks.push_back(new StackRenderer(game.get_stack(i), i));
+	reloadAll();
 
 	//Final setup
 	menuButton->setHidden(false);
@@ -132,8 +131,4 @@ void quit(bool save) {
 	pointer->setHidden(true);
 	themeView->setHidden(false);
 	showMenu(0);
-}
-
-void setGameSize(int width, int height) {
-	camera->setGameSize(width, height);
 }

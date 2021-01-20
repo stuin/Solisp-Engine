@@ -3,6 +3,7 @@
 #include <algorithm>
 
 sf::Texture cardset;
+float cardScaling = 1;
 Node *root = NULL;
 
 class StackRenderer : public Node {
@@ -17,16 +18,16 @@ private:
 	//Card image sizes
 	const int tileX = 103;
 	const int tileY = 142;
-	const int gapX = 80;
-	const int gapY = 57;
-	const float scaleX = 1.5;
-	const float scaleY = 1.5;
+	const int baseGapX = 53;
+	const int baseGapY = 38;
 
 	//Card rendering adjusters
 	int offsetX = tileX;
 	int offsetY = tileY / 6.5;
 	int overlapX = 0;
 	int overlapY = 5;
+	int gapX;
+	int gapY;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const {
 		states.texture = &cardset;
@@ -39,9 +40,7 @@ public:
 		this->stack = stack;
 		this->index = index;
 
-		setScale(scaleX, scaleY);
-		setPosition(stack->x * gapX, stack->y * gapY);
-		setGameSize(stack->width * gapX + 10, stack->height * gapY + 10);
+		setGameSize(stack->width * baseGapX + 10, stack->height * baseGapY + 10);
 		vertices.setPrimitiveType(sf::Quads);
 		UpdateList::addNode(this);
 
@@ -62,8 +61,6 @@ public:
 			offsetY = tileY;
 			overlapY = 0;
 		}
-
-		reload();
 	}
 
 	void reload(int count = 0, int skip = 0) {
@@ -76,10 +73,16 @@ public:
 			count -= skip;
 		}
 
-		//Apply sizing
+		//Recheck scaling
+		gapX = baseGapX * cardScaling;
+		gapY = baseGapY * cardScaling;
+		setScale(cardScaling, cardScaling);
+		setPosition(stack->x * gapX, stack->y * gapY);
+
+		//Apply card count sizing
 		int i = (std::abs(offsetX) == tileX) ? 0 : count - 1;
 		int j = (offsetY == tileY) ? 0 : count - 1;
-		setSize(sf::Vector2i((tileX + std::abs(offsetX) * i) * scaleX, (tileY + offsetY * j) * scaleY));
+		setSize(sf::Vector2i((tileX + std::abs(offsetX) * i) * cardScaling, (tileY + offsetY * j) * cardScaling));
 		vertices.resize(4 * std::max(count, 1));
 		setOrigin(0, 0);
 
@@ -167,8 +170,8 @@ public:
 			shiftX = tileX - (offsetX * 4) - 3;
 
 		return sf::Vector2f(
-				(offsetX % tileX) * count * scaleX + shiftX,
-				(offsetY % tileY) * count * scaleY);
+				(offsetX % tileX) * count * cardScaling + shiftX,
+				(offsetY % tileY) * count * cardScaling);
 	}
 
 	int checkOffset(sf::Vector2f pos) {
@@ -178,18 +181,18 @@ public:
 
 		//Vertical
 		if(overlapY != 0)
-			return bet(0, pos.y / (offsetY * scaleY), count);
+			return bet(0, pos.y / (offsetY * cardScaling), count);
 
 		//Horizontal reversed
 		if(stack->get_tag(SPREAD_REVERSE))
 			return bet(0, count - 1 +
-				(pos.x - (tileX - offsetX) * scaleX) / (offsetX * scaleX), count);
+				(pos.x - (tileX - offsetX) * cardScaling) / (offsetX * cardScaling), count);
 
 		//Horizontal
-		return bet(0, pos.x / (offsetX * scaleX), count);
+		return bet(0, pos.x / (offsetX * cardScaling), count);
 	}
 
 	sf::Vector2f getCardSize() const {
-		return sf::Vector2f(tileX * scaleX, tileY * scaleY);
+		return sf::Vector2f(tileX * cardScaling, tileY * cardScaling);
 	}
 };
