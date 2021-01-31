@@ -49,8 +49,8 @@ void buildMenus() {
 	//In game menu setup
 	menus[1] = new SubMenu(sf::Vector2i(300, 1130));
 	menus[1]->addButton("Resume", 60, 220, menus[1], selectMenu(-1));
-	menus[1]->addButton("Save & Quit", 120, 220, menus[1], []() { quit(true); });
-	menus[1]->addButton("Abandon Game", 180, 220, menus[1], []() { quit(false); });
+	menus[1]->addButton("Save & Quit", 120, 220, menus[1], []() { quitGame(true); });
+	menus[1]->addButton("Abandon Game", 180, 220, menus[1], []() { quitGame(false); });
 	menus[1]->addButton("Themes", 240, 220, menus[1], selectMenu(5));
 
 	//Sub menus

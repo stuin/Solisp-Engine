@@ -1,4 +1,4 @@
-#include "Pointer.hpp"
+#include "main.h"
 
 class Camera : public Node {
 	float gameWidth = 0;
@@ -46,11 +46,7 @@ public:
 			float scaleX = screenWidth / gameWidth;
 			float scaleY = screenHeight / gameHeight;
 			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
+			cardScaling = bet(0.25, cardScaling, 1.5);
 		}
 	}
 };
-
-Camera *camera = NULL;
-void setGameSize(int width, int height) {
-	camera->setGameSize(width, height);
-}

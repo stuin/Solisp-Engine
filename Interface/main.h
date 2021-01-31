@@ -13,13 +13,13 @@ using std::string;
 
 //Menus side
 void buildMenus();
-void showMenu(int selected, bool toggle=false);
+void showMenu(int selected, bool toggle);
 int checkOpen();
 
-//Main side
-void startGame(string rule_file, string save_file="");
+//Root/main
+void startGame(string rule_file, string save_file);
+void quitGame(bool save);
 void changeCardset(string file);
-void quit(bool save);
 void setGameSize(int width, int height);
 
 //Random helpers

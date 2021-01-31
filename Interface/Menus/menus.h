@@ -29,8 +29,8 @@ string ThemeNamer(string file) {
 //Function to start new game
 clickptr GameFunc(string file, Node *parent) {
 	return [file, parent]() {
-		startGame(file);
-		showMenu(-1);
+		startGame(file, "");
+		showMenu(-1, false);
 	};
 }
 
@@ -50,6 +50,6 @@ clickptr LoadFunc(string file, Node *parent) {
 		rule_file += ".solisp";
 
 		startGame(rule_file, file);
-		showMenu(-1);
+		showMenu(-1, false);
 	};
 }

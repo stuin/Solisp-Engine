@@ -2,10 +2,9 @@
 
 std::vector<StackRenderer*> stacks;
 Solisp::Game game;
-int STACKCOUNT;
 
 void reloadAll() {
-	for(unc i = 1; i < STACKCOUNT; i++)
+	for(unc i = 1; i < game.get_stack_count(); i++)
 		stacks[i]->reload();
 }
 
@@ -27,7 +26,7 @@ private:
 	}
 
 public:
-	Pointer(StackRenderer *stack) : Node(POINTER, sf::Vector2i(2, 2), false, root) {
+	Pointer(StackRenderer *stack, Node *root) : Node(POINTER, sf::Vector2i(2, 2), false, root) {
 		this->mouse = stack;
 		collideWith(STACKS);
 		stack->setParent(this);
@@ -92,7 +91,7 @@ public:
 
 				//Check for win
 				if(game.cards_remaining() <= 0) {
-					quit(false);
+					quitGame(false);
 					setHidden(true);
 				}
 			} else {
@@ -107,7 +106,7 @@ public:
 
 				//Check for win
 				if(game.cards_remaining() <= 0) {
-					quit(false);
+					quitGame(false);
 					setHidden(true);
 				}
 

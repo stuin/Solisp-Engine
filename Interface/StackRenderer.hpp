@@ -1,10 +1,11 @@
 #include "main.h"
+#include "Skyrmion/UpdateList.h"
+#include "../Gameplay/game.h"
 
 #include <algorithm>
 
 sf::Texture cardset;
 float cardScaling = 1;
-Node *root = NULL;
 
 class StackRenderer : public Node {
 public:
@@ -36,7 +37,7 @@ private:
 	}
 
 public:
-	StackRenderer(Solisp::Stack *stack, unc index, Layer layer=STACKS, float offsetDiv=4.5) : Node(layer, sf::Vector2i(1, 1), false, root) {
+	StackRenderer(Solisp::Stack *stack, unc index, Node *root, Layer layer=STACKS, float offsetDiv=4.5) : Node(layer, sf::Vector2i(1, 1), false, root) {
 		this->stack = stack;
 		this->index = index;
 
