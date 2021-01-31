@@ -194,7 +194,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 		case HStack:
 			stack.set_tag(SPREAD);
 			stack.set_tag(SPREAD_HORIZONTAL);
-			dim.x = 7;
+			dim.x = 10;
 
 			//Adjust for maximum
 			if(stack.get_max() != 0)
@@ -202,7 +202,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 			break;
 		case VStack:
 			stack.set_tag(SPREAD);
-			dim.y = 7;
+			dim.y = 10;
 
 			//Adjust for maximum
 			if(stack.get_max() != 0)

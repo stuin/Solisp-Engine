@@ -32,7 +32,6 @@ public:
 		stack->setParent(this);
 
 		//Set up rectangle
-		rect.setSize(stack->getCardSize() + sf::Vector2f(1, 1));
 		rect.setOutlineColor(sf::Color::Cyan);
 		rect.setFillColor(sf::Color::Transparent);
 		rect.setOutlineThickness(5);
@@ -130,6 +129,7 @@ public:
 		} else if(!holding) {
 			from = stack;
 			int offset = from->checkOffset(getPosition() - from->getPosition());
+			rect.setSize(stack->getCardSize() + sf::Vector2f(1, 1));
 			rect.setPosition(from->getPosition() + from->getOffset(offset));
 			selectionTime = 2;
 		} else if(to == stack)
@@ -164,9 +164,9 @@ public:
 				pressed = true;
 			else if(from != NULL && event.mouseButton.button == sf::Mouse::Right)
 				drop();
-		} else if(event.type == sf::Event::MouseMoved)
+		} else if(event.type == sf::Event::MouseMoved) {
 			setGPosition(event.mouseMove.x * shiftX, event.mouseMove.y * shiftY);
-		else if(event.type == sf::Event::MouseButtonReleased)
+		} else if(event.type == sf::Event::MouseButtonReleased)
 			pressed = false;
 	}
 };
