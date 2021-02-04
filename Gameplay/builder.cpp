@@ -21,6 +21,7 @@ std::map<string, stack_tags> Stack::tag_map = {
 	{"BUTTON", BUTTON},
 	{"MIRRORED", SPREAD_REVERSE},
 	{"MULTI", SPREAD_FAKE},
+	{"SWAP", SWAP},
 	{"CUSTOM", CUSTOM}
 };
 std::map<string, func_tag> Stack::func_map = {

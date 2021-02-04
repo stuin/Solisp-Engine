@@ -12,6 +12,7 @@ Devil's Grip, Challenge
 		(Clone 3 (HLayout
 			(Clone 8 (VStack {
 				GOAL
+				SWAP
 				(Start 0 1)
 				(Max 4)
 				(Filter-Open (Append

@@ -46,7 +46,6 @@ public:
 			float scaleX = screenWidth / gameWidth;
 			float scaleY = screenHeight / gameHeight;
 			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
-			cardScaling = bet(0.25, cardScaling, 1.5);
 		}
 	}
 };

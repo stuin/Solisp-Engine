@@ -165,10 +165,10 @@ void Game::deal() {
 
 				if(stack[j].start_hidden > 0) {
 					stack[j].start_hidden--;
-					*current += new Move(0, j, 1, 0, false, current);
+					*current += new Move(0, j, 1, 0, false);
 				} else if(stack[j].start_shown > 0) {
 					stack[j].start_shown--;
-					*current += new Move(0, j, 1, 0, true, current);
+					*current += new Move(0, j, 1, 0, true);
 				}
 			}
 		}
@@ -176,7 +176,7 @@ void Game::deal() {
 
 	//Move remaining cards to overflow
 	if(overflowSlot != 0)
-		*current += new Move(0, overflowSlot, -1, 0, false, current);
+		*current += new Move(0, overflowSlot, -1, 0, false);
 }
 
 //Call all setup functions
@@ -204,7 +204,7 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 
 	//Start game history
 	if(saved == NULL) {
-		current = new Move(0, 0, output.seed, false, false, NULL);
+		current = new Move(0, 0, output.seed, false, false);
 		deal();
 		stage = STARTING;
 	} else {
@@ -245,7 +245,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack is button
 	if(stack[from].get_tag(BUTTON) && user > 1) {
-		*current += new Move(from, from, 0, user, false, current);
+		*current += new Move(from, from, 0, user, false);
 		update();
 		return false;
 	}
@@ -256,7 +256,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Flip one card if top hidden
 	if(stack[from].get_card()->is_hidden() && user > 1) {
-		*current += new Move(from, from, 1, user, true, current);
+		*current += new Move(from, from, 1, user, true);
 		update();
 		return false;
 	}
@@ -310,9 +310,24 @@ bool Game::test(unc to, unc user) {
 }
 
 bool Game::place(unc to, unc user) {
+	unc from = users[user].from;
+
 	//Check for proper move
-	if(to != users[user].from && (users[user].tested == to || test(to, user))) {
-		*current += new Move(users[user].from, to, users[user].count, user, false, current);
+	if(to != from && (users[user].tested == to || test(to, user))) {
+		*current += new Move(from, to, users[user].count, user, false);
+
+		update();
+		cancel(user);
+		return true;
+	}
+
+	//Check for valid swap
+	if(to != from && stack[to].get_tag(SWAP) && stack[from].get_tag(SWAP)
+		&& stack[from].get_count() == users[user].count) {
+		*current += new Move(0, 0, 0, user, false);
+		*current += new Move(from, 0, stack[from].get_count(), 0, false);
+		*current += new Move(to, from, stack[to].get_count(), 0, false);
+		*current += new Move(0, to, stack[from].get_count(), 0, false);
 
 		update();
 		cancel(user);
@@ -381,14 +396,14 @@ void Game::load(string file, string rule_file) {
 
 	//Read first move
 	fread(&data, size, 1, infile);
-	Move *first = new Move(data, NULL);
+	Move *first = new Move(data);
 	Move *added = first;
 	unsigned int seed = first->get_count();
 
 	//Read all other moves
 	int count = 1;
 	while(fread(&data, size, 1, infile)) {
-		*added += new Move(data, added);
+		*added += new Move(data);
 		added = added->get_next();
 		++count;
 	}

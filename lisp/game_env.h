@@ -39,7 +39,7 @@ public:
 			cout << "Try: ";
 		cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 
-		*current += new Move(from, to, count, user, flip, current);
+		*current += new Move(from, to, count, user, flip);
 	}
 
 	//Retrieve stack properties

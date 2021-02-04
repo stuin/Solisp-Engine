@@ -16,12 +16,12 @@ namespace Solisp {
 
 using std::bitset;
 
-#define STACKTAGCOUNT 9
+#define STACKTAGCOUNT 10
 #define STACKFUNCOUNT 6
 
 //List of tags to change stack properties
 enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
-	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, CUSTOM };
+	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, SWAP, CUSTOM };
 enum func_tag { ONGRAB, ONPLACE, ONFLIP, ONSTART, GRABIF, PLACEIF };
 
 class Solisp::Stack {

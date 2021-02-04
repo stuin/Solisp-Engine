@@ -51,12 +51,12 @@ private:
 public:
 	Move() { }
 
-	Move(struct MovePacket data, Move *last) {
+	Move(struct MovePacket data) {
 		this->data = data;
 	}
 
 	//Build new move
-	Move(unc from, unc to, unsigned int count, unc user, bool flip, Move *last) {
+	Move(unc from, unc to, unsigned int count, unc user, bool flip) {
 		//Set general move
 		data.count = count;
 		data.from = from;
