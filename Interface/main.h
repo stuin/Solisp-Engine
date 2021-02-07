@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <string>
+#include <SFML/Graphics.hpp>
 
 #include "enums.h"
 
@@ -12,7 +13,7 @@ using std::string;
 #endif
 
 //Menus side
-void buildMenus();
+void buildMenus(sf::Font _font);
 void showMenu(int selected, bool toggle);
 int checkOpen();
 

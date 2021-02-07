@@ -1,5 +1,6 @@
 #include "Root.hpp"
 #include "Camera.hpp"
+#include "resources.h"
 
 //Static camera functions
 Camera *camera = NULL;
@@ -28,11 +29,16 @@ int main(int argc, char const *argv[]) {
 	DrawNode background(rect, BACKGROUND);
 	UpdateList::addNode(&background);
 
-	//Load defaults
-	buildMenus();
+	//Load menu resources
+	sf::Font font;
+	if(!font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size))
+		throw std::invalid_argument("Font file not found");
+	buildMenus(font);
+
+	//Load display defaults
 	camera = new Camera();
 	changeCardset("res/faces/minimal_dark.png");
-	if(!actionTexture.loadFromFile("res/icons.png"))
+	if(!actionTexture.loadFromMemory((void *)&_binary_icons_png_start, _icons_png_size))
 		throw std::invalid_argument("Button textures not found");
 
 	root = new Root();

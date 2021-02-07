@@ -33,10 +33,8 @@ int checkOpen() {
 	return openMenu;
 }
 
-void buildMenus() {
-	//Load important resources
-	if(!font.loadFromFile("res/RomanAntique.ttf"))
-		throw std::invalid_argument("Font file not found");
+void buildMenus(sf::Font _font) {
+	font = _font;
 
 	//Main menu setup
 	menus[0] = new SubMenu(sf::Vector2i(300, 1090));
