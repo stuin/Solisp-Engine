@@ -1,6 +1,8 @@
 *.os
 *.o
 *.exe
+*.out
+
 vgcore.*
 
 res/

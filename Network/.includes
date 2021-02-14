@@ -1,4 +1,4 @@
 parent=../Gameplay/.baseincludes
 
 files=./GameServer.cpp
-output=./server
+output=./server.out
