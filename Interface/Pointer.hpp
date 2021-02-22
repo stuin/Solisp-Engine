@@ -152,7 +152,7 @@ public:
 	}
 
 	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		if(checkOpen() != -1) {
+		if(checkOpen() != ACTIONMENU) {
 			if(holding)
 				drop();
 			rect.setPosition(-300, 0);

@@ -1,20 +1,23 @@
 #include "FolderMenu.hpp"
 #include "menus.h"
+#include "resources.h"
 
-#define MENUCOUNT 6
+#define MENUCOUNT 7
 SubMenu *menus[MENUCOUNT];
 int openMenu = 0;
+
+sf::Texture actionTexture;
 
 //Show specific menu or sub menu
 void showMenu(int selected, bool toggle) {
 	openMenu = selected;
 	for(int i = 0; i < MENUCOUNT; i++) {
-		if(i != selected && (selected == -1 || menus[i] != menus[selected]->getParent()))
+		if(i != selected && (menus[i] != menus[selected]->getParent()))
 			menus[i]->setHidden(true);
 		else if(i == selected && toggle) {
 			menus[i]->setHidden(!menus[i]->isHidden());
 			if(menus[i]->isHidden())
-				openMenu = -1;
+				openMenu = MAINMENU;
 		} else
 			menus[i]->setHidden(false);
 	}
@@ -23,45 +26,60 @@ void showMenu(int selected, bool toggle) {
 //Lambda function to open menu
 clickptr selectMenu(int i) {
 	return [i]() {
-		if(i > -1)
-			menus[i]->reload();
+		menus[i]->reload();
 		showMenu(i, true);
 	};
+}
+
+void addActionButton(int tindex, clickptr func) {
+	//Create sprite with texture
+	sf::Sprite *sprite = new sf::Sprite(actionTexture);
+	sprite->setScale(0.75, 0.75);
+	sprite->setTextureRect(sf::IntRect(0, tindex * 64, 64, (tindex + 1) * 64));
+	menus[ACTIONMENU]->addButton("", func);//->setImage(*sprite);
+}
+
+void addCardsetButton(string name, const char *start, size_t size) {
+	clickptr func = [start, size]() { getCardset()->loadFromMemory((void *)start, size); };
+	menus[CARDMENU1]->addButton(name, func, true);
+	menus[CARDMENU2]->addButton(name, func, true);
 }
 
 int checkOpen() {
 	return openMenu;
 }
 
-void buildMenus(sf::Font _font) {
-	font = _font;
+void buildMenus() {
+	//Load game resources
+	font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size);
+	actionTexture.loadFromMemory((void *)&_binary_icons_png_start, _icons_png_size);
+	getCardset()->loadFromMemory((void *)&_binary_minimal_dark_png_start, _minimal_dark_png_size);
 
 	//Main menu setup
-	menus[0] = new SubMenu(sf::Vector2i(300, 1090));
-	menus[0]->addButton("Solitaire", 60, 200, menus[0], selectMenu(2));
-	menus[0]->addButton("Load Game", 120, 200, menus[0], selectMenu(3));
-	menus[0]->addButton("Themes", 180, 200, menus[0], selectMenu(4));
-	menus[0]->addButton("Quit", 240, 200, menus[0], []() { UpdateList::stopEngine(); });
-	menus[0]->setHidden(false);
+	menus[MAINMENU] = new SubMenu(sf::Vector2i(250, 1090), 200);
+	menus[MAINMENU]->addButton("Solitaire", selectMenu(STARTMENU));
+	menus[MAINMENU]->addButton("Load Game", selectMenu(LOADMENU));
+	menus[MAINMENU]->addButton("Themes", selectMenu(CARDMENU1));
+	menus[MAINMENU]->addButton("Quit", []() { UpdateList::stopEngine(); });
+	menus[MAINMENU]->setHidden(false);
 
 	//In game menu setup
-	menus[1] = new SubMenu(sf::Vector2i(300, 1130));
-	menus[1]->addButton("Resume", 60, 220, menus[1], selectMenu(-1));
-	menus[1]->addButton("Save & Quit", 120, 220, menus[1], []() { quitGame(true); });
-	menus[1]->addButton("Abandon Game", 180, 220, menus[1], []() { quitGame(false); });
-	menus[1]->addButton("Themes", 240, 220, menus[1], selectMenu(5));
+	menus[PAUSEMENU] = new SubMenu(sf::Vector2i(250, 1090), 200);
+	menus[PAUSEMENU]->addButton("Resume", selectMenu(ACTIONMENU));
+	menus[PAUSEMENU]->addButton("Save & Quit", []() { quitGame(true); });
+	menus[PAUSEMENU]->addButton("Abandon Game", []() { quitGame(false); });
+	menus[PAUSEMENU]->addButton("Themes", selectMenu(CARDMENU2));
 
 	//Sub menus
-	menus[2] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, menus[0]);
-	menus[3] = new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, menus[0]);
-	menus[4] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[0]);
-	menus[5] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[1]);
-}
+	menus[STARTMENU] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, menus[0]);
+	menus[LOADMENU] = new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, menus[0]);
+	menus[CARDMENU1] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[0]);
+	menus[CARDMENU2] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[1]);
 
-int bet(int min, int value, int max) {
-	if(value < min)
-		return min;
-	if(value > max)
-		return max;
-	return value;
+	//Action menu
+	menus[ACTIONMENU] = new SubMenu(sf::Vector2i(80, 220), 64);
+	addActionButton(2, []() { showMenu(PAUSEMENU, false); });
+
+	//Add system cardsets
+	addCardsetButton("Minimal Dark", &_binary_minimal_dark_png_start, _minimal_dark_png_size);
 }

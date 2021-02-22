@@ -1,5 +1,4 @@
 #include "Pointer.hpp"
-#include "ActionButton.hpp"
 
 class Root : public Node {
 private:
@@ -9,11 +8,6 @@ private:
 
 	//Saving var
 	string next_save_file;
-
-	//Side buttons
-	ActionButton *menuButton = NULL;
-	ActionButton *undoButton = NULL;
-	ActionButton *redoButton = NULL;
 
 public:
 	Root() : Node(BACKGROUND) {
@@ -28,29 +22,6 @@ public:
 		stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
 		themeView = new StackRenderer(stack, 1, this, DISPLAY, 1.3);
 		themeView->setPosition(700, 400);
-
-		//Add quit button
-		Solisp::Game *gameptr = &game;
-		menuButton = new ActionButton(2, 40, []() {
-			if(checkOpen() == -1)
-				showMenu(1, false);
-		});
-
-		//Add undo/redo buttons
-		undoButton = new ActionButton(0, 100, [gameptr]() {
-			if(checkOpen() == -1) {
-				gameptr->undo(2);
-				gameptr->update();
-				reloadAll();
-			}
-		});
-		redoButton = new ActionButton(1, 160, [gameptr]() {
-			if(checkOpen() == -1) {
-				gameptr->redo(2);
-				gameptr->update();
-				reloadAll();
-			}
-		});
 	}
 
 	void startGame(string rule_file, string save_file) {
@@ -82,8 +53,6 @@ public:
 		reloadAll();
 
 		//Final setup
-		menuButton->setHidden(false);
-		undoButton->setHidden(false);
 		themeView->setHidden(true);
 
 		if(pointer == NULL) {
@@ -96,11 +65,6 @@ public:
 	void quitGame(bool save) {
 		if(save)
 			game.save(next_save_file);
-
-		//Reset menu buttons
-		menuButton->setHidden(true);
-		undoButton->setHidden(true);
-		redoButton->setHidden(true);
 
 		for(StackRenderer *s : stacks)
 			s->setDelete();

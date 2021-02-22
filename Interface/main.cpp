@@ -1,6 +1,5 @@
 #include "Root.hpp"
 #include "Camera.hpp"
-#include "resources.h"
 
 //Static camera functions
 Camera *camera = NULL;
@@ -16,10 +15,8 @@ void startGame(string rule_file, string save_file) {
 void quitGame(bool save) {
 	root->quitGame(save);
 }
-
-void changeCardset(string file) {
-	if(!cardset.loadFromFile(file))
-		throw std::invalid_argument("Card texture not found");
+sf::Texture *getCardset() {
+	return &cardset;
 }
 
 int main(int argc, char const *argv[]) {
@@ -29,18 +26,31 @@ int main(int argc, char const *argv[]) {
 	DrawNode background(rect, BACKGROUND);
 	UpdateList::addNode(&background);
 
-	//Load menu resources
-	sf::Font font;
-	if(!font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size))
-		throw std::invalid_argument("Font file not found");
-	buildMenus(font);
-
-	//Load display defaults
+	//Load display resources
+	buildMenus();
 	camera = new Camera();
-	changeCardset("res/faces/minimal_dark.png");
-	if(!actionTexture.loadFromMemory((void *)&_binary_icons_png_start, _icons_png_size))
-		throw std::invalid_argument("Button textures not found");
-
 	root = new Root();
+
+	//Add undo/redo buttons
+	Solisp::Game *gameptr = &game;
+	addActionButton(0, [gameptr]() {
+		gameptr->undo(2);
+		gameptr->update();
+		reloadAll();
+	});
+	addActionButton(1, [gameptr]() {
+		gameptr->redo(2);
+		gameptr->update();
+		reloadAll();
+	});
+
 	UpdateList::startEngine("Solitaire", POINTER);
+}
+
+int bet(int min, int value, int max) {
+	if(value < min)
+		return min;
+	if(value > max)
+		return max;
+	return value;
 }

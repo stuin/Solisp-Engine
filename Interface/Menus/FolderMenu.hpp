@@ -4,7 +4,7 @@
 
 namespace fs = std::filesystem;
 
-#include "Button.hpp"
+#include "SubMenu.hpp"
 
 class FolderMenu : public SubMenu {
 private:
@@ -18,8 +18,8 @@ private:
 public:
 	FolderMenu(string dir, string ext, function<string(string)> name,
 			function<clickptr(string, Node*)> func, Node *parent)
-			: SubMenu(sf::Vector2i(400, 1090), parent) {
-		setPosition(310, 0);
+			: SubMenu(sf::Vector2i(400, 1090), 300, parent) {
+		setPosition(260, 0);
 
 		//Save values to populate menu
 		this->dir = dir;
@@ -29,7 +29,7 @@ public:
 	}
 
 	void reload() {
-		if(fs::last_write_time(dir) == edited)
+		if(!fs::exists(dir) || fs::last_write_time(dir) == edited)
 			return;
 
 		//Reset list and mark time
@@ -37,12 +37,12 @@ public:
 		edited = fs::last_write_time(dir);
 
 		//Set up game list
-		int y = 0;
 		for(auto &entry : fs::directory_iterator(dir)) {
 			if(entry.is_regular_file() && entry.path().extension().string() == ext) {
 				string file = entry.path().relative_path().string();
-				addButton(name(file), y += 70, 300, this, func(file, getParent()));
+				addButton(name(file), func(file, getParent()));
 			}
 		}
+		sortContents();
 	}
 };

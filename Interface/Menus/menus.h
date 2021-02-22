@@ -30,14 +30,15 @@ string ThemeNamer(string file) {
 clickptr GameFunc(string file, Node *parent) {
 	return [file, parent]() {
 		startGame(file, "");
-		showMenu(-1, false);
+		showMenu(ACTIONMENU, false);
 	};
 }
 
 //Function to change card texture
 clickptr ThemeFunc(string file, Node *parent) {
 	return [file]() {
-		changeCardset(file);
+		if(!getCardset()->loadFromFile(file))
+			throw std::invalid_argument("Card texture not found");
 	};
 }
 
@@ -50,6 +51,6 @@ clickptr LoadFunc(string file, Node *parent) {
 		rule_file += ".solisp";
 
 		startGame(rule_file, file);
-		showMenu(-1, false);
+		showMenu(ACTIONMENU, false);
 	};
 }

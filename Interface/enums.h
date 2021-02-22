@@ -10,3 +10,13 @@ enum CollisionLayers {
 	TEXT,
 	POINTER
 };
+
+enum SubMenus {
+	MAINMENU,
+	PAUSEMENU,
+	ACTIONMENU,
+	STARTMENU,
+	LOADMENU,
+	CARDMENU1,
+	CARDMENU2
+};
