@@ -4,7 +4,8 @@
 //Static camera functions
 Camera *camera = NULL;
 void setGameSize(int width, int height) {
-	camera->setGameSize(width, height);
+	if(camera != NULL)
+		camera->setGameSize(width, height);
 }
 
 //Static Root functions
@@ -28,8 +29,8 @@ int main(int argc, char const *argv[]) {
 
 	//Load display resources
 	buildMenus();
-	camera = new Camera();
 	root = new Root();
+	camera = new Camera();
 
 	//Add undo/redo buttons
 	Solisp::Game *gameptr = &game;
@@ -38,11 +39,11 @@ int main(int argc, char const *argv[]) {
 		gameptr->update();
 		reloadAll();
 	});
-	addActionButton(1, [gameptr]() {
+	/*addActionButton(1, [gameptr]() {
 		gameptr->redo(2);
 		gameptr->update();
 		reloadAll();
-	});
+	});*/
 
 	UpdateList::startEngine("Solitaire", POINTER);
 }

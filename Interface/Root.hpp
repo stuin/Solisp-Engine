@@ -19,9 +19,10 @@ public:
 		stack->add_count(5);
 		stack->set_tag(SPREAD);
 		stack->set_tag(SPREAD_HORIZONTAL);
+		stack->set_cords(7, 7, 3, 8);
 		stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
-		themeView = new StackRenderer(stack, 1, this, DISPLAY, 1.3);
-		themeView->setPosition(700, 400);
+		themeView = new StackRenderer(stack, 1, NULL, DISPLAY, 1.3);
+		themeView->reload();
 	}
 
 	void startGame(string rule_file, string save_file) {

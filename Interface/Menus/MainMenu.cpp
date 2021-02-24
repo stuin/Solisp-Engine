@@ -36,7 +36,7 @@ void addActionButton(int tindex, clickptr func) {
 	sf::Sprite *sprite = new sf::Sprite(actionTexture);
 	sprite->setScale(0.75, 0.75);
 	sprite->setTextureRect(sf::IntRect(0, tindex * 64, 64, (tindex + 1) * 64));
-	menus[ACTIONMENU]->addButton("", func);//->setImage(*sprite);
+	menus[ACTIONMENU]->addButton("", func)->setImage(*sprite);
 }
 
 void addCardsetButton(string name, const char *start, size_t size) {
@@ -77,7 +77,8 @@ void buildMenus() {
 	menus[CARDMENU2] = new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, menus[1]);
 
 	//Action menu
-	menus[ACTIONMENU] = new SubMenu(sf::Vector2i(80, 220), 64);
+	menus[ACTIONMENU] = new SubMenu(sf::Vector2i(74, 140), 64);
+	menus[ACTIONMENU]->setPosition(0, -30);
 	addActionButton(2, []() { showMenu(PAUSEMENU, false); });
 
 	//Add system cardsets

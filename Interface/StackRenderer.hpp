@@ -5,7 +5,7 @@
 #include <algorithm>
 
 sf::Texture cardset;
-float cardScaling = 1;
+float cardScaling = 1.5;
 
 class StackRenderer : public Node {
 public:
