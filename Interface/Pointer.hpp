@@ -10,12 +10,17 @@ void reloadAll() {
 
 class Pointer : public Node {
 private:
-	StackRenderer *mouse;
+	//Interface
+	StackRenderer *mouse = NULL;
 	StackRenderer *from = NULL;
 	StackRenderer *to = NULL;
 	sf::RectangleShape rect;
 
+	//Game links
+	Solisp::GameInterface *gameI = &game;
 	unc user = 2;
+
+	//Current state
 	bool pressed = false;
 	bool holding = false;
 	double selectionTime = 0;
@@ -26,10 +31,8 @@ private:
 	}
 
 public:
-	Pointer(StackRenderer *stack, Node *root) : Node(POINTER, sf::Vector2i(2, 2), false, root) {
-		this->mouse = stack;
+	Pointer(Node *root) : Node(POINTER, sf::Vector2i(2, 2), false, root) {
 		collideWith(STACKS);
-		stack->setParent(this);
 
 		//Set up rectangle
 		rect.setOutlineColor(sf::Color::Cyan);
@@ -38,15 +41,25 @@ public:
 
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
 		UpdateList::addListener(this, sf::Event::MouseMoved);
+		UpdateList::addNode(this);
 	}
 
 	void reset(StackRenderer *stack) {
+		reset(stack, &game, 2);
+	}
+
+	void reset(StackRenderer *stack, Solisp::GameInterface *gameI, unc user) {
+		//Default values
 		from = NULL;
 		to = NULL;
 		pressed = false;
 		holding = false;
 
+		//External references
+		this->user = user;
+		this->gameI = gameI;
 		this->mouse = stack;
+
 		stack->setParent(this);
 		setHidden(false);
 	}
@@ -77,7 +90,7 @@ public:
 				}
 
 				//Pick up cards
-				if(game.grab(count, stack->getIndex(), user)) {
+				if(gameI->grab(count, stack->getIndex(), user)) {
 					from = stack;
 					stack->reload(0, count);
 					mouse->stack = stack->stack;
@@ -95,7 +108,7 @@ public:
 				}
 			} else {
 				//Place down cards
-				if(game.place(stack->getIndex(), user))
+				if(gameI->place(stack->getIndex(), user))
 					reloadAll();
 				else
 					from->reload();
@@ -118,7 +131,7 @@ public:
 			if(to == from) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count()));
-			} else if(game.test(stack->getIndex(), user)) {
+			} else if(gameI->test(stack->getIndex(), user)) {
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count() + 1));
 			} else {
@@ -140,7 +153,7 @@ public:
 	}
 
 	void drop() {
-		game.cancel(user);
+		gameI->cancel(user);
 		from->reload();
 		from = NULL;
 		to = NULL;

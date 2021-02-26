@@ -11,13 +11,13 @@ namespace Solisp {
 static unsigned int max_id = 0;
 
 using unc = unsigned char;
-enum move_tag { VALID, FLIP, SETUP, LOOP, SOFT };
+enum move_tag { VALID, FLIP, SETUP, LOOP, SOFT, SERVER };
 
 struct Solisp::MovePacket {
 	unc from;
 	unc to;
 	unc user;
-	unc tags;
+	unsigned int tags;
 	unsigned int count;
 	unsigned int id;
 };
@@ -51,8 +51,9 @@ private:
 public:
 	Move() { }
 
-	Move(struct MovePacket data) {
+	Move(struct MovePacket data, bool server=false) {
 		this->data = data;
+		set_tag(SERVER, server);
 	}
 
 	//Build new move

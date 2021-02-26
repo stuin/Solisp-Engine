@@ -59,6 +59,7 @@ void buildMenus() {
 	menus[MAINMENU] = new SubMenu(sf::Vector2i(250, 1090), 200);
 	menus[MAINMENU]->addButton("Solitaire", selectMenu(STARTMENU));
 	menus[MAINMENU]->addButton("Load Game", selectMenu(LOADMENU));
+	menus[MAINMENU]->addButton("Localhost", []() { joinServer("127.0.0.1"); });
 	menus[MAINMENU]->addButton("Themes", selectMenu(CARDMENU1));
 	menus[MAINMENU]->addButton("Quit", []() { UpdateList::stopEngine(); });
 	menus[MAINMENU]->setHidden(false);

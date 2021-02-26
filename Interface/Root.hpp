@@ -1,4 +1,5 @@
 #include "Pointer.hpp"
+#include "../Network/GameClient.hpp"
 
 class Root : public Node {
 private:
@@ -12,6 +13,7 @@ private:
 public:
 	Root() : Node(BACKGROUND) {
 		setPosition(100, 30);
+		pointer = new Pointer(this);
 
 		//Add decorational Cards
 		Solisp::Stack *stack = new Solisp::Stack();
@@ -55,12 +57,26 @@ public:
 
 		//Final setup
 		themeView->setHidden(true);
+		pointer->reset(stacks[0]);
+		showMenu(ACTIONMENU, false);
+	}
 
-		if(pointer == NULL) {
-			pointer = new Pointer(stacks[0], this);
-			UpdateList::addNode(pointer);
-		} else
-			pointer->reset(stacks[0]);
+	void joinServer(string ip) {
+		GameClient *client = new GameClient();
+		if(client->connect(ip, &game)) {
+			//Set up slots
+			stacks.clear();
+			stacks.reserve((int)game.get_stack_count());
+			stacks.push_back(new StackRenderer(game.get_stack(0), 0, this, POINTER));
+			for(unc i = 1; i < game.get_stack_count(); i++)
+				stacks.push_back(new StackRenderer(game.get_stack(i), i, this));
+			reloadAll();
+
+			//Final setup
+			themeView->setHidden(true);
+			pointer->reset(stacks[0], client, client->get_user());
+			showMenu(ACTIONMENU, false);
+		}
 	}
 
 	void quitGame(bool save) {

@@ -30,7 +30,6 @@ string ThemeNamer(string file) {
 clickptr GameFunc(string file, Node *parent) {
 	return [file, parent]() {
 		startGame(file, "");
-		showMenu(ACTIONMENU, false);
 	};
 }
 

@@ -13,6 +13,9 @@ Root *root = NULL;
 void startGame(string rule_file, string save_file) {
 	root->startGame(rule_file, save_file);
 }
+void joinServer(string ip) {
+	root->joinServer(ip);
+}
 void quitGame(bool save) {
 	root->quitGame(save);
 }

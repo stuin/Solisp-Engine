@@ -1,5 +1,0 @@
-parent=../Gameplay/.baseincludes
-
-buildargs3=-lclsocket
-files=./TestClient.cpp
-output=./client.out

@@ -1,4 +1,5 @@
 namespace Solisp {
+	class GameInterface;
 	class Game;
 	struct Hand;
 }
@@ -27,7 +28,15 @@ enum Stage {
 	PLAYING
 };
 
-class Solisp::Game {
+class Solisp::GameInterface {
+public:
+	virtual bool grab(unsigned int num, unc from, unc user) { return false; }
+	virtual bool test(unc to, unc user) { return false; }
+	virtual bool place(unc to, unc user) { return false; }
+	virtual void cancel(unc user) {}
+};
+
+class Solisp::Game : public GameInterface {
 private:
 	//Game definition
 	unc STACKCOUNT = 0;
@@ -63,8 +72,6 @@ public:
 	bool grab(unsigned int num, unc from, unc user);
 	bool test(unc to, unc user);
 	bool place(unc to, unc user);
-
-	//Clear hand
 	void cancel(unc user);
 
 	//History management
@@ -94,5 +101,8 @@ public:
 	}
 	Stage get_stage() {
 		return stage;
+	}
+	Hand get_hand(unc user) {
+		return users[user];
 	}
 };
