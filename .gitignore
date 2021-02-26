@@ -3,6 +3,8 @@
 *.exe
 *.out
 
+*.cache
+
 vgcore.*
 
 res/

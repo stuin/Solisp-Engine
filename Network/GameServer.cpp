@@ -1,46 +1,55 @@
 #include "../Gameplay/filelist.h"
 #include "../Gameplay/game.h"
 
-#include <brynet/net/EventLoop.hpp>
-#include <brynet/net/TcpService.hpp>
-#include <brynet/net/wrapper/ServiceBuilder.hpp>
+#define _LINUX true
+#define MAX_PACKET 4096
 
+#include <clsocket/PassiveSocket.h>
 #include <iostream>
 #include <queue>
+#include <fstream>
+#include <streambuf>
 
 using std::cout;
 using std::string;
 using Solisp::MovePacket;
+using Solisp::Move;
 using Solisp::Hand;
-using namespace brynet;
-using namespace brynet::net;
+using p = const uint8*;
 
-struct SETUP {
-	unc players = 0;
-	unsigned int seed;
-};
-
+//Game state
 Solisp::Game game;
-struct SETUP setup;
+unsigned int seed;
 std::queue<struct Hand> move_queue;
 
-std::vector<TcpConnection::Ptr> clients;
+//Connections
+std::vector<CActiveSocket *> clients;
 std::vector<Solisp::Move *> client_move;
 
-void update_client(const TcpConnection::Ptr& session, unc player) {
-	//Send move ends
-	unsigned int id = game.get_current()->get_id();
-	char data[sizeof(struct MovePacket)];
-	session->send("m" + id, 5);
+void run_client(CActiveSocket *session, unc player) {
+	while(true) {
+		//Send move count
+		unsigned int id = game.get_current()->get_id();
+		if(!session->Send((p)("m"), 1))
+			break;
+		session->Send((p)&id, 4);
 
-	//Send each move
-	Solisp::Move *move = client_move[player];
-	while(move->get_id() < id) {
-		move = move->get_next();
-		memcpy(data, move->get_data(), sizeof(struct MovePacket));
-		session->send(data, sizeof(struct MovePacket));
+		//Send each move
+		char data[sizeof(struct MovePacket)];
+		Solisp::Move *move = client_move[player];
+		while(move->get_id() < id) {
+			move = move->get_next();
+			memcpy(data, move->get_data(), sizeof(struct MovePacket));
+			session->Send((p)data, sizeof(struct MovePacket));
+		}
+		client_move[player] = move;
+
+		if(!session->Receive(1))
+			break;
+
 	}
-	client_move[player] = move;
+	session->Close();
+	cout << "Player " << (int)player << " disconnected\n";
 }
 
 int main(int argc, char const *argv[]) {
@@ -53,90 +62,72 @@ int main(int argc, char const *argv[]) {
 		std::cin >> game_number;
 	}
 
-	string ruleStr = rule_files[game_number];
-	cout << ruleStr << "\n";
+	//Read rule file
+	string ruleFile = "../" + rule_files[game_number];
+	std::ifstream t(ruleFile);
+	std::string ruleStr((std::istreambuf_iterator<char>(t)),
+                 std::istreambuf_iterator<char>());
 
-	//Build setup packet
-	setup.seed = time(NULL);
+	//Prepare other values
+	seed = time(NULL);
+	cout << "Seed: " << seed << "\n";
+	client_move.push_back(NULL);
+	client_move.push_back(NULL);
 
 	//Build game
-	Solisp::Builder *builder = new Solisp::Builder(rule_files[game_number], setup.seed);
+	Solisp::Builder *builder = new Solisp::Builder(ruleFile, seed);
 	game.setup(builder);
 	game.update();
 	delete builder;
-	game.players = 0;
+
+	//Locate first move
+	Move *start = game.get_current();
+	while(start->get_last() != NULL)
+		start = start->get_last();
 
 	//Server
-	int port = atoi("1234");
-	auto mainLoop = std::make_shared<EventLoop>();
-	auto service = TcpService::Create();
+	CPassiveSocket socket;
+	socket.Initialize();
+	if(!socket.Listen("127.0.0.1", 1234)) {
+		cout << "Server error\n";
+		return 1;
+	}
 
-	auto listenThread = ListenThread::Create(false, "0.0.0.0", port,
-			[mainLoop, service, ruleStr](TcpSocket::Ptr socket) {
-        socket->setNodelay();
-        socket->setSendSize(32 * 1024);
-        socket->setRecvSize(32 * 1024);
-
-		auto enterCallback = [mainLoop, ruleStr](const TcpConnection::Ptr& session) {
-			mainLoop->runAsyncFunctor([session, ruleStr]() {
-				//Notify players
-				for(TcpConnection::Ptr client : clients)
-					client->send("c", 1);
-
-				//Add client
-				setup.players = ++game.players;
-				clients.push_back(session);
-				cout << "Player " << setup.players << " connected\n";
-
-				//Send setup packet
-				char data[sizeof(struct SETUP) + ruleStr.length()];
-				memcpy(data, &setup, sizeof setup);
-				memcpy(data + sizeof setup, ruleStr.data(), ruleStr.length());
-				session->send(data, sizeof(struct SETUP) + ruleStr.length());
-			});
-
-			//Set up recieving packets
-			session->setDataCallback([session, mainLoop](const char* buffer, size_t len) {
-				struct Hand *hand = (struct Hand*) buffer;
-
-				mainLoop->runAsyncFunctor([session, hand]() {
-					cout << "Move from player " << hand->tested << "\n";
-					move_queue.push(*hand);
-					update_client(session, hand->tested);
-				});
-				return len;
-			});
-
-			//On disconnect
-			session->setDisConnectCallback([mainLoop](const TcpConnection::Ptr& session) {
-	            (void)session;
-	            //setup.players = --game.players;
-
-	            //Notify players
-	            mainLoop->runAsyncFunctor([session]() {
-	            	cout << "Player disconnected\n";
-	            	for(auto it = clients.begin(); it != clients.end(); ++it) {
-				        if(*it == session)
-				            clients.erase(it);
-				        else
-				        	(*it)->send("d", 1);
-				    }
-		        });
-	        });
-		};
-
-		service->addTcpConnection(std::move(socket),
-            brynet::net::AddSocketOption::AddEnterCallback(enterCallback),
-            brynet::net::AddSocketOption::WithMaxRecvBufferSize(1024 * 1024));
-	});
-
-	listenThread->startListen();
-	service->startWorkerThread(port);
 	cout << "Server started\n";
 
 	while(true) {
-		mainLoop->loop(10);
+		CActiveSocket *session = socket.Accept();
+		if(session != NULL) {
+			//session->Recive(MAX_PACKET);
+
+			//Notify players
+			//for(CActiveSocket *c : clients)
+			//	c->Send((const uint8 *)"c", 1);
+
+			//Add client
+			clients.push_back(session);
+			client_move.push_back(start);
+			cout << "Player " << (int)game.players++ << " connected\n";
+
+			//Send rule file
+			unsigned int size = ruleStr.length();
+			session->Send((p)&size, 4);
+			session->Send((p)ruleStr.c_str(), size);
+
+			//Send initial move
+			char data[sizeof(struct MovePacket)];
+			memcpy(data, start->get_data(), sizeof(struct MovePacket));
+			session->Send((p)data, sizeof(struct MovePacket));
+
+			//Start regular loop
+			run_client(session, game.players - 1);
+		}
 	}
+
+	//Close server and connections
+	for(CActiveSocket *c : clients)
+		c->Close();
+	socket.Close();
 
 	return 0;
 }
