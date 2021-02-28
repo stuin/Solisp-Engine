@@ -11,6 +11,8 @@ using std::cout;
 using Solisp::MovePacket;
 using Solisp::Move;
 using Solisp::Game;
+using Solisp::Hand;
+using p = const uint8*;
 
 class GameClient : public Solisp::GameInterface {
 private:
@@ -20,25 +22,31 @@ private:
 	bool move_updating = false;
 
 	//Outgoing game state
-	std::queue<Solisp::Hand> move_queue;
+	std::queue<Hand> move_queue;
 	Game *game;
 	unc user = 2;
 
 	//Client
 	CActiveSocket session;
+	std::thread *networking;
 
-	void receive_update() {
-		if(move_updating) {
-			session.Receive(sizeof(struct MovePacket));
-			struct MovePacket *data = (struct MovePacket *) session.GetData();
-			*server += new Move(*data, true);
+	void run_updates() {
+		while(true) {
+			while(move_queue.empty())
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 
-			if(data->id >= move_id)
-				move_updating = false;
-		} else {
-			session.Receive(1);
-			char c = session.GetData()[0];
-			switch (c) {
+			//Send move to server
+			cout << "Sending move\n";
+			char c = move_queue.front().to ? 'p' : 'g';
+			session.Send((p)&c, 1);
+			session.Send((p)&move_queue.front(), sizeof(Hand));
+			move_queue.pop();
+
+			if(!session.Receive(1))
+				break;
+
+			//Get message from server
+			switch (session.GetData()[0]) {
 				case 'c':
 					cout << "New player connected\n";
 					break;
@@ -47,12 +55,20 @@ private:
 					break;
 				case 'm':
 					session.Receive(4);
-					memcpy(&move_id, session.GetData(), 4);
-					cout << "Receiving moves:\n";
-					move_updating = true;
+					move_id = *(unsigned int *)session.GetData();
+					while(server->get_id() < move_id) {
+						session.Receive(sizeof(struct MovePacket));
+						struct MovePacket *data = (struct MovePacket *) session.GetData();
+						*server += new Move(*data, true);
+						server = server->get_next();
+					}
+					game->update();
+					reloadAll();
 					break;
 			}
 		}
+		session.Close();
+		cout << "Lost connection to server\n";
 	}
 public:
 	~GameClient() {
@@ -91,11 +107,11 @@ public:
 			//Get move id
 			session.Receive(1);
 			session.Receive(4);
-			unsigned int id = *(unsigned int *)session.GetData();
+			move_id = *(unsigned int *)session.GetData();
 
 			//Read all other moves
 			int count = 1;
-			while(data->id < id) {
+			while(data->id < move_id) {
 				session.Receive(sizeof(struct MovePacket));
 				data = (struct MovePacket *) session.GetData();
 				*added += new Move(*data, true);
@@ -112,6 +128,7 @@ public:
 			game->update();
 
 			cout << "Multiplayer game started\n";
+			networking = new std::thread([this] { run_updates(); });
 			return true;
 		} else {
 			cout << "Connection failed\n";
@@ -124,14 +141,17 @@ public:
 	}
 
 	bool grab(unsigned int num, unc from, unc user) {
+		move_queue.push({from, 0, 0, num});
 		return game->grab(num, from, user);
 	}
 	bool test(unc to, unc user) {
 		return game->test(to, user);
 	}
 	bool place(unc to, unc user) {
-		move_queue.push(game->get_hand(user));
-		return game->place(to, user);
+		Hand h = game->get_hand(user);
+		h.to = to;
+		move_queue.push(h);
+		return game->test(to, user);
 	}
 	void cancel(unc user) {
 		return game->cancel(user);

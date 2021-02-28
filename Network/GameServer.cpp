@@ -35,18 +35,36 @@ void run_client(CActiveSocket *session, unc player) {
 		session->Send((p)&id, 4);
 
 		//Send each move
-		char data[sizeof(struct MovePacket)];
 		Solisp::Move *move = client_move[player];
 		while(move->get_id() < id) {
 			move = move->get_next();
-			memcpy(data, move->get_data(), sizeof(struct MovePacket));
-			session->Send((p)data, sizeof(struct MovePacket));
+			session->Send((p)move->get_data(), sizeof(struct MovePacket));
 		}
 		client_move[player] = move;
 
 		if(!session->Receive(1))
 			break;
 
+		//Receive move from player
+		struct Hand *hand;
+		switch(((char *)session->GetData())[0]) {
+			case 'g':
+				session->Receive(sizeof(struct Hand));
+				hand = (struct Hand *)session->GetData();
+				if(!game.grab(hand->count, hand->from, player))
+					cout << "Rejected grab from player " << (int)player << "\n";
+				break;
+			case 'p':
+				session->Receive(sizeof(struct Hand));
+				hand = (struct Hand *)session->GetData();
+				if(!game.place(hand->to, player))
+					cout << "Rejected place from player " << (int)player << "\n";
+				break;
+			case 'c':
+				game.cancel(player);
+				break;
+		}
+		game.update();
 	}
 	session->Close();
 	cout << "Player " << (int)player << " disconnected\n";
@@ -113,11 +131,7 @@ int main(int argc, char const *argv[]) {
 			unsigned int size = ruleStr.length();
 			session->Send((p)&size, 4);
 			session->Send((p)ruleStr.c_str(), size);
-
-			//Send initial move
-			char data[sizeof(struct MovePacket)];
-			memcpy(data, start->get_data(), sizeof(struct MovePacket));
-			session->Send((p)data, sizeof(struct MovePacket));
+			session->Send((p)start->get_data(), sizeof(struct MovePacket));
 
 			//Start regular loop
 			run_client(session, game.players - 1);

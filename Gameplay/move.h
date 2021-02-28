@@ -88,7 +88,8 @@ public:
 			current = current->last;
 
 		//Find most recent valid move
-		while(current->next != NULL && current->next->get_tag(VALID))
+		while(current->next != NULL && current->next->get_tag(VALID) &&
+			(!other->get_tag(SERVER) || current->next->get_tag(SERVER)))
 			current = current->next;
 
 		//Add new move
@@ -119,10 +120,16 @@ public:
 	//Recursizely delete forward
 	void clear_forward() {
 		if(next != NULL) {
-			next->last = NULL;
-			next->clear_forward();
-			delete next;
-			next = NULL;
+			if(next->get_tag(VALID)) {
+				next->set_tag(VALID, false);
+				next->clear_forward();
+				next = NULL;
+			} else {
+				next->last = NULL;
+				next->clear_forward();
+				delete next;
+				next = NULL;
+			}
 		}
 	}
 
