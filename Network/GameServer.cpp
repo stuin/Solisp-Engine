@@ -1,26 +1,14 @@
 #include "../Gameplay/filelist.h"
 #include "../Gameplay/game.h"
+#include "message.h"
 
-#define _LINUX true
-#define MAX_PACKET 4096
-
-#include <clsocket/PassiveSocket.h>
-#include <iostream>
-#include <queue>
 #include <fstream>
 #include <streambuf>
-
-using std::cout;
-using std::string;
-using Solisp::MovePacket;
-using Solisp::Move;
-using Solisp::Hand;
-using p = const uint8*;
 
 //Game state
 Solisp::Game game;
 unsigned int seed;
-std::queue<struct Hand> move_queue;
+std::queue<struct Message> move_queue;
 
 //Connections
 std::vector<CActiveSocket *> clients;
@@ -46,18 +34,18 @@ void run_client(CActiveSocket *session, unc player) {
 			break;
 
 		//Receive move from player
-		struct Hand *hand;
+		struct Message *msg;
 		switch(((char *)session->GetData())[0]) {
 			case 'g':
-				session->Receive(sizeof(struct Hand));
-				hand = (struct Hand *)session->GetData();
-				if(!game.grab(hand->count, hand->from, player))
+				session->Receive(sizeof(struct Message));
+				msg = (struct Message *)session->GetData();
+				if(!game.grab(msg->count, msg->slot, player))
 					cout << "Rejected grab from player " << (int)player << "\n";
 				break;
 			case 'p':
-				session->Receive(sizeof(struct Hand));
-				hand = (struct Hand *)session->GetData();
-				if(!game.place(hand->to, player))
+				session->Receive(sizeof(struct Message));
+				msg = (struct Message *)session->GetData();
+				if(!game.place(msg->slot, player))
 					cout << "Rejected place from player " << (int)player << "\n";
 				break;
 			case 'c':
