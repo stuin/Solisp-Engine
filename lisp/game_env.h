@@ -38,7 +38,7 @@ public:
 		//if(user == 1) cout << "Try: ";
 		//cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 
-		*current += new Move(from, to, count, user, flip);
+		apply(from, to, count, user, flip);
 	}
 
 	//Retrieve stack properties

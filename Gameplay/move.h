@@ -1,6 +1,5 @@
 namespace Solisp {
-	class Move;
-	struct MovePacket;
+	struct Move;
 }
 
 /*
@@ -8,18 +7,43 @@ namespace Solisp {
  * History of solitare game
  */
 
-static unsigned int max_id = 0;
-
 using unc = unsigned char;
-enum move_tag { VALID, FLIP, SETUP, LOOP, SOFT, SERVER };
+enum move_tag { FLIP, LOOP, SOFT, SETUP };
 
-struct Solisp::MovePacket {
+struct Solisp::Move {
 	unc from;
 	unc to;
 	unc user;
-	unsigned int tags;
+	unsigned char tags;
 	unsigned int count;
-	unsigned int id;
+
+	//bitwise tag values
+	void set_tag(move_tag tag, bool value) {
+		if(value)
+			data.tags |= (1 << tag);
+		else
+			data.tags &= (1 << tag) ^ 0xff;
+	}
+	bool get_tag(move_tag tag) {
+		return data.tags & (1 << tag);
+	}
+
+	//Build new move
+	Move(unc from, unc to, unsigned int count, unc user, bool flip) {
+		//Set general move
+		count = count;
+		from = from;
+		to = to;
+		user = user;
+
+		//Set special tags
+		tags = 0;
+		set_tag(FLIP, flip);
+		set_tag(SOFT, user == 1);
+
+		//tags[LOOP] = check_loop(last);
+	}
+
 };
 
 class Solisp::Move {
@@ -41,38 +65,12 @@ private:
 		return check_loop(other->last);
 	}
 
-	void set_tag(move_tag tag, bool value) {
-		if(value)
-			data.tags |= (1 << tag);
-		else
-			data.tags &= (1 << tag) ^ 0xff;
-	}
+	
 
 public:
 	Move() { }
 
-	Move(struct MovePacket data, bool server=false) {
-		this->data = data;
-		set_tag(SERVER, server);
-	}
-
-	//Build new move
-	Move(unc from, unc to, unsigned int count, unc user, bool flip) {
-		//Set general move
-		data.count = count;
-		data.from = from;
-		data.to = to;
-		data.user = user;
-		data.id = ++max_id;
-
-		//Set special tags
-		data.tags = 0;
-		set_tag(VALID, true);
-		set_tag(FLIP, flip);
-		set_tag(SOFT, user == 1);
-
-		//tags[LOOP] = check_loop(last);
-	}
+	
 
 	//Recursizely delete backward
 	~Move() {
@@ -113,9 +111,7 @@ public:
 		set_tag(SOFT, false);
 	}
 
-	void mark_setup() {
-		set_tag(SETUP, true);
-	}
+
 
 	//Recursizely delete forward
 	void clear_forward() {
@@ -157,17 +153,11 @@ public:
 
 	//Set actual card count if move-all used
 	void correct_count(unsigned int count) {
-		if(count < data.count)
-			data.count = count;
+		
 	}
 
 	struct MovePacket *get_data() {
 		return &data;
-	}
-
-	//Get tag value
-	bool get_tag(move_tag tag) {
-		return data.tags & (1 << tag);
 	}
 
 	unc get_user() {

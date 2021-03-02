@@ -14,63 +14,24 @@ using Solisp::Game;
 
 GameEnviroment game_env;
 
-//Apply current moves to stack array
-void Game::update() {
-	//Recall invalid moves
-	while(!current->get_tag(VALID)) {
-		apply(current, true);
-		current = current->get_last();
-	}
-
-	//Apply new moves
-	while(current->get_next() != NULL && current->get_next()->get_tag(VALID)
-			&& (stage != PLAYING || cardsLeft > 0)) {
-		Move *move = current->get_next();
-		if(move->get_tag(SOFT)) {
-			if(grab(move->get_count(), move->get_from(), 1) && test(move->get_to(), 1)) {
-				cout << "Successful soft move: "<< move->get_id() << "\n";
-				move->soft_validate();
-				current = move;
-				apply(current, false);
-			} else {
-				move->soft_invalidate();
-				//delete move;
-			}
-		} else {
-			current = move;
-			apply(current, false);
-
-			if(stage == STARTING)
-				current->mark_setup();
-		}
-	}
-
-	//Check for game start functions
-	if(stage == STARTING) {
-		for(unc i = 1; i < STACKCOUNT; i++) {
-			cell c = stack[i].get_function(ONSTART);
-			if(c.type == EXPR)
-				game_env.run(c, i, -1, current);
-		}
-		stage = PLAYING;
-		update();
-	} else if(stage == LOADING)
-		stage = PLAYING;
-}
-
 //Apply single card move
-void Game::apply(Move *move, bool reverse) {
-	unc from = move->get_from();
-	unc to = move->get_to();
-	unsigned int count = move->get_count();
-	bool flip = move->get_tag(FLIP);
+void Game::apply(bool reverse) {
+	Move move = moves.back();
 
+	//Initial variables
+	unc from = move.from;
+	unc to = move.to;
+	unsigned int count = move.count;
+	bool flip = move.get_tag(FLIP);
 	unsigned int realCount = 1;
 
 	//Swap destinations for undo
 	if(reverse) {
 		from = to;
-		to = move->get_from();
+		to = move.from;
+
+		//Delete undo move
+		moves.pop_back();
 	}
 
 	//Get card stacks
@@ -104,8 +65,8 @@ void Game::apply(Move *move, bool reverse) {
 		}
 
 		//Record proper card count
-		if(count > 1)
-			move->correct_count(realCount);
+		if(!reverse && count > 1 && realCount < move.count)
+			moves.back().count = realCount;
 
 		//Update win counter
 		if((from == 0 || stack[from].get_tag(GOAL)) && !stack[to].get_tag(GOAL))
@@ -120,7 +81,7 @@ void Game::apply(Move *move, bool reverse) {
 		if(flip) {
 			source->flip();
 			source->set_next(NULL);
-			stack[to].get_card()->reverse(stack[to].get_count() - realCount);
+			stack[to].get_card()->reverse(stack[to].count - realCount);
 			stack[to].get_card()->set_next(destination);
 			stack[to].set_card(source);
 		} else {
@@ -130,7 +91,7 @@ void Game::apply(Move *move, bool reverse) {
 	}
 
 	//Check for additional functions and moves
-	if(move->get_user() > 0 && !reverse && stage != LOADING) {
+	if(move.user > 0 && !reverse && stage != LOADING) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR)
@@ -141,6 +102,65 @@ void Game::apply(Move *move, bool reverse) {
 		if(c.type == EXPR)
 			game_env.run(c, to, from, move);
 	}
+}
+
+//Call all setup functions
+Solisp::Card *Game::setup(Builder *builder, Move *saved) {
+	if(users != NULL)
+		clear();
+
+	//Read rules file
+	struct setup output = builder->build_ruleset(stack);
+	if(output.count == 0)
+		return NULL;
+
+	//Build game structures
+	STACKCOUNT = output.count;
+	stack[0].set_card(output.deck);
+	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
+	users = (Hand*)malloc(3 * sizeof(Hand));
+	moves.reserve(1000);
+
+	//Check for game variables
+	std::ifstream *rule_file = output.file;
+	if(!rule_file->eof()) {
+		game_env.shift_env(true);
+		game_env.read_stream(*rule_file, EXPR);
+	}
+
+	//Start game history
+	if(saved == NULL) {
+		moves.emplace_back(0, 0, output.seed, 0, false);
+		moves.back().set_tag(SETUP, true);
+		deal();
+		stage = STARTING;
+	} else {
+		current = saved;
+		stage = LOADING;
+	}
+
+	return stack[0].get_card();
+}
+
+//Delete all data specific to game
+void Game::clear() {
+	for(int i = 0; i < STACKCOUNT; ++i)
+		stack[i] = Stack();
+
+	//General variables
+	STACKCOUNT = 0;
+	players = 2;
+	stage = NONE;
+	cardsLeft = 0;
+
+	//Clear history
+	moves.clear();
+	server = 0;
+
+	//Clear users
+	if(users != NULL)
+		free(users);
+	users = NULL;
 }
 
 //Deal out cards to starting positions
@@ -165,10 +185,10 @@ void Game::deal() {
 
 				if(stack[j].start_hidden > 0) {
 					stack[j].start_hidden--;
-					*current += new Move(0, j, 1, 0, false);
+					apply(0, j, 1, 0, false);
 				} else if(stack[j].start_shown > 0) {
 					stack[j].start_shown--;
-					*current += new Move(0, j, 1, 0, true);
+					apply(0, j, 1, 0, true);
 				}
 			}
 		}
@@ -176,64 +196,17 @@ void Game::deal() {
 
 	//Move remaining cards to overflow
 	if(overflowSlot != 0)
-		*current += new Move(0, overflowSlot, -1, 0, false);
-}
+		apply(0, overflowSlot, -1, 0, false);
+	moves.back().set_tag(SETUP, true);
 
-//Call all setup functions
-Solisp::Card *Game::setup(Builder *builder, Move *saved) {
-	if(users != NULL || current != NULL)
-		clear();
-
-	//Read rules file
-	struct setup output = builder->build_ruleset(stack);
-	if(output.count == 0)
-		return NULL;
-
-	//Build game structures
-	STACKCOUNT = output.count;
-	stack[0].set_card(output.deck);
-	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
-	users = (Hand*)malloc(3 * sizeof(Hand));
-
-	//Check for game variables
-	std::ifstream *rule_file = output.file;
-	if(!rule_file->eof()) {
-		game_env.shift_env(true);
-		game_env.read_stream(*rule_file, EXPR);
+	//Check for game start functions
+	for(unc i = 1; i < STACKCOUNT; i++) {
+		cell c = stack[i].get_function(ONSTART);
+		if(c.type == EXPR)
+			game_env.run(c, i, -1, current);
 	}
-
-	//Start game history
-	if(saved == NULL) {
-		current = new Move(0, 0, output.seed, false, false);
-		deal();
-		stage = STARTING;
-	} else {
-		current = saved;
-		stage = LOADING;
-	}
-
-	return stack[0].get_card();
-}
-
-//Delete all data specific to game
-void Game::clear() {
-	for(int i = 0; i < STACKCOUNT; ++i)
-		stack[i] = Stack();
-
-	STACKCOUNT = 0;
-	players = 2;
-	stage = NONE;
-	cardsLeft = 0;
-
-	//stack.clear();
-	if(current != NULL) {
-		current->clear_forward();
-		delete current;
-		free(users);
-	}
-
-	current = NULL;
-	users = NULL;
+	moves.back().set_tag(SETUP, true);
+	stage = PLAYING;
 }
 
 //Pick up cards from stack
@@ -245,8 +218,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack is button
 	if(stack[from].get_tag(BUTTON) && user > 1) {
-		*current += new Move(from, from, 0, user, false);
-		update();
+		apply(from, from, 0, user, false);
 		return false;
 	}
 
@@ -256,8 +228,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Flip one card if top hidden
 	if(stack[from].get_card()->is_hidden() && user > 1) {
-		*current += new Move(from, from, 1, user, true);
-		update();
+		apply(from, from, 1, user, true);
 		return false;
 	}
 
@@ -314,22 +285,19 @@ bool Game::place(unc to, unc user) {
 
 	//Check for proper move
 	if(to != from && (users[user].tested == to || test(to, user))) {
-		*current += new Move(from, to, users[user].count, user, false);
-
-		update();
+		apply(from, to, users[user].count, user, false);
 		cancel(user);
 		return true;
 	}
 
 	//Check for valid swap
 	if(to != from && stack[to].get_tag(SWAP) && stack[from].get_tag(SWAP)
-		&& stack[from].get_count() == users[user].count) {
-		*current += new Move(0, 0, 0, user, false);
-		*current += new Move(from, 0, stack[from].get_count(), 0, false);
-		*current += new Move(to, from, stack[to].get_count(), 0, false);
-		*current += new Move(0, to, stack[from].get_count(), 0, false);
+		&& stack[from].count == users[user].count) {
+		apply(0, 0, 0, user, false);
+		apply(from, 0, stack[from].count, 0, false);
+		apply(to, from, stack[to].count, 0, false);
+		apply(0, to, stack[from].count, 0, false);
 
-		update();
 		cancel(user);
 		return true;
 	}
@@ -343,42 +311,46 @@ void Game::cancel(unc user) {
 	users[user] = { 0, 0, 0, 0 };
 }
 
-//Move history manipulation
+//Undo move in history
 void Game::undo(unc user) {
 	cancel(user);
-	current->undo();
-}
-void Game::redo(unc user) {
-	cancel(user);
 
-	if(current->get_next() != NULL)
-		current->redo();
+	//Find most recent user move
+	unsigned int i = moves.size() - 1;
+	while(moves[i].user == 0 && !moves[i].get_tag(SETUP))
+		--i;
+
+	//Enforce undo
+	if(moves[i].user == user) {
+		while(moves.size() - 1 > i)
+			apply(true);
+	}
+}
+
+//Public apply methods
+void Game::apply(Move move) {
+	moves.push_back(move);
+	apply(false);
+}
+void Game::apply(unc from, unc to, unsigned int count, unc user, bool flip) {
+	moves.emplace_back(from, to, count, user, flip);
+	apply(false);
 }
 
 //Save to file
 void Game::save(string file) {
-	//Get starting move
-	Move *first = current;
-	int count = 0;
-	while(first->get_last() != NULL) {
-		first = first->get_last();
-	}
-
 	//Open output file
 	FILE *outfile = fopen(file.c_str(), "wb");
-	size_t size = sizeof(struct MovePacket);
+	size_t size = sizeof(Move);
 
 	//struct MovePacket *data = first->get_data();
 	//printf("%2X %2X %2X %X %X %2X\n", data->from, data->to, data->user, data->count, data->id, data->tags);
 
 	//Save each move
-	while(first != NULL && first->get_tag(VALID)) {
-		fwrite(first->get_data(), size, 1, outfile);
-		first = first->get_next();
-		++count;
-	}
+	for(Move *move : moves)
+		fwrite(move, size, 1, outfile);
 
-	cout << size << ":" << count << "\n";
+	cout << size << ": " << moves.size() << "\n";
 	fclose(outfile);
 }
 
@@ -391,24 +363,15 @@ void Game::load(string file, string rule_file) {
 		return;
 	}
 
-	struct MovePacket data;
-	size_t size = sizeof(struct MovePacket);
+	struct Move data;
+	size_t size = sizeof(struct Move);
 
-	//Read first move
-	fread(&data, size, 1, infile);
-	Move *first = new Move(data);
-	Move *added = first;
-	unsigned int seed = first->get_count();
+	//Read all moves
+	while(fread(&data, size, 1, infile))
+		apply(data);
+	unsigned int seed = moves.front().count;
 
-	//Read all other moves
-	int count = 1;
-	while(fread(&data, size, 1, infile)) {
-		*added += new Move(data);
-		added = added->get_next();
-		++count;
-	}
-
-	cout << count << " moves loaded with seed " << seed << "\n";
+	cout << moves.size() << " moves loaded with seed " << seed << "\n";
 
 	//Set game
 	Solisp::Builder builder(rule_file, seed);

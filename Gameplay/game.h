@@ -45,11 +45,11 @@ private:
 
 	//Current game state
 	Stack stack[64];
-	Move *current = NULL;
+	vector<Move> moves;
 	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array
-	void apply(Move *move, bool reverse);
+	void apply(bool reverse);
 
 	//Startup functions
 	void shuffle();
@@ -64,9 +64,8 @@ public:
 	}
 
 	//Setup functions
-	Card *setup(Builder *builder, Move *saved=NULL);
+	Card *setup(Builder *builder);
 	void clear();
-	void update();
 
 	//General interaction methods
 	bool grab(unsigned int num, unc from, unc user);
@@ -74,12 +73,10 @@ public:
 	bool place(unc to, unc user);
 	void cancel(unc user);
 
-	//History management
+	//Specialized interaction methods
 	void undo(unc user);
-	void redo(unc user);
-	Move *get_current() {
-		return current;
-	}
+	void apply(Move move);
+	void apply(unc from, unc to, unsigned int count, unc user, bool flip);
 
 	//File loading/saving
 	void save(string file);
@@ -101,8 +98,5 @@ public:
 	}
 	Stage get_stage() {
 		return stage;
-	}
-	Hand get_hand(unc user) {
-		return users[user];
 	}
 };
