@@ -39,7 +39,6 @@ int main(int argc, char const *argv[]) {
 	Solisp::Game *gameptr = &game;
 	addActionButton(0, [gameptr]() {
 		gameptr->undo(2);
-		gameptr->update();
 		reloadAll();
 	});
 	/*addActionButton(1, [gameptr]() {

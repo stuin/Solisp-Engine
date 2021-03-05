@@ -34,14 +34,14 @@ void Game::apply(bool reverse) {
 		moves.pop_back();
 	}
 
-	//Get card stacks
-	Card *destination = stack[to].get_card();
-	Card *source = stack[from].get_card();
-	stack[to].set_card(source);
-
-	if(source == NULL) {
-		std::cerr << "Taking cards from empty stack\n";
+	if(stack[from].get_count() == 0) {
+		std::cerr << "Taking cards from empty stack " << from << "\n";
 	} else {
+		//Get card stacks
+		Card *destination = stack[to].get_card();
+		Card *source = stack[from].get_card();
+		stack[to].set_card(source);
+
 		//Find bottom moved card
 		while(count > 1 && source->get_next() != NULL) {
 			if(flip)
@@ -81,7 +81,7 @@ void Game::apply(bool reverse) {
 		if(flip) {
 			source->flip();
 			source->set_next(NULL);
-			stack[to].get_card()->reverse(stack[to].count - realCount);
+			stack[to].get_card()->reverse(stack[to].get_count() - realCount);
 			stack[to].get_card()->set_next(destination);
 			stack[to].set_card(source);
 		} else {
@@ -95,17 +95,17 @@ void Game::apply(bool reverse) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR)
-			game_env.run(c, from, to, move);
+			game_env.run(c, from, to);
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
 		if(c.type == EXPR)
-			game_env.run(c, to, from, move);
+			game_env.run(c, to, from);
 	}
 }
 
 //Call all setup functions
-Solisp::Card *Game::setup(Builder *builder, Move *saved) {
+Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	if(users != NULL)
 		clear();
 
@@ -113,11 +113,13 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	struct setup output = builder->build_ruleset(stack);
 	if(output.count == 0)
 		return NULL;
+	cout << output.deck->print_stack();
 
 	//Build game structures
 	STACKCOUNT = output.count;
 	stack[0].set_card(output.deck);
-	game_env.setup(stack, STACKCOUNT, [&]() { update(); });
+	stack[0].full_count();
+	game_env.setup(stack, STACKCOUNT, [&](Move move) { apply(move); });
 	users = (Hand*)malloc(3 * sizeof(Hand));
 	moves.reserve(1000);
 
@@ -129,15 +131,13 @@ Solisp::Card *Game::setup(Builder *builder, Move *saved) {
 	}
 
 	//Start game history
-	if(saved == NULL) {
-		moves.emplace_back(0, 0, output.seed, 0, false);
+	if(!saved) {
+		stage = STARTING;
+		apply(0, 0, output.seed, 0, false);
 		moves.back().set_tag(SETUP, true);
 		deal();
-		stage = STARTING;
-	} else {
-		current = saved;
+	} else
 		stage = LOADING;
-	}
 
 	return stack[0].get_card();
 }
@@ -155,7 +155,6 @@ void Game::clear() {
 
 	//Clear history
 	moves.clear();
-	server = 0;
 
 	//Clear users
 	if(users != NULL)
@@ -165,7 +164,7 @@ void Game::clear() {
 
 //Deal out cards to starting positions
 void Game::deal() {
-	int remaining = 0;
+	unsigned int remaining = 0;
 	unc overflowSlot = 0;
 
 	//Initial check of slots
@@ -177,19 +176,14 @@ void Game::deal() {
 	}
 
 	//Loop until all placed
-	while(remaining > 0) {
-		//For each slot
+	while(remaining > 0 && stack[0].get_count() > 0) {
 		for(unc j = 1; j < STACKCOUNT; j++) {
 			if(j != overflowSlot && stack[j].start_hidden + stack[j].start_shown > 0) {
 				remaining--;
-
-				if(stack[j].start_hidden > 0) {
-					stack[j].start_hidden--;
+				if(stack[j].start_hidden-- > 0)
 					apply(0, j, 1, 0, false);
-				} else if(stack[j].start_shown > 0) {
-					stack[j].start_shown--;
+				else if(stack[j].start_shown-- > 0)
 					apply(0, j, 1, 0, true);
-				}
 			}
 		}
 	}
@@ -203,7 +197,7 @@ void Game::deal() {
 	for(unc i = 1; i < STACKCOUNT; i++) {
 		cell c = stack[i].get_function(ONSTART);
 		if(c.type == EXPR)
-			game_env.run(c, i, -1, current);
+			game_env.run(c, i, -1);
 	}
 	moves.back().set_tag(SETUP, true);
 	stage = PLAYING;
@@ -244,7 +238,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack has function defined
 	cell c = stack[from].get_function(GRABIF);
-	if(c.type == EXPR && !game_env.run(c, from, -1, current))
+	if(c.type == EXPR && !game_env.run(c, from, -1))
 		return false;
 
 	//Set picked cards
@@ -269,7 +263,7 @@ bool Game::test(unc to, unc user) {
 	if(to == from || stack[to].matches(users[user].count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
-		if(c.type == EXPR && !game_env.run(c, to, from, current))
+		if(c.type == EXPR && !game_env.run(c, to, from))
 			return false;
 
 		users[user].tested = to;
@@ -292,11 +286,11 @@ bool Game::place(unc to, unc user) {
 
 	//Check for valid swap
 	if(to != from && stack[to].get_tag(SWAP) && stack[from].get_tag(SWAP)
-		&& stack[from].count == users[user].count) {
+		&& stack[from].get_count() == users[user].count) {
 		apply(0, 0, 0, user, false);
-		apply(from, 0, stack[from].count, 0, false);
-		apply(to, from, stack[to].count, 0, false);
-		apply(0, to, stack[from].count, 0, false);
+		apply(from, 0, stack[from].get_count(), 0, false);
+		apply(to, from, stack[to].get_count(), 0, false);
+		apply(0, to, stack[from].get_count(), 0, false);
 
 		cancel(user);
 		return true;
@@ -328,9 +322,16 @@ void Game::undo(unc user) {
 }
 
 //Public apply methods
-void Game::apply(Move move) {
-	moves.push_back(move);
-	apply(false);
+void Game::apply(Move move, unsigned int server) {
+	if(server == 0) {
+		moves.push_back(move);
+		apply(false);
+	} else if(!(moves[server] == move)) {
+		while(server > moves.size() - 1)
+			apply(true);
+		moves.push_back(move);
+		apply(false);
+	}
 }
 void Game::apply(unc from, unc to, unsigned int count, unc user, bool flip) {
 	moves.emplace_back(from, to, count, user, flip);
@@ -347,8 +348,8 @@ void Game::save(string file) {
 	//printf("%2X %2X %2X %X %X %2X\n", data->from, data->to, data->user, data->count, data->id, data->tags);
 
 	//Save each move
-	for(Move *move : moves)
-		fwrite(move, size, 1, outfile);
+	for(unsigned int i = 0; i < moves.size(); i++)
+		fwrite(moves.data() + i, size, 1, outfile);
 
 	cout << size << ": " << moves.size() << "\n";
 	fclose(outfile);
@@ -363,8 +364,8 @@ void Game::load(string file, string rule_file) {
 		return;
 	}
 
-	struct Move data;
-	size_t size = sizeof(struct Move);
+	Move data;
+	size_t size = sizeof(Move);
 
 	//Read all moves
 	while(fread(&data, size, 1, infile))
@@ -375,6 +376,5 @@ void Game::load(string file, string rule_file) {
 
 	//Set game
 	Solisp::Builder builder(rule_file, seed);
-	setup(&builder, first);
-	update();
+	setup(&builder, true);
 }

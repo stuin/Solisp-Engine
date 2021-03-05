@@ -8,7 +8,6 @@
 
 using std::cout;
 using std::string;
-using Solisp::MovePacket;
 using Solisp::Move;
 using Solisp::Game;
 using Solisp::Hand;

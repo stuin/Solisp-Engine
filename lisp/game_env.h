@@ -17,28 +17,29 @@ private:
 
 	int stack = 0;
 	char STACKCOUNT;
+
+	//Game functions
 	Solisp::Stack *stacks;
-	Move *current;
-	std::function<void(void)> update;
+	std::function<void(Move)> apply;
 
 public:
 	//Check if both slots in range
-	bool both_valid(int from, int to) {
+	bool both_valid(unc from, unc to) {
 		return from > 0 && to > 0 &&
 			from < STACKCOUNT && to < STACKCOUNT;
 	}
 
-	bool check_move(int count, int from, int to) {
+	bool check_move(unsigned int count, unc from, unc to) {
 		return both_valid(from, to) &&
 			(from == to || stacks[to].matches(count, stacks[from].get_card()));
 	}
 
 	//Add new move to game
-	void add_move(int count, int from, int to, unc user, bool flip) {
+	void add_move(unsigned int count, unc from, unc to, unc user, bool flip) {
 		//if(user == 1) cout << "Try: ";
 		//cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
 
-		apply(from, to, count, user, flip);
+		apply({from, to, count, user, flip});
 	}
 
 	//Retrieve stack properties
@@ -47,13 +48,12 @@ public:
 	}
 
 	//Set this value before evaluating
-	bool run(cell c, int stack, int from, Move *current) {
+	bool run(cell c, int stack, int from) {
 		if(std::get<sexpr>(c.content).size() == 0)
 			return false;
 
 		//Update enviroment
 		bool output = true;
-		this->current = current;
 		shift_env(true);
 		set("from", from);
 		set("to", from);
@@ -74,10 +74,10 @@ public:
 	}
 
 	//Build up lisp enviroment
-	void setup(Solisp::Stack *stacks, int STACKCOUNT, std::function<void(void)> update) {
+	void setup(Solisp::Stack *stacks, int STACKCOUNT, std::function<void(Move)> apply) {
 		this->STACKCOUNT = STACKCOUNT;
 		this->stacks = stacks;
-		this->update = update;
+		this->apply = apply;
 
 		//Build tag stack lists
 		sexpr tags[STACKTAGCOUNT];

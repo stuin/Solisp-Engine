@@ -12,23 +12,19 @@ std::queue<struct Message> move_queue;
 
 //Connections
 std::vector<CActiveSocket *> clients;
-std::vector<Solisp::Move *> client_move;
+std::vector<unsigned int> client_move;
 
 void run_client(CActiveSocket *session, unc player) {
 	while(true) {
 		//Send move count
-		unsigned int id = game.get_current()->get_id();
+		unsigned int size = game.moves.size();
 		if(!session->Send((p)("m"), 1))
 			break;
-		session->Send((p)&id, 4);
+		session->Send((p)&size, 4);
 
 		//Send each move
-		Solisp::Move *move = client_move[player];
-		while(move->get_id() < id) {
-			move = move->get_next();
-			session->Send((p)move->get_data(), sizeof(struct MovePacket));
-		}
-		client_move[player] = move;
+		while(++client_move[player] < size)
+			session->Send((p)game.moves.data() + client_move[player], sizeof(Move));
 
 		if(!session->Receive(1))
 			break;
@@ -52,7 +48,6 @@ void run_client(CActiveSocket *session, unc player) {
 				game.cancel(player);
 				break;
 		}
-		game.update();
 	}
 	session->Close();
 	cout << "Player " << (int)player << " disconnected\n";
@@ -77,19 +72,13 @@ int main(int argc, char const *argv[]) {
 	//Prepare other values
 	seed = time(NULL);
 	cout << "Seed: " << seed << "\n";
-	client_move.push_back(NULL);
-	client_move.push_back(NULL);
+	client_move.push_back(0);
+	client_move.push_back(0);
 
 	//Build game
 	Solisp::Builder *builder = new Solisp::Builder(ruleFile, seed);
 	game.setup(builder);
-	game.update();
 	delete builder;
-
-	//Locate first move
-	Move *start = game.get_current();
-	while(start->get_last() != NULL)
-		start = start->get_last();
 
 	//Server
 	CPassiveSocket socket;
@@ -112,14 +101,13 @@ int main(int argc, char const *argv[]) {
 
 			//Add client
 			clients.push_back(session);
-			client_move.push_back(start);
+			client_move.push_back(0);
 			cout << "Player " << (int)game.players++ << " connected\n";
 
 			//Send rule file
 			unsigned int size = ruleStr.length();
 			session->Send((p)&size, 4);
 			session->Send((p)ruleStr.c_str(), size);
-			session->Send((p)start->get_data(), sizeof(struct MovePacket));
 
 			//Start regular loop
 			run_client(session, game.players - 1);

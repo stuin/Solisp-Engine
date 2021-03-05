@@ -3,8 +3,8 @@
 class GameClient : public Solisp::GameInterface {
 private:
 	//Incoming game state
-	Move *server;
-	unsigned int move_id;
+	unsigned int server = 0;
+	unsigned int move_count = 0;
 	bool move_updating = false;
 
 	//Outgoing game state
@@ -40,14 +40,11 @@ private:
 					break;
 				case 'm':
 					session.Receive(4);
-					move_id = *(unsigned int *)session.GetData();
-					while(server->get_id() < move_id) {
-						session.Receive(sizeof(struct MovePacket));
-						struct MovePacket *data = (struct MovePacket *) session.GetData();
-						*server += new Move(*data, true);
-						server = server->get_next();
+					move_count = *(unsigned int *)session.GetData();
+					while(++server < move_count) {
+						session.Receive(sizeof(Move));
+						game->apply(*(Move *)session.GetData(), server++);
 					}
-					game->update();
 					reloadAll();
 					break;
 			}
@@ -82,35 +79,27 @@ public:
 			file << rule_file;
 			file.close();
 
-			//Read first move
-			session.Receive(sizeof(struct MovePacket));
-			struct MovePacket *data = (struct MovePacket *) session.GetData();
-			Move *first = new Move(*data);
-			Move *added = first;
-			unsigned int seed = first->get_count();
-
 			//Get move id
 			session.Receive(1);
 			session.Receive(4);
-			move_id = *(unsigned int *)session.GetData();
+			move_count = *(unsigned int *)session.GetData();
+
+			//Get first move
+			session.Receive(sizeof(Move));
+			game->apply(*(Move*) session.GetData());
+			unsigned int seed = game->moves[0].count;
 
 			//Read all other moves
-			int count = 1;
-			while(data->id < move_id) {
-				session.Receive(sizeof(struct MovePacket));
-				data = (struct MovePacket *) session.GetData();
-				*added += new Move(*data, true);
-				added = added->get_next();
-				++count;
+			while(++server < move_count) {
+				session.Receive(sizeof(Move));
+				game->apply(*(Move*) session.GetData());
 			}
-			server = added;
 
-			cout << count << " moves loaded with seed " << seed << "\n";
+			cout << server << " moves loaded with seed " << seed << "\n";
 
 			//Set game
 			Solisp::Builder builder(RULE_CACHE, seed);
-			game->setup(&builder, first);
-			game->update();
+			game->setup(&builder, true);
 
 			cout << "Multiplayer game started\n";
 			networking = new std::thread([this] { run_updates(); });

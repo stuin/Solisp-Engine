@@ -45,7 +45,6 @@ private:
 
 	//Current game state
 	Stack stack[64];
-	vector<Move> moves;
 	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array
@@ -57,6 +56,7 @@ private:
 
 public:
 	unc players = 2;
+	vector<Move> moves;
 
 	Game() {}
 	~Game() {
@@ -64,7 +64,7 @@ public:
 	}
 
 	//Setup functions
-	Card *setup(Builder *builder);
+	Card *setup(Builder *builder, bool saved=false);
 	void clear();
 
 	//General interaction methods
@@ -75,7 +75,7 @@ public:
 
 	//Specialized interaction methods
 	void undo(unc user);
-	void apply(Move move);
+	void apply(Move move, unsigned int server=0);
 	void apply(unc from, unc to, unsigned int count, unc user, bool flip);
 
 	//File loading/saving

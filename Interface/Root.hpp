@@ -32,7 +32,6 @@ public:
 			//Initialize game
 			Solisp::Builder builder(rule_file);
 			game.setup(&builder);
-			game.update();
 		} else {
 			game.load(save_file, rule_file);
 			std::remove(save_file.c_str());

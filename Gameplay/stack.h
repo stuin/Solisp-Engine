@@ -94,6 +94,16 @@ public:
 		functions[type] = new cell(function, EXPR);
 	}
 
+	//Count all cards in list
+	void full_count() {
+		Card *c = stack;
+		count = 0;
+		while(c != NULL) {
+			count++;
+			c = c->get_next();
+		}
+	}
+
 	//Check if new cards can be placed on stack
 	bool matches(unsigned int count, Card *newCard) {
 		//Check if INPUT or if inserting multiple into single stack
