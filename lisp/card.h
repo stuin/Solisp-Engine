@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace Solisp {
 	struct cardData;
@@ -31,5 +32,6 @@ struct Solisp::cardData {
 };
 
 char card_face(Solisp::cardData card);
+std::string print_card(Solisp::cardData card);
 
 enum filter_type { OPEN, CLOSED, ALL };

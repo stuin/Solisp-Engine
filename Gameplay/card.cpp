@@ -90,8 +90,12 @@ string Card::print_stack() {
 	string s = "";
 	if(next != NULL)
 		s = next->print_stack();
-	s += "{" + string(1, card_face(data)) + "," + string(1, data.suit) + "}, ";
-	return s;
+	return s + print_card(data) + ", ";
+}
+
+//Print single card
+string print_card(Solisp::cardData card) {
+	return "{" + string(1, card_face(card)) + "," + string(1, card.suit) + "}";
 }
 
 //Get card face from card data

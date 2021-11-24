@@ -23,8 +23,6 @@ void Game::apply(Move move, bool reverse) {
 	bool flip = move.get_tag(FLIP);
 	unsigned int realCount = 1;
 
-	//cout << "Processing move " << (int)from << ">" << (int)to << "\n";
-
 	//Swap destinations for undo
 	if(reverse) {
 		from = to;
@@ -150,7 +148,18 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 		stage = LOADING;
 		apply(0, 0, output.seed, 0, false);
 		moves.back().set_tag(SETUP, true);
+		cardsLeft = 0;
 		deal();
+		stage = STARTING;
+
+		//Check for game start functions
+		for(unc i = 1; i < STACKCOUNT; i++) {
+			cell c = stack[i].get_function(ONSTART);
+			if(c.type == EXPR)
+				game_env.run(c, i, -1);
+		}
+
+		stage = PLAYING;
 	} else
 		stage = LOADING;
 
@@ -207,15 +216,6 @@ void Game::deal() {
 	if(overflowSlot != 0)
 		apply(0, overflowSlot, -1, 0, false);
 	moves.back().set_tag(SETUP, true);
-	stage = STARTING;
-
-	//Check for game start functions
-	for(unc i = 1; i < STACKCOUNT; i++) {
-		cell c = stack[i].get_function(ONSTART);
-		if(c.type == EXPR)
-			game_env.run(c, i, -1);
-	}
-	stage = PLAYING;
 }
 
 //Pick up cards from stack
@@ -227,7 +227,12 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack is button
 	if(stack[from].get_tag(BUTTON) && user > 1) {
-		apply(from, from, 0, user, false);
+		moves.push_back(Move(from, from, 0, user, false));
+
+		//Check stack grab function
+		cell c = stack[from].get_function(ONGRAB);
+		if(c.type == EXPR)
+			game_env.run(c, from, from);
 		return false;
 	}
 
@@ -342,14 +347,19 @@ void Game::save(string file) {
 	FILE *outfile = fopen(file.c_str(), "wb");
 	size_t size = sizeof(Move);
 
+	if(outfile == NULL) {
+		cout << "Error: Could not open file " << file << "\n";
+		return;
+	}
+
 	//struct MovePacket *data = first->get_data();
 	//printf("%2X %2X %2X %X %X %2X\n", data->from, data->to, data->user, data->count, data->id, data->tags);
 
 	//Save each move
 	for(unsigned int i = 0; i < moves.size(); i++)
-		fwrite(moves.data() + i, size, 1, outfile);
+		fwrite(&(moves[i]), size, 1, outfile);
 
-	cout << size << ": " << moves.size() << "\n";
+	cout << "Saved " << moves.size() << " moves\n"; 
 	fclose(outfile);
 }
 
@@ -365,14 +375,21 @@ void Game::load(string file, string rule_file) {
 	Move data;
 	size_t size = sizeof(Move);
 
-	//Read all moves
-	while(fread(&data, size, 1, infile))
-		apply(data);
-	unsigned int seed = moves.front().count;
-
-	cout << moves.size() << " moves loaded with seed " << seed << "\n";
+	//Read starting data
+	fread(&data, size, 1, infile);
+	unsigned int seed = data.count;
+	apply(data);
+	cardsLeft = 0;
 
 	//Set game
 	Solisp::Builder builder(rule_file, seed);
 	setup(&builder, true);
+	cout << "Using seed " << seed << "\n";
+
+	//Read all moves
+	while(fread(&data, size, 1, infile))
+		apply(data);
+
+	stage = PLAYING;
+	cout << "Loaded " << moves.size() << " moves\n";
 }

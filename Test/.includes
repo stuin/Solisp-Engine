@@ -1,4 +1,5 @@
 parent=../Gameplay/.baseincludes
 files=test.cpp
+output=/tmp/test.out
 
 testargs=1
