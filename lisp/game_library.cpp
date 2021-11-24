@@ -21,8 +21,9 @@ cell GameEnviroment::general_move(int num, bool flip, unc player) {
 		}
 
 		DONE;
-		if(genv->both_valid(from, to)) {
-			genv->add_move(count, from, to, player, flip);
+		if((player==0 && genv->both_valid(from, to)) || genv->check_move(count, from, to)) {
+			if(player != 2)
+				genv->add_move(count, from, to, player, flip);
 			return cell(count);
 		}
 		return cell(0);
@@ -41,6 +42,10 @@ void GameEnviroment::build_library_game() {
 	//Soft moves
 	set("Soft-Move", general_move(1, false, 1));
 	set("Soft-Flip", general_move(1, true, 1));
+
+	//Test move
+	set("Test-Move", general_move(1, false, 2));
+	set("Test-Flip", general_move(1, true, 2));
 
 	//Count cards in stack
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {
@@ -87,21 +92,5 @@ void GameEnviroment::build_library_game() {
 		if(genv->get_stack(stack)->get_count() > 0)
 			return cell(genv->get_stack(stack)->get_card()->is_hidden());
 		return cell(0);
-	}));
-
-	set("Matches", cell([](Enviroment *env, marker pos, marker end) {
-		int from = env->num_eval(*pos++);
-		int to = env->num_eval(*pos++);
-		int count = 1;
-
-		//If number included
-		if(pos != end) {
-			count = from;
-			from = to;
-			to = env->num_eval(*pos++);
-		}
-
-		DONE;
-		return cell(genv->check_move(count, from, to));
 	}));
 }

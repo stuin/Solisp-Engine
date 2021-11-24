@@ -38,8 +38,8 @@ private:
 
 public:
 	//Starting count
-	unsigned int start_hidden = 0;
-	unsigned int start_shown = 0;
+	int start_hidden = 0;
+	int start_shown = 0;
 
 	int x = -1;
 	int y = -1;

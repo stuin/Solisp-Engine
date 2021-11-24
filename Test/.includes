@@ -1,0 +1,4 @@
+parent=../Gameplay/.baseincludes
+files=test.cpp
+
+testargs=1

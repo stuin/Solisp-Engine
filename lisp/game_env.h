@@ -30,7 +30,7 @@ public:
 	}
 
 	bool check_move(unsigned int count, unc from, unc to) {
-		return both_valid(from, to) &&
+		return both_valid(from, to) && stacks[from].get_count() >= count &&
 			(from == to || stacks[to].matches(count, stacks[from].get_card()));
 	}
 
@@ -48,20 +48,20 @@ public:
 	}
 
 	//Set this value before evaluating
-	bool run(cell c, int stack, int from) {
+	bool run(cell c, int stack, int other) {
 		if(std::get<sexpr>(c.content).size() == 0)
 			return false;
 
 		//Update enviroment
-		bool output = true;
 		shift_env(true);
-		set("from", from);
-		set("to", from);
+		set("from", other);
+		set("to", other);
 		set("prev", this->stack);
 		set("this", stack);
 		this->stack = stack;
 
 		//Attempt evaluation
+		bool output = true;
 		try {
 			output = num_eval(c);
 		} catch(std::exception &e) {

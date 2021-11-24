@@ -15,9 +15,7 @@ using Solisp::Game;
 GameEnviroment game_env;
 
 //Apply single card move
-void Game::apply(bool reverse) {
-	Move move = moves.back();
-
+void Game::apply(Move move, bool reverse) {
 	//Initial variables
 	unc from = move.from;
 	unc to = move.to;
@@ -25,17 +23,20 @@ void Game::apply(bool reverse) {
 	bool flip = move.get_tag(FLIP);
 	unsigned int realCount = 1;
 
+	//cout << "Processing move " << (int)from << ">" << (int)to << "\n";
+
 	//Swap destinations for undo
 	if(reverse) {
 		from = to;
 		to = move.from;
-
-		//Delete undo move
 		moves.pop_back();
+	} else {
+		moves.push_back(move);
 	}
 
 	if(stack[from].get_count() == 0) {
 		std::cerr << "Taking cards from empty stack " << from << "\n";
+		return;
 	} else {
 		//Get card stacks
 		Card *destination = stack[to].get_card();
@@ -66,7 +67,7 @@ void Game::apply(bool reverse) {
 
 		//Record proper card count
 		if(!reverse && count > 1 && realCount < move.count)
-			moves.back().count = realCount;
+			move.count = realCount;
 
 		//Update win counter
 		if((from == 0 || stack[from].get_tag(GOAL)) && !stack[to].get_tag(GOAL))
@@ -104,6 +105,20 @@ void Game::apply(bool reverse) {
 	}
 }
 
+//Public apply methods
+void Game::apply(Move move, unsigned int server) {
+	if(server == 0) {
+		apply(move, false);
+	} else if(!(moves[server] == move)) {
+		while(server > moves.size() - 1)
+			apply(moves.back(), true);
+		apply(move, false);
+	}
+}
+void Game::apply(unc from, unc to, unsigned int count, unc user, bool flip) {
+	apply(Move(from, to, count, user, flip), false);
+}
+
 //Call all setup functions
 Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	if(users != NULL)
@@ -113,7 +128,7 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	struct setup output = builder->build_ruleset(stack);
 	if(output.count == 0)
 		return NULL;
-	cout << output.deck->print_stack();
+	cout << output.deck->print_stack() << "\n";
 
 	//Build game structures
 	STACKCOUNT = output.count;
@@ -132,7 +147,7 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 
 	//Start game history
 	if(!saved) {
-		stage = STARTING;
+		stage = LOADING;
 		apply(0, 0, output.seed, 0, false);
 		moves.back().set_tag(SETUP, true);
 		deal();
@@ -169,7 +184,7 @@ void Game::deal() {
 
 	//Initial check of slots
 	for(unc i = 1; i < STACKCOUNT; i++) {
-		if(stack[i].start_hidden == (unsigned int)-1)
+		if(stack[i].start_hidden == -1)
 			overflowSlot = i;
 		else
 			remaining += stack[i].start_hidden + stack[i].start_shown;
@@ -192,6 +207,7 @@ void Game::deal() {
 	if(overflowSlot != 0)
 		apply(0, overflowSlot, -1, 0, false);
 	moves.back().set_tag(SETUP, true);
+	stage = STARTING;
 
 	//Check for game start functions
 	for(unc i = 1; i < STACKCOUNT; i++) {
@@ -199,7 +215,6 @@ void Game::deal() {
 		if(c.type == EXPR)
 			game_env.run(c, i, -1);
 	}
-	moves.back().set_tag(SETUP, true);
 	stage = PLAYING;
 }
 
@@ -317,25 +332,8 @@ void Game::undo(unc user) {
 	//Enforce undo
 	if(moves[i].user == user) {
 		while(moves.size() - 1 > i)
-			apply(true);
+			apply(moves.back(), true);
 	}
-}
-
-//Public apply methods
-void Game::apply(Move move, unsigned int server) {
-	if(server == 0) {
-		moves.push_back(move);
-		apply(false);
-	} else if(!(moves[server] == move)) {
-		while(server > moves.size() - 1)
-			apply(true);
-		moves.push_back(move);
-		apply(false);
-	}
-}
-void Game::apply(unc from, unc to, unsigned int count, unc user, bool flip) {
-	moves.emplace_back(from, to, count, user, flip);
-	apply(false);
 }
 
 //Save to file

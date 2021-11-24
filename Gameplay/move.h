@@ -33,13 +33,13 @@ struct Solisp::Move {
 	}
 	Move(unc from, unc to, unsigned int count, unc user, bool flip) {
 		//Set general move
-		count = count;
-		from = from;
-		to = to;
-		user = user;
+		this->count = count;
+		this->from = from;
+		this->to = to;
+		this->user = user;
 
 		//Set special tags
-		tags = 0;
+		this->tags = 0;
 		set_tag(FLIP, flip);
 		set_tag(SOFT, user == 1);
 

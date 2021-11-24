@@ -48,7 +48,7 @@ private:
 	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array
-	void apply(bool reverse);
+	void apply(Move move, bool reverse);
 
 	//Startup functions
 	void shuffle();
