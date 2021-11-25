@@ -54,6 +54,25 @@ public:
 		for(int i = 0; i < STACKFUNCOUNT; i++)
 			functions[i] = c;
 	}
+	Stack(const Stack &other) {
+		//Game defined variables
+		filter = other.filter;
+		tags = other.tags;
+		functions = other.functions;
+		max = other.max;
+
+		//Game start position
+		start_hidden = other.start_hidden;
+		start_shown = other.start_shown;
+		x = other.x;
+		y = other.y;
+		width = other.width;
+		height = other.height;
+
+		//Current game state
+		stack = other.stack->clone();
+		full_count();
+	}
 	~Stack() {
 		delete filter;
 		delete stack;

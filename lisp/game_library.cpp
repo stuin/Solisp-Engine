@@ -22,7 +22,7 @@ cell GameEnviroment::general_move(int num, bool flip, unc player) {
 
 		DONE;
 		if((player==0 && genv->both_valid(from, to)) || genv->check_move(count, from, to)) {
-			if(player != 2)
+			if(player != 1)
 				genv->add_move(count, from, to, player, flip);
 			return cell(count);
 		}
@@ -40,12 +40,12 @@ void GameEnviroment::build_library_game() {
 	set("Flip-All", general_move(1000, true, 0));
 
 	//Soft moves
-	set("Soft-Move", general_move(1, false, 1));
-	set("Soft-Flip", general_move(1, true, 1));
+	set("Soft-Move", general_move(1, false, 2));
+	set("Soft-Flip", general_move(1, true, 2));
 
 	//Test move
-	set("Test-Move", general_move(1, false, 2));
-	set("Test-Flip", general_move(1, true, 2));
+	set("Test-Move", general_move(1, false, 1));
+	set("Test-Flip", general_move(1, true, 1));
 
 	//Count cards in stack
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {

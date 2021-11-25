@@ -126,14 +126,16 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	struct setup output = builder->build_ruleset(stack);
 	if(output.count == 0)
 		return NULL;
-	cout << output.deck->print_stack() << "\n";
+	//cout << output.deck->print_stack() << "\n";
 
 	//Build game structures
 	STACKCOUNT = output.count;
 	stack[0].set_card(output.deck);
 	stack[0].full_count();
 	game_env.setup(stack, STACKCOUNT, [&](Move move) { apply(move); });
-	users = (Hand*)malloc(3 * sizeof(Hand));
+
+	//Reset standard values
+	users = (Hand*)malloc(players * sizeof(Hand));
 	moves.reserve(1000);
 
 	//Check for game variables
@@ -164,26 +166,6 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 		stage = LOADING;
 
 	return stack[0].get_card();
-}
-
-//Delete all data specific to game
-void Game::clear() {
-	for(int i = 0; i < STACKCOUNT; ++i)
-		stack[i] = Stack();
-
-	//General variables
-	STACKCOUNT = 0;
-	players = 2;
-	stage = NONE;
-	cardsLeft = 0;
-
-	//Clear history
-	moves.clear();
-
-	//Clear users
-	if(users != NULL)
-		free(users);
-	users = NULL;
 }
 
 //Deal out cards to starting positions
@@ -218,6 +200,26 @@ void Game::deal() {
 	moves.back().set_tag(SETUP, true);
 }
 
+//Delete all data specific to game
+void Game::clear() {
+	for(int i = 0; i < STACKCOUNT; ++i)
+		stack[i] = Stack();
+
+	//General variables
+	STACKCOUNT = 0;
+	players = 3;
+	stage = NONE;
+	cardsLeft = 0;
+
+	//Clear history
+	moves.clear();
+
+	//Clear users
+	if(users != NULL)
+		free(users);
+	users = NULL;
+}
+
 //Pick up cards from stack
 bool Game::grab(unsigned int num, unc from, unc user) {
 	users[user] = { 0, 0, 0, 0 };
@@ -226,14 +228,14 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 		return false;
 
 	//Check if stack is button
-	if(stack[from].get_tag(BUTTON) && user > 1) {
+	if(stack[from].get_tag(BUTTON) && user > 0) {
 		moves.push_back(Move(from, from, 0, user, false));
 
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
 		if(c.type == EXPR)
 			game_env.run(c, from, from);
-		return false;
+		return user == 1;
 	}
 
 	//Fail if stack empty or marked as output
@@ -241,9 +243,9 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 		return false;
 
 	//Flip one card if top hidden
-	if(stack[from].get_card()->is_hidden() && user > 1) {
+	if(stack[from].get_card()->is_hidden() && user > 0) {
 		apply(from, from, 1, user, true);
-		return false;
+		return user == 1;
 	}
 
 	//Check for null or hidden card in stack
@@ -348,7 +350,7 @@ void Game::save(string file) {
 	size_t size = sizeof(Move);
 
 	if(outfile == NULL) {
-		cout << "Error: Could not open file " << file << "\n";
+		std::cerr << "Error: Could not open file " << file << "\n";
 		return;
 	}
 
@@ -368,7 +370,7 @@ void Game::load(string file, string rule_file) {
 	//Open file
 	FILE *infile = fopen(file.c_str(), "rb");
 	if(infile == NULL) {
-		cout << "Error, unreadable save file\n";
+		std::cerr << "Error, unreadable save file\n";
 		return;
 	}
 
@@ -392,4 +394,25 @@ void Game::load(string file, string rule_file) {
 
 	stage = PLAYING;
 	cout << "Loaded " << moves.size() << " moves\n";
+}
+
+//Full copy constructor
+Game::Game(const Game &other) {
+	//Copy simple variables
+	STACKCOUNT = other.STACKCOUNT;
+	stage = other.stage;
+	cardsLeft = other.cardsLeft;
+	players = other.players;
+	moves.clear();
+
+	//Copy complex state
+	for(int i = 0; i < STACKCOUNT; i++)
+		stack[i] = Stack(other.stack[i]);
+	for(int i = 0; i < other.moves.size(); i++)
+		moves.push_back(other.moves[i]);
+
+	//Clear users
+	if(users != NULL)
+		free(users);
+	users = (Hand*)malloc(players * sizeof(Hand));
 }

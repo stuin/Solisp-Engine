@@ -33,12 +33,9 @@ struct setup {
 class Solisp::Builder {
 private:
 	std::ifstream rule_file;
-	std::string name;
-	int seed;
-
-	sexpr tag_eval(sexpr list, bool layout);
 
 	//Solisp to gameplay convertions
+	sexpr tag_eval(sexpr list, bool layout);
 	Card *make_card(const cell &source, bool shuffled);
 	Filter *make_filter(const cell &source);
 
@@ -48,6 +45,9 @@ private:
 
 
 public:
+	std::string name;
+	int seed;
+
 	Builder(std::string file, unsigned int seed=0) {
 		if(seed == 0)
 			this->seed = time(NULL);
@@ -57,7 +57,6 @@ public:
 
 		rule_file.open(file);
 		std::getline(rule_file, name);
-		std::cout << "Builder initialized with game: " << name << "\n";
 	}
 
 	~Builder();

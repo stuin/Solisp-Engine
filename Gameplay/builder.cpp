@@ -175,7 +175,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 			else if(builder_env.str_eval(list[0], true).find("Filter") == 0)
 				stack.set_filter(make_filter(c));
 			else
-				cout << "\tUnhandled expression: " << builder_env.str_eval(c, true) << "\n";
+				std::cerr << "\tUnhandled expression: " << builder_env.str_eval(c, true) << "\n";
 		} else {
 			//Boolean tag evaluation
 			auto tag = Stack::tag_map.find(builder_env.str_eval(c));
@@ -186,7 +186,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 				//cout << "\tStart-Extra\n";
 				stack.set_start(-1, 0);
 			} else
-				cout << "Unhandled tag: " << builder_env.str_eval(c, true) << "\n";
+				std::cerr << "Unhandled tag: " << builder_env.str_eval(c, true) << "\n";
 		}
 	}
 
@@ -222,7 +222,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 //Set up all stacks on game board
 struct setup Builder::build_ruleset(Stack *stack) {
 	Card *deck = make_card(builder_env.read_stream(rule_file, DECK), true);
-	cout << "Deck loaded\n";
+	//cout << "Deck loaded\n";
 
 	cell c;
 	try {

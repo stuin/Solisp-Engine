@@ -43,6 +43,7 @@ void assert_false(bool result, string message) {
 int main(int argc, char const *argv[]) {
 	Solisp::Game game;
 	Solisp::Builder *builder = new Solisp::Builder("Games/Klondike.solisp", 10);
+	cout << "Builder initialized with game: " << builder->name << "\n";
 
 	cout << "--Setting up game\n";
 	game.setup(builder);
@@ -62,41 +63,41 @@ int main(int argc, char const *argv[]) {
 	//assert_false(true, "Test");
 
 	//Try some fake moves
-	assert_false(game.place(9, 2), "Fake place 1");
-	assert_false(game.grab(2, 11, 2), "Fake grab 1");
-	assert(game.grab(1, 13, 2), "Fake grab 2");
-	assert_false(game.place(9, 2), "Fake place 2");
-	assert(game.grab(1, 9, 2), "Fake grab 3");
+	assert_false(game.place(9, 1), "Fake place 1");
+	assert_false(game.grab(2, 11, 1), "Fake grab 1");
+	assert(game.grab(1, 13, 1), "Fake grab 2");
+	assert_false(game.place(9, 1), "Fake place 2");
+	assert(game.grab(1, 9, 1), "Fake grab 3");
 	game.cancel(2);
-	assert_false(game.place(11, 2), "Fake place 3");
+	assert_false(game.place(11, 1), "Fake place 3");
 
 	//Play game
 	assert(game.get_stack(4), {2, 'D'}, "stack 4");
-	assert(game.grab(1, 9, 2), "Grab 1");
-	assert(game.place(11, 2), "Place 1");
+	assert(game.grab(1, 9, 1), "Grab 1");
+	assert(game.place(11, 1), "Place 1");
 	assert(game.get_stack(1), {1, 'C'}, "stack 1");
-	assert(game.grab(2, 11, 2), "Grab 2");
-	assert(game.place(9, 2), "Place 2");
-	assert(game.grab(1, 14, 2), "Grab 3");
-	assert(game.place(10, 2), "Place 3");
+	assert(game.grab(2, 11, 1), "Grab 2");
+	assert(game.place(9, 1), "Place 2");
+	assert(game.grab(1, 14, 1), "Grab 3");
+	assert(game.place(10, 1), "Place 3");
 
 	//More fake moves
-	assert(game.grab(2, 9, 2), "Fake grab 4");
-	assert_false(game.place(8, 2), "Fake place 4");
-	assert(game.grab(1, 12, 2), "Fake grab 5");
-	assert_false(game.place(6, 2), "Fake place 5");
-	assert(game.grab(1, 12, 2), "Fake grab 6");
-	assert_false(game.place(2, 2), "Fake place 6");
-	assert_false(game.grab(1, 4, 2), "Fake grab 7");
-	assert_false(game.place(4, 2), "Fake place 7");
+	assert(game.grab(2, 9, 1), "Fake grab 4");
+	assert_false(game.place(8, 1), "Fake place 4");
+	assert(game.grab(1, 12, 1), "Fake grab 5");
+	assert_false(game.place(6, 1), "Fake place 5");
+	assert(game.grab(1, 12, 1), "Fake grab 6");
+	assert_false(game.place(2, 1), "Fake place 6");
+	assert_false(game.grab(1, 4, 1), "Fake grab 7");
+	assert_false(game.place(4, 1), "Fake place 7");
 
 	//Continuing game
-	assert_false(game.grab(1, 5, 2), "Deal 1");
+	assert_false(game.grab(1, 5, 1), "Deal 1");
 	assert(game.get_stack(6)->get_count(), 3, "cards after deal 1");
-	assert_false(game.grab(1, 5, 2), "Deal 2");
+	assert_false(game.grab(1, 5, 1), "Deal 2");
 	assert(game.get_stack(7)->get_count(), 3, "cards after deal 2");
-	assert(game.grab(1, 6, 2), "Grab 4");
-	assert(game.place(13, 2), "Place 4");
+	assert(game.grab(1, 6, 1), "Grab 4");
+	assert(game.place(13, 1), "Place 4");
 
 
 	//Report test results

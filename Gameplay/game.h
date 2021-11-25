@@ -55,10 +55,11 @@ private:
 	void deal();
 
 public:
-	unc players = 2;
+	unc players = 3;
 	vector<Move> moves;
 
 	Game() {}
+	Game(const Game &other);
 	~Game() {
 		clear();
 	}
