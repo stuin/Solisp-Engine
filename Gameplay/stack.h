@@ -58,7 +58,7 @@ public:
 		//Game defined variables
 		filter = other.filter;
 		tags = other.tags;
-		functions = other.functions;
+		//functions = other.functions;
 		max = other.max;
 
 		//Game start position
@@ -110,7 +110,7 @@ public:
 	}
 	void set_function(sexpr function, func_tag type) {
 		function[0] = cell("+");
-		functions[type] = new cell(function, EXPR);
+		functions[type] = new cell(function, SOL_EXPR);
 	}
 
 	//Count all cards in list

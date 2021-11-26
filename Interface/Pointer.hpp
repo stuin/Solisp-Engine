@@ -102,7 +102,7 @@ public:
 					reloadAll();
 
 				//Check for win
-				if(game.cards_remaining() <= 0) {
+				if(game.get_remaining() <= 0) {
 					quitGame(false);
 					setHidden(true);
 				}
@@ -117,7 +117,7 @@ public:
 				mouse->setHidden(true);
 
 				//Check for win
-				if(game.cards_remaining() <= 0) {
+				if(game.get_remaining() <= 0) {
 					quitGame(false);
 					setHidden(true);
 				}

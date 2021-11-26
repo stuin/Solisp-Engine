@@ -90,7 +90,7 @@ public:
 		//Link strings to stack tags
 		auto it = Solisp::Stack::tag_map.begin();
 		while(it != Solisp::Stack::tag_map.end()) {
-			set(it->first, cell(tags[it->second], LIST));
+			set(it->first, cell(tags[it->second], SOL_LIST));
 			it++;
 		}
 

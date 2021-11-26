@@ -94,7 +94,7 @@ public:
 	}
 
 	//Current game state
-	unsigned int cards_remaining() {
+	unsigned int get_remaining() {
 		return cardsLeft;
 	}
 	Stage get_stage() {

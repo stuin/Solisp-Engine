@@ -2,5 +2,7 @@ parent=../Gameplay/.baseincludes
 files=solver.cpp
 output=/tmp/solver.out
 
-builder1=mpi++ -c %ncfiles -std=c++17 -Wall -fpermissive -O3 -g
-builder3=mpi++ %cached -o %output -g
+builder1=mpic++ -c %ncfiles -std=c++17 -Wall -fpermissive -O3 -g
+builder3=mpic++ %cached -o %output -g
+
+tester=mpirun 

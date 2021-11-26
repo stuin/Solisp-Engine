@@ -59,16 +59,16 @@ sexpr CardEnviroment::list_eval_cont(cell const &c) {
 cardData CardEnviroment::card_eval(cell const &c) {
 	sexpr list;
 	switch(c.type) {
-		case EXPR:
+		case SOL_EXPR:
 			return card_eval(eval(c));
-		case NUMBER: case CHAR:
+		case SOL_NUMBER: case SOL_CHAR:
 			return to_card("N" + std::to_string(std::get<int>(c.content)));
 		case DECK:
 			list = std::get<sexpr>(c.content);
 			if(list.size() > 1)
 				CONVERTERROR("single card");
 			return card_eval(list[0]);
-		case STRING: case CARD:
+		case SOL_STRING: case CARD:
 			string s = std::get<string>(c.content);
 
 			//Try base conversion
@@ -93,16 +93,16 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 	string s;
 
 	switch(c.type) {
-		case EXPR:
+		case SOL_EXPR:
 			return deck_eval(eval(c));
 		case DECK:
 			return std::get<sexpr>(c.content);
 		case TAGFILTER:
 			return deck_eval(cell(filter_eval(c), FILTER));
-		case LIST:
+		case SOL_LIST:
 			array = std::get<sexpr>(c.content);
 
-			if(array[0].type == DECK || array[0].type == EXPR) {
+			if(array[0].type == DECK || array[0].type == SOL_EXPR) {
 				//Flatten contained decks into one
 				for(cell value : array) {
 					sexpr deck = deck_eval(eval(value));
@@ -115,7 +115,7 @@ sexpr CardEnviroment::deck_eval(cell const &c) {
 			}
 
 			return output;
-		case STRING: case CARD:
+		case SOL_STRING: case CARD:
 			//Try base conversion
 			s = std::get<string>(c.content);
 			if(s.length() >= 1 && s.length() <= 3) {
@@ -142,7 +142,7 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 	sexpr array;
 	sexpr output;
 	switch(c.type) {
-		case EXPR:
+		case SOL_EXPR:
 			return filter_eval(eval(c));
 		case FILTER:
 			return std::get<sexpr>(c.content);
@@ -151,7 +151,7 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 		case DECK:
 			output.push_back(c);
 			return output;
-		case LIST:
+		case SOL_LIST:
 			array = std::get<sexpr>(c.content);
 
 			//Convert all contents to decks
@@ -168,7 +168,7 @@ sexpr CardEnviroment::filter_eval(cell const &c) {
 //Convert cell to filter with tag
 sexpr CardEnviroment::tagfilter_eval(cell const &c, filter_type open) {
 	switch(c.type) {
-		case EXPR: //case STRING:
+		case SOL_EXPR: //case STRING:
 			return tagfilter_eval(eval(c), open);
 		case TAGFILTER:
 			return std::get<sexpr>(c.content);
@@ -184,7 +184,7 @@ sexpr CardEnviroment::tagfilter_eval(cell const &c, filter_type open) {
 //Convert cell to layout
 sexpr CardEnviroment::layout_eval(cell const &c) {
 	switch(c.type) {
-		case EXPR:
+		case SOL_EXPR:
 			return layout_eval(eval(c));
 		case LAYOUT:
 			return std::get<sexpr>(c.content);

@@ -93,12 +93,12 @@ void Game::apply(Move move, bool reverse) {
 	if(move.user > 0 && !reverse && stage != LOADING) {
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
-		if(c.type == EXPR)
+		if(c.type == SOL_EXPR)
 			game_env.run(c, from, to);
 
 		//Check stack place function
 		c = stack[to].get_function(ONPLACE);
-		if(c.type == EXPR)
+		if(c.type == SOL_EXPR)
 			game_env.run(c, to, from);
 	}
 }
@@ -142,7 +142,7 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	std::ifstream *rule_file = output.file;
 	if(!rule_file->eof()) {
 		game_env.shift_env(true);
-		game_env.read_stream(*rule_file, EXPR);
+		game_env.read_stream(*rule_file, SOL_EXPR);
 	}
 
 	//Start game history
@@ -157,7 +157,7 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 		//Check for game start functions
 		for(unc i = 1; i < STACKCOUNT; i++) {
 			cell c = stack[i].get_function(ONSTART);
-			if(c.type == EXPR)
+			if(c.type == SOL_EXPR)
 				game_env.run(c, i, -1);
 		}
 
@@ -233,7 +233,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 		//Check stack grab function
 		cell c = stack[from].get_function(ONGRAB);
-		if(c.type == EXPR)
+		if(c.type == SOL_EXPR)
 			game_env.run(c, from, from);
 		return user == 1;
 	}
@@ -260,7 +260,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 
 	//Check if stack has function defined
 	cell c = stack[from].get_function(GRABIF);
-	if(c.type == EXPR && !game_env.run(c, from, -1))
+	if(c.type == SOL_EXPR && !game_env.run(c, from, -1))
 		return false;
 
 	//Set picked cards
@@ -285,7 +285,7 @@ bool Game::test(unc to, unc user) {
 	if(to == from || stack[to].matches(users[user].count, stack[from].get_card())) {
 		//Check if stack has function defined
 		cell c = stack[to].get_function(PLACEIF);
-		if(c.type == EXPR && !game_env.run(c, to, from))
+		if(c.type == SOL_EXPR && !game_env.run(c, to, from))
 			return false;
 
 		users[user].tested = to;

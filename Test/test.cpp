@@ -55,7 +55,7 @@ int main(int argc, char const *argv[]) {
 	for(int i = 0; i < 15; i++) {
 		assert(game.get_stack(i)->get_count(), counts[i], "cards in stack");
 	}
-	assert(game.cards_remaining(), 50, "remaining cards in game");
+	assert(game.get_remaining(), 50, "remaining cards in game");
 
 	//Check test suite
 	//assert(1, 2, "Test");
@@ -94,6 +94,7 @@ int main(int argc, char const *argv[]) {
 	//Continuing game
 	assert_false(game.grab(1, 5, 1), "Deal 1");
 	assert(game.get_stack(6)->get_count(), 3, "cards after deal 1");
+	assert(game.get_remaining(), 49, "remaining cards after deal 1");
 	assert_false(game.grab(1, 5, 1), "Deal 2");
 	assert(game.get_stack(7)->get_count(), 3, "cards after deal 2");
 	assert(game.grab(1, 6, 1), "Grab 4");

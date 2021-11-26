@@ -160,7 +160,7 @@ layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 		//cout << "cell: " << builder_env.str_eval(c, true) << "\n";
 		if(c.type == TAGFILTER || c.type == FILTER)
 			stack.set_filter(make_filter(c));
-		else if(c.type == EXPR) {
+		else if(c.type == SOL_EXPR) {
 			//Special tag evaluation
 			sexpr list = std::get<sexpr>(c.content);
 			auto func = Stack::func_map.find(builder_env.str_eval(list[0]));
@@ -227,7 +227,7 @@ struct setup Builder::build_ruleset(Stack *stack) {
 	cell c;
 	try {
 		//std::cout << "Slot 0: \n";
-		c = builder_env.read_stream(rule_file, EXPR);
+		c = builder_env.read_stream(rule_file, SOL_EXPR);
 
 		//Setup hand
 		sexpr array;
