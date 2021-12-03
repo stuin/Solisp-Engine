@@ -3,6 +3,8 @@
  * Lisp structures for moving cards during game
  */
 
+#include "Solisp/src/lisp.h"
+
 using Solisp::Move;
 
 #define genv ((GameEnviroment*)env)
@@ -90,7 +92,7 @@ public:
 		//Link strings to stack tags
 		auto it = Solisp::Stack::tag_map.begin();
 		while(it != Solisp::Stack::tag_map.end()) {
-			set(it->first, cell(tags[it->second], SOL_LIST));
+			set(it->first, cell(tags[it->second], LIST));
 			it++;
 		}
 

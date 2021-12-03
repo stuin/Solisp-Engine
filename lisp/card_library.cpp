@@ -98,7 +98,7 @@ void CardEnviroment::build_library_cards() {
 			sexpr deck;
 			deck.push_back(cell(s));
 			deck.push_back(*pos);
-			output.push_back(cell(deck, SOL_EXPR));
+			output.push_back(cell(deck, EXPR));
 		}
 
 		pos++;
@@ -166,7 +166,7 @@ void CardEnviroment::build_library_cards() {
 			array.push_back(cell("HLayout"));
 			for(int i = 0; i < row_length && pos != end; i++)
 				array.push_back(*pos++);
-			output.push_back(cell(array, SOL_EXPR));
+			output.push_back(cell(array, EXPR));
 		}
 
 		return cell(output, LAYOUT);

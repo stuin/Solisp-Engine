@@ -6,6 +6,7 @@ namespace Solisp {
 
 #include <time.h>
 #include <vector>
+#include <fstream>
 
 using Solisp::Stack;
 using std::vector;
@@ -33,16 +34,6 @@ struct setup {
 class Solisp::Builder {
 private:
 	std::ifstream rule_file;
-
-	//Solisp to gameplay convertions
-	sexpr tag_eval(sexpr list, bool layout);
-	Card *make_card(const cell &source, bool shuffled);
-	Filter *make_filter(const cell &source);
-
-	//Layout interpreting functions
-	layout make_slot(Stack &stack, sexpr data, int type, int x, int y);
-	layout make_layout(Stack *stack, cell layout, sexpr tags={}, struct layout current={0,0,1});
-
 
 public:
 	std::string name;

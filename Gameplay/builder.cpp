@@ -34,7 +34,7 @@ std::map<string, func_tag> Stack::func_map = {
 };
 
 //Ensure consistant tag data structure
-sexpr Builder::tag_eval(sexpr list, bool layout) {
+sexpr tag_eval(sexpr list, bool layout) {
 	sexpr output;
 	if(layout)
 		list.erase(list.begin());
@@ -47,7 +47,7 @@ sexpr Builder::tag_eval(sexpr list, bool layout) {
 }
 
 //Create card from lisp cell
-Card *Builder::make_card(const cell &source, bool shuffled) {
+Card *make_card(const cell &source, bool shuffled) {
 	Card *current = NULL;
 	Card *start = NULL;
 	sexpr deck = builder_env.deck_eval(source);
@@ -74,7 +74,7 @@ Card *Builder::make_card(const cell &source, bool shuffled) {
 }
 
 //Create filter from lisp cell
-Filter *Builder::make_filter(const cell &source) {
+Filter *make_filter(const cell &source) {
 	//Retrieve cell values
 	sexpr array = builder_env.tagfilter_eval(source, OPEN);
 	filter_type open = (filter_type)builder_env.num_eval(array[1]);
@@ -90,8 +90,76 @@ Filter *Builder::make_filter(const cell &source) {
 	return output;
 }
 
+//Set internal values of stack
+layout make_slot(Stack &stack, sexpr data, int type, int x, int y) {
+	layout dim = {1, 2, 1};
+
+	//Read connected tags
+	for(cell c : data) {
+		//cout << "cell: " << builder_env.str_eval(c, true) << "\n";
+		if(c.type == TAGFILTER || c.type == FILTER)
+			stack.set_filter(make_filter(c));
+		else if(c.type == EXPR) {
+			//Special tag evaluation
+			sexpr list = std::get<sexpr>(c.content);
+			auto func = Stack::func_map.find(builder_env.str_eval(list[0]));
+
+			if(func != Stack::func_map.end()) {
+				stack.set_function((void *)&list, func->second);
+				//cout << "\tFunction set: " << builder_env.str_eval(c, true) << "\n";
+			} else if(builder_env.str_eval(list[0]) == "Start")
+				stack.set_start(builder_env.num_eval(list[1]), builder_env.num_eval(list[2]));
+			else if(builder_env.str_eval(list[0]) == "Max")
+				stack.set_max(builder_env.num_eval(list[1]));
+			else if(builder_env.str_eval(list[0], true).find("Filter") == 0)
+				stack.set_filter(make_filter(c));
+			else
+				std::cerr << "\tUnhandled expression: " << builder_env.str_eval(c, true) << "\n";
+		} else {
+			//Boolean tag evaluation
+			auto tag = Stack::tag_map.find(builder_env.str_eval(c));
+			if(tag != Stack::tag_map.end()) {
+				//Base boolean tag
+				stack.set_tag(tag->second);
+			} else if(builder_env.str_eval(c, false) == "Start-Extra") {
+				//cout << "\tStart-Extra\n";
+				stack.set_start(-1, 0);
+			} else
+				std::cerr << "Unhandled tag: " << builder_env.str_eval(c, true) << "\n";
+		}
+	}
+
+	//Set base type tags
+	switch(type) {
+		case HStack:
+			stack.set_tag(SPREAD);
+			stack.set_tag(SPREAD_HORIZONTAL);
+			dim.x = 10;
+
+			//Adjust for maximum
+			if(stack.get_max() != 0)
+				dim.x = stack.get_max();
+			break;
+		case VStack:
+			stack.set_tag(SPREAD);
+			dim.y = 10;
+
+			//Adjust for maximum
+			if(stack.get_max() != 0)
+				dim.y = stack.get_max();
+			break;
+		default:
+			break;
+	}
+
+	dim.x += 1;
+	dim.y += 2;
+	stack.set_cords(x, y, dim.x, dim.y);
+	return dim;
+}
+
 //Recursively build stack objects from lisp structure
-layout Builder::make_layout(Stack *stack, cell layout_c, sexpr tags, layout current) {
+layout make_layout(Stack *stack, cell layout_c, sexpr tags={}, layout current={0,0,1}) {
 	//cout << "Next layer = " << str_eval(layout, true) << "\n";
 	sexpr list = builder_env.layout_eval(layout_c);
 	sexpr array;
@@ -151,74 +219,6 @@ layout Builder::make_layout(Stack *stack, cell layout_c, sexpr tags, layout curr
 	return current;
 }
 
-//Set internal values of stack
-layout Builder::make_slot(Stack &stack, sexpr data, int type, int x, int y) {
-	layout dim = {1, 2, 1};
-
-	//Read connected tags
-	for(cell c : data) {
-		//cout << "cell: " << builder_env.str_eval(c, true) << "\n";
-		if(c.type == TAGFILTER || c.type == FILTER)
-			stack.set_filter(make_filter(c));
-		else if(c.type == SOL_EXPR) {
-			//Special tag evaluation
-			sexpr list = std::get<sexpr>(c.content);
-			auto func = Stack::func_map.find(builder_env.str_eval(list[0]));
-
-			if(func != Stack::func_map.end()) {
-				stack.set_function(list, func->second);
-				//cout << "\tFunction set: " << builder_env.str_eval(c, true) << "\n";
-			} else if(builder_env.str_eval(list[0]) == "Start")
-				stack.set_start(builder_env.num_eval(list[1]), builder_env.num_eval(list[2]));
-			else if(builder_env.str_eval(list[0]) == "Max")
-				stack.set_max(builder_env.num_eval(list[1]));
-			else if(builder_env.str_eval(list[0], true).find("Filter") == 0)
-				stack.set_filter(make_filter(c));
-			else
-				std::cerr << "\tUnhandled expression: " << builder_env.str_eval(c, true) << "\n";
-		} else {
-			//Boolean tag evaluation
-			auto tag = Stack::tag_map.find(builder_env.str_eval(c));
-			if(tag != Stack::tag_map.end()) {
-				//Base boolean tag
-				stack.set_tag(tag->second);
-			} else if(builder_env.str_eval(c, false) == "Start-Extra") {
-				//cout << "\tStart-Extra\n";
-				stack.set_start(-1, 0);
-			} else
-				std::cerr << "Unhandled tag: " << builder_env.str_eval(c, true) << "\n";
-		}
-	}
-
-	//Set base type tags
-	switch(type) {
-		case HStack:
-			stack.set_tag(SPREAD);
-			stack.set_tag(SPREAD_HORIZONTAL);
-			dim.x = 10;
-
-			//Adjust for maximum
-			if(stack.get_max() != 0)
-				dim.x = stack.get_max();
-			break;
-		case VStack:
-			stack.set_tag(SPREAD);
-			dim.y = 10;
-
-			//Adjust for maximum
-			if(stack.get_max() != 0)
-				dim.y = stack.get_max();
-			break;
-		default:
-			break;
-	}
-
-	dim.x += 1;
-	dim.y += 2;
-	stack.set_cords(x, y, dim.x, dim.y);
-	return dim;
-}
-
 //Set up all stacks on game board
 struct setup Builder::build_ruleset(Stack *stack) {
 	Card *deck = make_card(builder_env.read_stream(rule_file, DECK), true);
@@ -227,7 +227,7 @@ struct setup Builder::build_ruleset(Stack *stack) {
 	cell c;
 	try {
 		//std::cout << "Slot 0: \n";
-		c = builder_env.read_stream(rule_file, SOL_EXPR);
+		c = builder_env.read_stream(rule_file, EXPR);
 
 		//Setup hand
 		sexpr array;

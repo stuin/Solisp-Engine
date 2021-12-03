@@ -32,10 +32,10 @@ void Game::apply(Move move, bool reverse) {
 		moves.push_back(move);
 	}
 
-	if(stack[from].get_count() == 0) {
-		std::cerr << "Taking cards from empty stack " << from << "\n";
+	if(stack[from].get_count() == 0 && count > 0) {
+		std::cerr << "Taking cards from empty stack " << (int)from << "\n";
 		return;
-	} else {
+	} else if(count > 0) {
 		//Get card stacks
 		Card *destination = stack[to].get_card();
 		Card *source = stack[from].get_card();
@@ -91,15 +91,9 @@ void Game::apply(Move move, bool reverse) {
 
 	//Check for additional functions and moves
 	if(move.user > 0 && !reverse && stage != LOADING) {
-		//Check stack grab function
-		cell c = stack[from].get_function(ONGRAB);
-		if(c.type == SOL_EXPR)
-			game_env.run(c, from, to);
-
 		//Check stack place function
-		c = stack[to].get_function(ONPLACE);
-		if(c.type == SOL_EXPR)
-			game_env.run(c, to, from);
+		stack[from].run_function(ONGRAB, from, to);
+		stack[to].run_function(ONPLACE, to, from);
 	}
 }
 
@@ -133,16 +127,18 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 	stack[0].set_card(output.deck);
 	stack[0].full_count();
 	game_env.setup(stack, STACKCOUNT, [&](Move move) { apply(move); });
-
-	//Reset standard values
-	users = (Hand*)malloc(players * sizeof(Hand));
 	moves.reserve(1000);
+
+	//Setup user hands
+	users = (Hand*)malloc(players * sizeof(Hand));
+	for(int i = 0; i < players; i++)
+		users[i] = {0,0,0,0};
 
 	//Check for game variables
 	std::ifstream *rule_file = output.file;
 	if(!rule_file->eof()) {
 		game_env.shift_env(true);
-		game_env.read_stream(*rule_file, SOL_EXPR);
+		game_env.read_stream(*rule_file, EXPR);
 	}
 
 	//Start game history
@@ -155,11 +151,8 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 		stage = STARTING;
 
 		//Check for game start functions
-		for(unc i = 1; i < STACKCOUNT; i++) {
-			cell c = stack[i].get_function(ONSTART);
-			if(c.type == SOL_EXPR)
-				game_env.run(c, i, -1);
-		}
+		for(unc i = 1; i < STACKCOUNT; i++)
+			stack[i].run_function(ONSTART, i, -1);
 
 		stage = PLAYING;
 	} else
@@ -232,10 +225,8 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 		moves.push_back(Move(from, from, 0, user, false));
 
 		//Check stack grab function
-		cell c = stack[from].get_function(ONGRAB);
-		if(c.type == SOL_EXPR)
-			game_env.run(c, from, from);
-		return user == 1;
+		stack[from].run_function(ONGRAB, from, from);
+		return false;
 	}
 
 	//Fail if stack empty or marked as output
@@ -259,8 +250,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 	}
 
 	//Check if stack has function defined
-	cell c = stack[from].get_function(GRABIF);
-	if(c.type == SOL_EXPR && !game_env.run(c, from, -1))
+	if(stack[from].run_function(GRABIF, from, -1))
 		return false;
 
 	//Set picked cards
@@ -284,8 +274,7 @@ bool Game::test(unc to, unc user) {
 	unc from = users[user].from;
 	if(to == from || stack[to].matches(users[user].count, stack[from].get_card())) {
 		//Check if stack has function defined
-		cell c = stack[to].get_function(PLACEIF);
-		if(c.type == SOL_EXPR && !game_env.run(c, to, from))
+		if(stack[to].run_function(PLACEIF, to, from))
 			return false;
 
 		users[user].tested = to;
@@ -328,17 +317,17 @@ void Game::cancel(unc user) {
 }
 
 //Undo move in history
-void Game::undo(unc user) {
+void Game::undo(unc user, bool anyone) {
 	cancel(user);
 
 	//Find most recent user move
 	unsigned int i = moves.size() - 1;
-	while(moves[i].user == 0 && !moves[i].get_tag(SETUP))
+	while((moves[i].user == 0 || (anyone && moves[i].user != user)) && !moves[i].get_tag(SETUP))
 		--i;
 
 	//Enforce undo
-	if(moves[i].user == user) {
-		while(moves.size() - 1 > i)
+	if(moves[i].user > 0 && !moves[i].get_tag(SETUP)) {
+		while(moves.size() > i)
 			apply(moves.back(), true);
 	}
 }
@@ -415,4 +404,21 @@ Game::Game(const Game &other) {
 	if(users != NULL)
 		free(users);
 	users = (Hand*)malloc(players * sizeof(Hand));
+}
+
+Stack::Stack() {
+	cell *c = new cell(0);
+	for(int i = 0; i < STACKFUNCOUNT; i++)
+		functions[i] = c;
+}
+
+void Stack::set_function(void *function, func_tag type) {
+	sexpr *func = (sexpr *)function;
+	(*func)[0] = cell("+");
+	functions[type] = (void *)(new cell(*func, EXPR));
+}
+
+bool Stack::run_function(func_tag func, unsigned char first, unsigned char second) {
+	cell c = *((cell *)(functions[func]));
+	return c.type == EXPR && game_env.run(c, first, second);
 }

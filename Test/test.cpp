@@ -68,7 +68,7 @@ int main(int argc, char const *argv[]) {
 	assert(game.grab(1, 13, 1), "Fake grab 2");
 	assert_false(game.place(9, 1), "Fake place 2");
 	assert(game.grab(1, 9, 1), "Fake grab 3");
-	game.cancel(2);
+	game.cancel(1);
 	assert_false(game.place(11, 1), "Fake place 3");
 
 	//Play game

@@ -75,7 +75,7 @@ public:
 	void cancel(unc user);
 
 	//Specialized interaction methods
-	void undo(unc user);
+	void undo(unc user, bool anyone);
 	void apply(Move move, unsigned int server=0);
 	void apply(unc from, unc to, unsigned int count, unc user, bool flip);
 

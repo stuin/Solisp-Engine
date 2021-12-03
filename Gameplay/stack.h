@@ -5,8 +5,8 @@ namespace Solisp {
 }
 
 #include <bitset>
+#include <map>
 
-#include "../Lisp/Solisp/src/lisp.h"
 #include "filter.h"
 
 /*
@@ -29,7 +29,7 @@ private:
 	//Stack properties
 	Filter *filter = NULL;
 	bitset<STACKTAGCOUNT> tags;
-	cell *functions[STACKFUNCOUNT];
+	void *functions[STACKFUNCOUNT];
 	unsigned int max = 0;
 
 	//Current state
@@ -49,11 +49,7 @@ public:
 	static std::map<string, stack_tags> tag_map;
 	static std::map<string, func_tag> func_map;
 
-	Stack() {
-		cell *c = new cell(0);
-		for(int i = 0; i < STACKFUNCOUNT; i++)
-			functions[i] = c;
-	}
+	Stack();
 	Stack(const Stack &other) {
 		//Game defined variables
 		filter = other.filter;
@@ -108,10 +104,9 @@ public:
 	void set_filter(Filter *filter) {
 		this->filter = filter;
 	}
-	void set_function(sexpr function, func_tag type) {
-		function[0] = cell("+");
-		functions[type] = new cell(function, SOL_EXPR);
-	}
+
+	void set_function(void *function, func_tag type);
+	bool run_function(func_tag func, unsigned char first, unsigned char second);
 
 	//Count all cards in list
 	void full_count() {
@@ -153,8 +148,5 @@ public:
 	}
 	Card *get_card() {
 		return stack;
-	}
-	cell get_function(func_tag func) {
-		return *functions[func];
 	}
 };

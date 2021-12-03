@@ -3,10 +3,11 @@
 struct node {
 	//Node stats
 	unsigned int depth;
-	unsigned int simulations;
-	unsigned int successes;
+	unsigned int simulations = 0;
+	unsigned int successes = 0;
 	unsigned int remaining;
-	bool clean;
+	bool clean = true;
+	bool failed = false;
 
 	//Node pointers
 	node *parent;
@@ -20,16 +21,13 @@ struct node {
 	//Constructor
 	node(unsigned int depth, unsigned int remaining, node *parent, unsigned int count, unc from, unc to) {
 		this->depth = depth;
+		this->remaining = remaining;
+
 		this->parent = parent;
 
 		this->count = count;
 		this->from = from;
 		this->to = to;
-
-		//Blank initial values
-		this->simulations = 0;
-		this->successes = 0;
-		this->clean = true;
 	}
 
 	//Push to end of child list
@@ -68,7 +66,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 
 	//From others to focus
 	for(int i : INPUTS) {
-		if(i != focus && game->get_stack(i)->get_count() > 0) {
+		if(i != focus && i != root->to && game->get_stack(i)->get_count() > 0) {
 			//Try all shown cards in spread
 			int count = 1;
 			while(game->grab(count, i, 1)) {
@@ -88,7 +86,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 
 		//From focus to others
 		for(int i : OUTPUTS) {
-			if(i != focus && game->get_stack(i)->get_count() > 0) {
+			if(i != focus && i != root->to && game->get_stack(i)->get_count() > 0) {
 				for(int j = 0; j < max; j++)
 					if(game->grab(j, focus, 1) && game->test(i, 1))
 						root->add_child(remaining, j, i, focus);
@@ -98,9 +96,12 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 }
 
 bool simulate(Solisp::Game *game, node *root) {
+	if(root->failed)
+		return false;
+
 	//Run draw cards
 	if(root->from == 5) {
-		game->grab(1, 5, 1);
+		game->grab(0, 5, 1);
 		simulations++;
 		return true;
 	}
@@ -111,6 +112,7 @@ bool simulate(Solisp::Game *game, node *root) {
 		return true;
 	}
 
-	std::cerr << "ERROR: Cannot simulate move from " << (int)root->from << " to " << (int)root->to << "\n";
+	root->failed = true;
+	std::cerr << "ERROR: Cannot simulate move from " << (int)root->from << " to " << (int)root->to << " at depth " << root->depth << "\n";
 	return false;
 }

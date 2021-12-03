@@ -15,11 +15,11 @@ enum layout_type { VLayout, HLayout, GLayout, VStack, HStack, PStack, Slot, Appl
 #define cenv ((CardEnviroment*)env)
 
 //Added cell types
-#define CARD SOL_LIST+1
-#define DECK SOL_LIST+2
-#define FILTER SOL_LIST+3
-#define TAGFILTER SOL_LIST+4
-#define LAYOUT SOL_LIST+5
+#define CARD LIST+1
+#define DECK LIST+2
+#define FILTER LIST+3
+#define TAGFILTER LIST+4
+#define LAYOUT LIST+5
 
 class CardEnviroment : public Enviroment {
 private:
