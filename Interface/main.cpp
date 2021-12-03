@@ -38,7 +38,7 @@ int main(int argc, char const *argv[]) {
 	//Add undo/redo buttons
 	Solisp::Game *gameptr = &game;
 	addActionButton(0, [gameptr]() {
-		gameptr->undo(2);
+		gameptr->undo(2, true);
 		reloadAll();
 	});
 	/*addActionButton(1, [gameptr]() {

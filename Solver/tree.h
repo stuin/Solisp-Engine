@@ -34,10 +34,17 @@ struct node {
 	void add_child(unsigned int remaining, unsigned int count, unc from, unc to) {
 		this->children.push_back(new node(depth + 1, remaining, this, count, from, to));
 	}
+
+	void print_stack() {
+		if(parent != NULL)
+			parent->print_stack();
+		if(from != 5)
+			cout << '{' << (int)from << ':' << (int)to << "} ";
+	}
 };
 
 int INPUTS[8] = {6, 8, 9, 10, 11, 12, 13, 14};
-int OUTPUTS[7] = {8, 9, 10, 11, 12, 13, 14};
+int OUTPUTS[11] = {1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14};
 
 int successes = 0;
 int simulations = 0;
@@ -89,7 +96,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 			if(i != focus && i != root->to && game->get_stack(i)->get_count() > 0) {
 				for(int j = 0; j < max; j++)
 					if(game->grab(j, focus, 1) && game->test(i, 1))
-						root->add_child(remaining, j, i, focus);
+						root->add_child(remaining, j, focus, i);
 			}
 		}
 	}

@@ -72,8 +72,10 @@ void Game::apply(Move move, bool reverse) {
 			cardsLeft += realCount;
 		else if(!stack[from].get_tag(GOAL) && stack[to].get_tag(GOAL)) {
 			cardsLeft -= realCount;
-			if(cardsLeft <= 0)
+			if(cardsLeft <= 0) {
 				cout << "YOU WIN!!\n";
+				cout << moves.size() << " moves recorded\n";
+			}
 		}
 
 		//Reverse cards properly

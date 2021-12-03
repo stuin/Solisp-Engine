@@ -4,7 +4,7 @@
 
 using std::cout;
 
-#define SEED time(NULL)
+#define SEED 1638558167
 #define MAX_TIME 10
 #define MAX_DEPTH 20
 
@@ -39,6 +39,10 @@ int main(int argc, char *argv[ ]) {
 	Solisp::Game game;
 	Solisp::Builder *builder = new Solisp::Builder("Klondike.solisp", seed);
 	game.setup(builder);
+
+	//Create save file with starting conditions
+	if(world_rank == 0)
+		game.save("../saves/Klondike.seed.sav");
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(world_rank == 0)
@@ -65,8 +69,6 @@ int main(int argc, char *argv[ ]) {
 				game.undo(1, false);
 				current = current->parent;
 			}
-			if(current->simulations >= current->children.size())
-				min_depth = current->depth + 1;
 		} else {
 			current = current->children[choose_next(current, world_rank, world_size)];
 			if(!current->failed && simulate(&game, current)) {
@@ -92,6 +94,19 @@ int main(int argc, char *argv[ ]) {
 
 	cout << "Simulator " << world_rank << " at depth " << max_depth << "/" << min_depth << 
 		": reached " << min_remaining << " cards in " << best->depth << " moves using " << simulations << " simulations\n";
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	int recv;
+	if(world_rank > 0)
+        MPI_Recv(&recv, 1, MPI_INT, world_rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+	cout << world_rank << ": ";
+	best->print_stack();
+	cout << "\n";
+	
+	if(world_size > world_rank + 1)
+		MPI_Send(&min_remaining, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
 
 	MPI_Finalize();
     return 0;
