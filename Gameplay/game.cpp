@@ -334,6 +334,19 @@ void Game::undo(unc user, bool anyone) {
 	}
 }
 
+//Print out all cards in game
+void Game::print_game() {
+	int i = 0;
+	while(i < STACKCOUNT)	{
+		cout << "Stack " << i << " at (" <<
+			stack[i].x << "," << stack[i].y << "): ";
+		if(stack[i].get_card() != NULL)
+			cout << stack[i].get_card()->print_stack();
+		cout << "\n";
+		i++;
+	}
+}
+
 //Save to file
 void Game::save(string file) {
 	//Open output file

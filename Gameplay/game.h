@@ -75,9 +75,10 @@ public:
 	void cancel(unc user);
 
 	//Specialized interaction methods
-	void undo(unc user, bool anyone);
 	void apply(Move move, unsigned int server=0);
 	void apply(unc from, unc to, unsigned int count, unc user, bool flip);
+	void undo(unc user, bool anyone);
+	void print_game();
 
 	//File loading/saving
 	void save(string file);

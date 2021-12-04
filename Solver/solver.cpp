@@ -4,9 +4,14 @@
 
 using std::cout;
 
-#define SEED 1638558167
-#define MAX_TIME 10
+#define SEED time(NULL)
+//1638558167
+
+#define MAX_TIME 2
+#define MAX_LOOPS 30
+#define BACKUP_DEPTH 2
 #define MAX_DEPTH 20
+#define START_DEPTH 2
 
 int choose_next(node *node, int world_rank, int world_size) {
 	int size = node->children.size();
@@ -26,6 +31,9 @@ int main(int argc, char *argv[ ]) {
 	int seed;
 	int end;
 	if(world_rank == 0) {
+		if(argc > 1)
+			seed = atoi(argv[1]);
+
 		seed = SEED;
 		cout << "Seed: " << seed << "\n";
 		end = time(NULL) + MAX_TIME;
@@ -56,57 +64,91 @@ int main(int argc, char *argv[ ]) {
 		cout << "Found " << root.children.size() << " starting positions\n";
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	unsigned int min_depth = 2;
-	unsigned int min_remaining = game.get_remaining();
+	std::vector<node *> wins;
+	node *best;
 	unsigned int max_depth = 0;
+	unsigned int min_depth = START_DEPTH;
 
 	//Explore some branches
 	node *current = &root;
-	node *best = current;
+	best = current;
+
 	while(time(NULL) < end && current != NULL) {
+		//Return to min_depth
 		if(current->depth > min_depth + MAX_DEPTH) {
 			while(current->parent != NULL && current->depth > min_depth) {
-				game.undo(1, false);
+				game.undo(1, true);
 				current = current->parent;
+
+				//Move up when node has been run many times
+				if(current->simulations >= current->children.size() * MAX_LOOPS)
+					min_depth -= BACKUP_DEPTH;
 			}
 		} else {
+			//Choose path to follow
 			current = current->children[choose_next(current, world_rank, world_size)];
 			if(!current->failed && simulate(&game, current)) {
-				if(current->clean)
-					add_possibilities(&game, current, current->from);
+				if(game.get_remaining() == 0) {
+					cout << "Win found at depth " << current->depth << "\n";
+					current->failed = true;
+					wins.push_back(current);
 
-				if(game.get_remaining() < min_remaining) {
-					min_remaining = game.get_remaining();
-					min_depth = current->depth;
-					best = current;
+					//Reset for new round
+					min_depth -= MAX_DEPTH;
+					best = &root;
+				} else {
+					if(current->clean)
+						add_possibilities(&game, current, current->from);
+
+					if(current->remaining < best->remaining) {
+						min_depth = current->depth;
+						best = current;
+					}
+
+					if(current->depth > max_depth)
+						max_depth = current->depth;
 				}
-				if(current->depth > max_depth)
-					max_depth = current->depth;
 			} else
 				current = current->parent;
 		}
 	}
+	wins.push_back(best);
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	if(world_rank == 0)
 		cout << "Starting with seed " << seed << " and " << root.remaining << " cards:\n";
+
+	for(node *n : wins)
+		if(n->remaining < best->remaining || (n->depth < best->depth && n->remaining == best->remaining))
+			best = n;
+
+	cout << "Simulator " << world_rank << ": reached " << best->remaining << " cards in " << best->depth << " moves"
+		<< " using " << simulations << " simulations and max depth " << max_depth << "\n";
+
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	cout << "Simulator " << world_rank << " at depth " << max_depth << "/" << min_depth << 
-		": reached " << min_remaining << " cards in " << best->depth << " moves using " << simulations << " simulations\n";
+	int best_remaining = best->remaining;
+	int best_rank = world_rank;
+	if(world_rank == 0) {
+		for(int i = 1; i < world_size; i++) {
+			int recv;
+			MPI_Recv(&recv, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	MPI_Barrier(MPI_COMM_WORLD);
+			if(recv < best_remaining) {
+				best_remaining = recv;
+				best_rank = i;
+			}
+		}
+	} else
+        MPI_Send(&best_remaining, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
-	int recv;
-	if(world_rank > 0)
-        MPI_Recv(&recv, 1, MPI_INT, world_rank-1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Bcast(&best_rank, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-	cout << world_rank << ": ";
-	best->print_stack();
-	cout << "\n";
-	
-	if(world_size > world_rank + 1)
-		MPI_Send(&min_remaining, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
+    if(world_rank == best_rank) {
+    	cout << world_rank << ": ";
+		best->print_stack();
+		cout << "\n";
+	}
 
 	MPI_Finalize();
     return 0;

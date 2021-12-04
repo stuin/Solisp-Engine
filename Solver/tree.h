@@ -4,7 +4,6 @@ struct node {
 	//Node stats
 	unsigned int depth;
 	unsigned int simulations = 0;
-	unsigned int successes = 0;
 	unsigned int remaining;
 	bool clean = true;
 	bool failed = false;
@@ -31,35 +30,26 @@ struct node {
 	}
 
 	//Push to end of child list
-	void add_child(unsigned int remaining, unsigned int count, unc from, unc to) {
+	void add_child(unsigned int count, unc from, unc to) {
 		this->children.push_back(new node(depth + 1, remaining, this, count, from, to));
 	}
 
 	void print_stack() {
 		if(parent != NULL)
 			parent->print_stack();
-		if(from != 5)
-			cout << '{' << (int)from << ':' << (int)to << "} ";
+		//if(from != 5)
+		cout << '{' << (int)from << ':' << (int)to << "} ";
 	}
 };
 
 int INPUTS[8] = {6, 8, 9, 10, 11, 12, 13, 14};
 int OUTPUTS[11] = {1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 14};
 
-int successes = 0;
 int simulations = 0;
 
 //Find all possible moves from the current node
 void add_possibilities(Solisp::Game *game, node *root, int focus) {
-	int remaining = game->get_remaining();
 	root->clean = false;
-
-	//Check for win
-	if(remaining == 0) {
-		root->successes++;
-		successes++;
-		return;
-	}
 
 	//Cancel invalid focus
 	if(focus < 8) {
@@ -69,7 +59,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 	}
 
 	//Use draw button
-	root->add_child(remaining, 1, 5, 5);
+	root->add_child(1, 5, 5);
 
 	//From others to focus
 	for(int i : INPUTS) {
@@ -78,7 +68,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 			int count = 1;
 			while(game->grab(count, i, 1)) {
 				if(game->test(focus, 1))
-					root->add_child(remaining, count, i, focus);
+					root->add_child(count, i, focus);
 				count++;
 			}
 		}
@@ -96,7 +86,7 @@ void add_possibilities(Solisp::Game *game, node *root, int focus) {
 			if(i != focus && i != root->to && game->get_stack(i)->get_count() > 0) {
 				for(int j = 0; j < max; j++)
 					if(game->grab(j, focus, 1) && game->test(i, 1))
-						root->add_child(remaining, j, focus, i);
+						root->add_child(j, focus, i);
 			}
 		}
 	}
@@ -115,6 +105,7 @@ bool simulate(Solisp::Game *game, node *root) {
 
 	//Simulate actual move
 	if(game->grab(root->count, root->from, 1) && game->place(root->to, 1)) {
+		root->remaining = game->get_remaining();
 		simulations++;
 		return true;
 	}

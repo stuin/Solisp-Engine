@@ -24,7 +24,11 @@ void assert(bool result, string message) {
 }
 
 void assert(Stack *value, cardData expected, string message) {
-	if(value->get_card() == NULL || !value->get_card()->matches(expected)) {
+	if(value->get_card() == NULL) {
+		failed++;
+		cout << "ERROR: NULL != " << print_card(expected);
+		cout << ": Missing card at " << message << "\n";
+	} else if(!value->get_card()->matches(expected)) {
 		failed++;
 		cout << "ERROR: " << print_card(value->get_card()->get_data()) << " != " << print_card(expected);
 		cout << ": Incorrect card at " << message << "\n";
@@ -71,11 +75,35 @@ int main(int argc, char const *argv[]) {
 	game.cancel(1);
 	assert_false(game.place(11, 1), "Fake place 3");
 
-	//Play game
+	//Test undo 1
 	assert(game.get_stack(4), {2, 'D'}, "stack 4");
-	assert(game.grab(1, 9, 1), "Grab 1");
-	assert(game.place(11, 1), "Place 1");
-	assert(game.get_stack(1), {1, 'C'}, "stack 1");
+	assert(game.get_stack(11)->get_count(), 4, "stack 11 before 1a");
+	assert(game.get_stack(1)->get_count(), 0, "empty stack 1");
+	assert(game.grab(1, 9, 1), "Grab 1a");
+	assert(game.place(11, 1), "Place 1a");
+	assert(game.get_stack(11)->get_count(), 5, "stack 11 after 1a");
+	assert(game.get_stack(1), {1, 'C'}, "stack 1 after 1a");
+	assert(game.moves.size(), 37, "moves before undo 1");
+	game.undo(1, true);
+	assert(game.moves.size(), 34, "moves after undo 1");
+	assert(game.get_stack(11)->get_count(), 4, "stack 11 after undo 1");
+	assert(game.get_stack(1)->get_count(), 0, "stack 1 after undo 1");
+
+	//Test undo 2
+	assert(game.grab(1, 9, 1), "Grab 1b");
+	assert(game.place(11, 1), "Place 1b");
+	assert(game.get_stack(11)->get_count(), 5, "stack 11 after 1b");
+	assert(game.get_stack(1), {1, 'C'}, "stack 1 after 1b");
+	assert(game.moves.size(), 37, "moves before undo 2");
+	game.undo(1, false);
+	assert(game.moves.size(), 36, "moves after undo 2");
+	assert(game.get_stack(11)->get_count(), 5, "stack 11 after undo 2");
+	assert(game.get_stack(1)->get_count(), 0, "stack 1 after undo 2");
+	assert(game.grab(1, 9, 1), "Grab 1c");
+	assert(game.place(1, 1), "Place 1c");
+	assert(game.get_stack(1), {1, 'C'}, "stack 1 after 1c");
+
+	//Play game further
 	assert(game.grab(2, 11, 1), "Grab 2");
 	assert(game.place(9, 1), "Place 2");
 	assert(game.grab(1, 14, 1), "Grab 3");
@@ -100,7 +128,6 @@ int main(int argc, char const *argv[]) {
 	assert(game.grab(1, 6, 1), "Grab 4");
 	assert(game.place(13, 1), "Place 4");
 
-
 	//Report test results
 	if(failed == 0)
 		cout << "All " << total << " tests passed\n";
@@ -108,13 +135,5 @@ int main(int argc, char const *argv[]) {
 		cout << failed << "/" << total << " tests failed\n";
 
 	cout << "--Listing slots\n";
-	int i = 0;
-	while(game.get_stack(i) != NULL && i < 30)	{
-		cout << "Stack " << i << " at (" <<
-			game.get_stack(i)->x << "," << game.get_stack(i)->y << "): ";
-		if(game.get_stack(i)->get_card() != NULL)
-			cout << game.get_stack(i)->get_card()->print_stack();
-		cout << "\n";
-		i++;
-	}
+	game.print_game();
 }
