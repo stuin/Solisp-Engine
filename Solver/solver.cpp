@@ -33,8 +33,9 @@ int main(int argc, char *argv[ ]) {
 	if(world_rank == 0) {
 		if(argc > 1)
 			seed = atoi(argv[1]);
-
-		seed = SEED;
+		else
+			seed = SEED;
+		
 		cout << "Seed: " << seed << "\n";
 		end = time(NULL) + MAX_TIME;
 	}
@@ -49,8 +50,8 @@ int main(int argc, char *argv[ ]) {
 	game.setup(builder);
 
 	//Create save file with starting conditions
-	if(world_rank == 0)
-		game.save("../saves/Klondike.seed.sav");
+	//if(world_rank == 0)
+	//	game.save("../saves/Klondike.seed.sav");
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	if(world_rank == 0)

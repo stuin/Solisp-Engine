@@ -1,0 +1,1 @@
+mpic++ Solver/solver.cpp Gameplay/builder.cpp Gameplay/card.cpp Gameplay/game.cpp Lisp/Solisp/src/lisp.cpp Lisp/Solisp/src/reader.cpp Lisp/Solisp/src/library.cpp Lisp/card_env.cpp Lisp/card_library.cpp Lisp/game_library.cpp -std=c++17 -Wall -fpermissive -O3 -o /tmp/solver.out

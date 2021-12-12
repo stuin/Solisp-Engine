@@ -1,7 +1,0 @@
-parent=../Gameplay/.baseincludes
-
-buildargs3=-lclsocket
-files=./GameServer.cpp
-output=/tmp/server.out
-
-testargs=0
