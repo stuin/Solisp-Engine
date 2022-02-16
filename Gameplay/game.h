@@ -65,7 +65,7 @@ public:
 	}
 
 	//Setup functions
-	Card *setup(Builder *builder, bool saved=false);
+	void setup(Builder *builder, bool saved=false);
 	void clear();
 
 	//General interaction methods

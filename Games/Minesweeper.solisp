@@ -1,0 +1,46 @@
+Minesweeper, Classic
+
+(Append (Clone 54 {J1}) (Clone 10 {D11}))
+{(Max 1)}
+
+(HLayout
+	(Apply {
+			INPUT
+			OUTPUT
+		}
+		(VLayout
+			(Slot {(Start-With {J1})})
+			(Slot {(Start-With (Clone 48 {S1}))})
+			(Slot {(Start-With (Clone 48 {S2}))})
+			(Slot {(Start-With (Clone 48 {S3}))})
+			(Slot {(Start-With (Clone 24 {S4}))})
+			(Slot {(Start-With (Clone 12 {S5}))})
+			(Slot {(Start-With (Clone 6 {S6}))})
+			(Slot {(Start-With (Clone 3 {S7}))})
+			(Slot {(Start-With (Clone 2 {S8}))})
+		)
+	)
+	(VLayout
+		(Clone 8 (HLayout
+			(Clone 8 (Slot {
+				GOAL
+				BUTTON
+				INPUT
+				(Start 1 0)
+				(On-Grab
+					(If (== (Suit this) D)
+						(Flip this this)
+						(If (== (Suit this) J)
+							(+
+								(Move this 1)
+								(Move (+ (Sum (Map side {-9, -8, -7, -1, 1, 7, 8, 9} (
+									(== (Suit (+ this side)) D)
+								))) 1) this)
+							)
+						)
+					)
+				)
+			}))
+		))
+	)
+)

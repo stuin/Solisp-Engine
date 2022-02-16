@@ -32,8 +32,10 @@ public:
 		data = card->data;
 		next = card->next;
 	}
-	Card(cardData data) {
+	Card(cardData data, int slot=0, int index=0) {
 		this->data = data;
+		this->slot = slot;
+		this->index = index;
 	}
 	Card(char value, char suit) {
 		data.value = value;
@@ -107,8 +109,6 @@ public:
 
 	//Make sure index value is set properly
 	int set_index(int count) {
-		if(index < 0)
-			index = 0;
 		if(count == 0)
 			return index;
 		if(next == NULL)

@@ -47,7 +47,7 @@ sexpr tag_eval(sexpr list, bool layout) {
 }
 
 //Create card from lisp cell
-Card *make_card(const cell &source, bool shuffled) {
+Card *make_card(const cell &source, bool shuffled, int slot=0) {
 	Card *current = NULL;
 	Card *start = NULL;
 	sexpr deck = builder_env.deck_eval(source);
@@ -91,7 +91,7 @@ Filter *make_filter(const cell &source) {
 }
 
 //Set internal values of stack
-layout make_slot(Stack &stack, sexpr data, int type, int x, int y) {
+layout make_slot(Stack &stack, sexpr data, int type, layout current) {
 	layout dim = {1, 2, 1};
 
 	//Read connected tags
@@ -107,7 +107,14 @@ layout make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 			if(func != Stack::func_map.end()) {
 				stack.set_function((void *)&list, func->second);
 				//cout << "\tFunction set: " << builder_env.str_eval(c, true) << "\n";
-			} else if(builder_env.str_eval(list[0]) == "Start")
+			} 
+			else if(builder_env.str_eval(list[0]) == "Start-With") {
+				Card *card = make_card(list[1], false, current.count);
+				cout << card->print_stack() << "\n";
+				stack.set_card(card);
+				stack.full_count();
+			}
+			else if(builder_env.str_eval(list[0]) == "Start")
 				stack.set_start(builder_env.num_eval(list[1]), builder_env.num_eval(list[2]));
 			else if(builder_env.str_eval(list[0]) == "Max")
 				stack.set_max(builder_env.num_eval(list[1]));
@@ -154,7 +161,7 @@ layout make_slot(Stack &stack, sexpr data, int type, int x, int y) {
 
 	dim.x += 1;
 	dim.y += 2;
-	stack.set_cords(x, y, dim.x, dim.y);
+	stack.set_cords(current.x, current.y, dim.x, dim.y);
 	return dim;
 }
 
@@ -203,7 +210,7 @@ layout make_layout(Stack *stack, cell layout_c, sexpr tags={}, layout current={0
 			//cout << "Slot " << (int)current.count << ":\n";
 			try {
 				//stack.emplace_back();
-				added = make_slot(stack[current.count], array, builder_env.num_eval(list[0]), current.x, current.y);
+				added = make_slot(stack[current.count], array, builder_env.num_eval(list[0]), current);
 			} catch(std::exception &e) {
 				std::cerr << "Slot Error: " << e.what() << std::endl;
 				std::cerr << builder_env.str_eval(cell(array)) << "\n";
@@ -233,7 +240,7 @@ struct setup Builder::build_ruleset(Stack *stack) {
 		sexpr array;
 		array.push_back(cell("VStack"));
 		array.push_back(c);
-		make_slot(stack[0], tag_eval(builder_env.layout_eval(array), true), VStack, -1, -1);
+		make_slot(stack[0], tag_eval(builder_env.layout_eval(array), true), VStack, {-1, -1, 0});
 
 		//Build other slots
 		c = builder_env.read_stream(rule_file, LAYOUT);

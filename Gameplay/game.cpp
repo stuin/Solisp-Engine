@@ -114,7 +114,7 @@ void Game::apply(unc from, unc to, unsigned int count, unc user, bool flip) {
 }
 
 //Call all setup functions
-Solisp::Card *Game::setup(Builder *builder, bool saved) {
+void Game::setup(Builder *builder, bool saved) {
 	if(users != NULL)
 		clear();
 
@@ -159,8 +159,6 @@ Solisp::Card *Game::setup(Builder *builder, bool saved) {
 		stage = PLAYING;
 	} else
 		stage = LOADING;
-
-	return stack[0].get_card();
 }
 
 //Deal out cards to starting positions
@@ -300,10 +298,13 @@ bool Game::place(unc to, unc user) {
 	//Check for valid swap
 	if(to != from && stack[to].get_tag(SWAP) && stack[from].get_tag(SWAP)
 		&& stack[from].get_count() == users[user].count) {
-		apply(0, 0, 0, user, false);
-		apply(from, 0, stack[from].get_count(), 0, false);
-		apply(to, from, stack[to].get_count(), 0, false);
-		apply(0, to, stack[from].get_count(), 0, false);
+		
+		int from_count = stack[from].get_count();
+		int to_count = stack[to].get_count();
+		apply(0, 0, from_count, user, false);
+		apply(from, 0, from_count, 0, false);
+		apply(to, from, to_count, 0, false);
+		apply(0, to, from_count, 0, false);
 
 		cancel(user);
 		return true;
