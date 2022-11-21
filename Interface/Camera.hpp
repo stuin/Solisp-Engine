@@ -14,7 +14,7 @@ public:
 		UpdateList::addListener(this, sf::Event::Resized);
 	}
 
-	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
+	void recieveEvent(sf::Event event, WindowSize *windowSize) {
 		std::cout << event.size.width << ", " << event.size.height << "\n";
 		screenWidth = event.size.width;
 		screenHeight = event.size.height;

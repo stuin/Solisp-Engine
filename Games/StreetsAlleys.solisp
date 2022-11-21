@@ -16,7 +16,7 @@ Streets and Alleys, Normal
 	)
 	(Apply {
 			GOAL
-			OUTPUT
+			NOGRAB
 			(On-Place (Map st CUSTOM (Soft-Move st this)))
 		} (VLayout
 			(Slot (Filter (Clubs Standard)))

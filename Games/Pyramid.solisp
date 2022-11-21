@@ -23,8 +23,8 @@ Pyramid, Classic
 	)
 	(HLayout
 		(Slot Start-Extra)
-		(Slot INPUT)
-		(Slot INPUT)
+		(Slot NOPLACE)
+		(Slot NOPLACE)
 	)
 	(Slot {
 		GOAL

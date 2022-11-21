@@ -1,5 +1,5 @@
 #include "Pointer.hpp"
-#include "../Network/GameClient.hpp"
+//#include "../Network/GameClient.hpp"
 
 class Root : public Node {
 private:
@@ -61,7 +61,7 @@ public:
 	}
 
 	void joinServer(string ip) {
-		GameClient *client = new GameClient();
+		/*GameClient *client = new GameClient();
 		if(client->connect(ip, &game)) {
 			//Set up slots
 			stacks.clear();
@@ -75,7 +75,7 @@ public:
 			themeView->setHidden(true);
 			pointer->reset(stacks[0], client, client->get_user());
 			showMenu(ACTIONMENU, false);
-		}
+		}*/
 	}
 
 	void quitGame(bool save) {

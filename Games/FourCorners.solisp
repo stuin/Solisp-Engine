@@ -26,7 +26,7 @@ Four Corners, Normal
 			)
 		)
 		(HStack
-			INPUT
+			NOPLACE
 			(Start 0 6)
 			(Max 7)
 			(Grab-If true)
@@ -58,7 +58,7 @@ Four Corners, Normal
 		(Slot
 			Start-Extra
 			BUTTON
-			INPUT
+			NOPLACE
 			(On-Grab
 				(If (> (Count this) 0)
 					(+
@@ -90,7 +90,7 @@ Four Corners, Normal
 			)
 		)
 		(HStack
-			INPUT
+			NOPLACE
 			(Start 0 6)
 			(Max 7)
 			(Grab-If true)

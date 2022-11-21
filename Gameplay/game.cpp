@@ -176,6 +176,7 @@ void Game::deal() {
 
 	//Loop until all placed
 	while(remaining > 0 && stack[0].get_count() > 0) {
+		unsigned int loopRemaining = remaining;
 		for(unc j = 1; j < STACKCOUNT; j++) {
 			if(j != overflowSlot && stack[j].start_hidden + stack[j].start_shown > 0) {
 				remaining--;
@@ -185,6 +186,8 @@ void Game::deal() {
 					apply(0, j, 1, 0, true);
 			}
 		}
+		if(loopRemaining == remaining)
+			break;
 	}
 
 	//Move remaining cards to overflow
@@ -230,7 +233,7 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 	}
 
 	//Fail if stack empty or marked as output
-	if(stack[from].get_card() == NULL || stack[from].get_tag(OUTPUT) || num < 1)
+	if(stack[from].get_card() == NULL || stack[from].get_tag(NOGRAB) || num < 1)
 		return false;
 
 	//Flip one card if top hidden
@@ -252,6 +255,8 @@ bool Game::grab(unsigned int num, unc from, unc user) {
 	//Check if stack has function defined
 	if(stack[from].run_function(GRABIF, from, -1))
 		return false;
+
+	//cout << (int)num << " " << stack[from].get_count() << "\n";
 
 	//Set picked cards
 	if(stack[0].matches(num, stack[from].get_card())) {

@@ -22,8 +22,7 @@ cell GameEnviroment::general_move(int num, bool flip, unc player) {
 
 		DONE;
 		if((player==0 && genv->both_valid(from, to)) || genv->check_move(count, from, to)) {
-			if(player != 1)
-				genv->add_move(count, from, to, player, flip);
+			genv->add_move(count, from, to, player, flip);
 			return cell(count);
 		}
 		return cell(0);
@@ -40,8 +39,8 @@ void GameEnviroment::build_library_game() {
 	set("Flip-All", general_move(1000, true, 0));
 
 	//Soft moves
-	set("Soft-Move", general_move(1, false, 2));
-	set("Soft-Flip", general_move(1, true, 2));
+	set("Soft-Move", general_move(1, false, 1));
+	set("Soft-Flip", general_move(1, true, 1));
 
 	//Test move
 	set("Test-Move", general_move(1, false, 1));

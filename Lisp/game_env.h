@@ -39,7 +39,7 @@ public:
 	//Add new move to game
 	void add_move(unsigned int count, unc from, unc to, unc user, bool flip) {
 		//if(user == 1) cout << "Try: ";
-		//cout << "Moving " << count << " cards from " << from << " to " << to << "\n";
+		//cout << "Moving " << count << " cards from " << (int)from << " to " << (int)to << "\n";
 
 		apply({from, to, count, user, flip});
 	}
@@ -92,7 +92,7 @@ public:
 		//Link strings to stack tags
 		auto it = Solisp::Stack::tag_map.begin();
 		while(it != Solisp::Stack::tag_map.end()) {
-			//set(it->first, cell(tags[it->second], LIST));
+			set(it->first, cell(tags[it->second], LIST));
 			it++;
 		}
 

@@ -6,7 +6,7 @@ Gridcannon, Challenge
 (HLayout
 	(VLayout
 		(Slot
-			INPUT
+			NOPLACE
 			Start-Extra
 			(On-Grab
 				(Flip 1 1)
@@ -26,12 +26,12 @@ Gridcannon, Challenge
 			(Filter-Open {J1 J1})
 			(Max 2)
 		)
-		(Slot INPUT OUTPUT)
+		(Slot NOPLACE NOGRAB)
 	)
-	(Apply {OUTPUT}
+	(Apply {NOGRAB}
 		(VLayout
 			(HLayout
-				(Slot INPUT OUTPUT)
+				(Slot NOPLACE NOGRAB)
 				(Slot #Top Left
 					{(Place-If
 						(Check 0)
@@ -47,7 +47,7 @@ Gridcannon, Challenge
 						(Check 2)
 					)}
 				)
-				(Slot INPUT OUTPUT)
+				(Slot NOPLACE NOGRAB)
 			)
 			(HLayout
 				(Slot #Left Top
@@ -200,7 +200,7 @@ Gridcannon, Challenge
 				)
 			)
 			(HLayout
-				(Slot INPUT OUTPUT)
+				(Slot NOPLACE NOGRAB)
 				(Slot #Bottom Left
 					{(Place-If
 						(Check 6)
@@ -216,7 +216,7 @@ Gridcannon, Challenge
 						(Check 8)
 					)}
 				)
-				(Slot INPUT OUTPUT)
+				(Slot NOPLACE NOGRAB)
 			)
 		)
 	)

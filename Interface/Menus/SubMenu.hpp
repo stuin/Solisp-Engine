@@ -24,9 +24,11 @@ public:
 		UpdateList::addListener(this, sf::Event::MouseButtonPressed);
 	}
 
-	void recieveEvent(sf::Event event, int shiftX, int shiftY) {
-		sf::Vector2i pos(event.mouseButton.x * shiftX, event.mouseButton.y * shiftY);
-		if(event.mouseButton.button == sf::Mouse::Left && getRect().contains(pos)) {
+	void recieveEvent(sf::Event event, WindowSize *windowSize) {
+		sf::Vector2f pos = windowSize->worldPos(
+			event.mouseButton.x, event.mouseButton.y);
+		if(!isHidden() && event.mouseButton.button == sf::Mouse::Left && 
+			getRect().contains(pos)) {
 			for(Button *b : contents) {
 				if(b->getRect().contains(pos))
 					b->run();

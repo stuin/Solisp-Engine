@@ -36,7 +36,7 @@ Devil's Grip, Challenge
 			(Slot
 				Start-Extra
 				BUTTON
-				INPUT
+				NOPLACE
 				(On-Grab
 					(If (> (Count (+ this 2)) 0)
 						(Move 3 (+ this 2) (+ this 1))
@@ -49,7 +49,7 @@ Devil's Grip, Challenge
 			)
 			(Slot
 				BUTTON
-				INPUT
+				NOPLACE
 				(Grab-If (== (Count (- this 1)) 0))
 				(On-Grab
 					(Move 3 (+ this 1) this)
@@ -59,7 +59,7 @@ Devil's Grip, Challenge
 			)
 		)
 		(HStack
-			INPUT
+			NOPLACE
 			(Max 3)
 		)
 	)

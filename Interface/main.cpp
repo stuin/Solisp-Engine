@@ -24,6 +24,8 @@ sf::Texture *getCardset() {
 }
 
 int main(int argc, char const *argv[]) {
+	Settings::loadSettings("res/settings.json");
+
 	//Draw background
 	sf::RectangleShape rect(sf::Vector2f(1930, 1090));
 	rect.setFillColor(sf::Color(7, 99, 36));

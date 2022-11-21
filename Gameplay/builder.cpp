@@ -16,8 +16,8 @@ CardEnviroment builder_env;
 
 std::map<string, stack_tags> Stack::tag_map = {
 	{"GOAL", GOAL},
-	{"INPUT", INPUT},
-	{"OUTPUT", OUTPUT},
+	{"NOPLACE", NOPLACE},
+	{"NOGRAB", NOGRAB},
 	{"BUTTON", BUTTON},
 	{"MIRRORED", SPREAD_REVERSE},
 	{"MULTI", SPREAD_FAKE},

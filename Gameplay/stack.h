@@ -20,7 +20,7 @@ using std::bitset;
 #define STACKFUNCOUNT 6
 
 //List of tags to change stack properties
-enum stack_tags { GOAL, INPUT, OUTPUT, SPREAD,
+enum stack_tags { GOAL, NOPLACE, NOGRAB, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, SWAP, CUSTOM };
 enum func_tag { ONGRAB, ONPLACE, ONFLIP, ONSTART, GRABIF, PLACEIF };
 
@@ -78,8 +78,8 @@ public:
 	void set_cords(int x, int y, int width, int height) {
 		this->x = x;
 		this->y = y;
-		this->width = x + width;
-		this->height = y + height;
+		this->width = width;
+		this->height = height;
 	}
 	void set_tag(int tag, bool value=true) {
 		tags[tag] = value;
@@ -120,8 +120,8 @@ public:
 
 	//Check if new cards can be placed on stack
 	bool matches(unsigned int count, Card *newCard) {
-		//Check if INPUT or if inserting multiple into single stack
-		if(tags[INPUT] || (!tags[SPREAD] && !tags[SPREAD_FAKE] && count > 1))
+		//Check if NOPLACE or if inserting multiple into single stack
+		if(tags[NOPLACE] || (!tags[SPREAD] && !tags[SPREAD_FAKE] && count > 1))
 			return false;
 
 		//Check max card count of stack

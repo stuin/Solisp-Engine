@@ -8,7 +8,7 @@ Spider, Classic
 		(HLayout
 			(Clone 8 (Slot {
 				GOAL
-				OUTPUT
+				NOGRAB
 				MULTI
 				(Max 13)
 				(Filter-All (Spades (Reverse Standard)))
@@ -28,7 +28,7 @@ Spider, Classic
 		(HLayout
 			(Append
 				(Slot {
-					INPUT
+					NOPLACE
 					BUTTON
 					(Start 10 0)
 					(Grab-If
@@ -43,8 +43,8 @@ Spider, Classic
 					)
 				})
 				(Clone 4 (Slot {
-					INPUT
-					OUTPUT
+					NOPLACE
+					NOGRAB
 					(Start 10 0)
 				}))
 			)

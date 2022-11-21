@@ -8,6 +8,7 @@ enum CollisionLayers {
 	FADE,
 	MENU,
 	TEXT,
+	INPUT,
 	POINTER
 };
 

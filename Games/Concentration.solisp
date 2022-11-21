@@ -30,5 +30,5 @@ Concentration, Normal
 			)
 		))
 	))
-	(Slot INPUT OUTPUT GOAL)
+	(Slot NOPLACE NOGRAB GOAL)
 )

@@ -1,8 +1,8 @@
+#include <algorithm>
+
 #include "main.h"
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
-
-#include <algorithm>
 
 sf::Texture cardset;
 float cardScaling = 1.5;
@@ -11,6 +11,8 @@ class StackRenderer : public Node {
 public:
 	Solisp::Stack *stack;
 	bool spread;
+	bool vspread;
+	bool hspread;
 
 private:
 	unc index;
@@ -41,13 +43,17 @@ public:
 		this->stack = stack;
 		this->index = index;
 
-		setGameSize(stack->width * baseGapX + 10, stack->height * baseGapY + 10);
+		setGameSize(
+			(stack->x + stack->width) * baseGapX + 10, 
+			(stack->y + stack->height) * baseGapY + 10);
 		vertices.setPrimitiveType(sf::Quads);
 		UpdateList::addNode(this);
 
 		//Edit offset values for spreading
-		spread = stack->get_tag(SPREAD);
+		spread = vspread = stack->get_tag(SPREAD);
 		if(stack->get_tag(SPREAD_HORIZONTAL)) {
+			hspread = true;
+			vspread = false;
 			offsetX /= offsetDiv;
 			overlapX = 5;
 			offsetY = tileY;
@@ -195,5 +201,13 @@ public:
 
 	sf::Vector2f getCardSize() const {
 		return sf::Vector2f(tileX * cardScaling, tileY * cardScaling);
+	}
+
+	sf::Vector2f getCardOffset() {
+		return sf::Vector2f(offsetX * cardScaling, offsetY * cardScaling);
+	}
+
+	sf::Vector2f getCardGap() {
+		return sf::Vector2f(gapX, gapY);
 	}
 };

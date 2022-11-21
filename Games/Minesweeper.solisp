@@ -5,8 +5,8 @@ Minesweeper, Classic
 
 (HLayout
 	(Apply {
-			INPUT
-			OUTPUT
+			NOPLACE
+			NOGRAB
 		}
 		(VLayout
 			(Slot {(Start-With {J1})})
@@ -25,12 +25,12 @@ Minesweeper, Classic
 			(Clone 8 (Slot {
 				GOAL
 				BUTTON
-				INPUT
+				NOPLACE
 				(Start 1 0)
 				(On-Grab
 					(If (== (Suit this) D)
 						(Flip this this)
-						(If (== (Suit this) J)
+						(If (Hidden this)
 							(+
 								(Move this 1)
 								(Move (+ (Sum (Map side {-9, -8, -7, -1, 1, 7, 8, 9} (

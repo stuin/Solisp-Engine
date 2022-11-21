@@ -7,7 +7,7 @@ Klondike, Classic
 	(HLayout
 		(Apply {
 				GOAL
-				OUTPUT
+				NOGRAB
 				(On-Place (Map st CUSTOM (If (!= st from) (Soft-Move st this))))
 			}
 			(HLayout
@@ -21,7 +21,7 @@ Klondike, Classic
 			(Slot
 				Start-Extra
 				BUTTON
-				INPUT
+				NOPLACE
 				(On-Grab
 					(If (> (Count (+ this 1)) 0)
 						(Move 3 (+ this 1) (+ this 2))
@@ -34,14 +34,14 @@ Klondike, Classic
 				)
 			)
 			(HStack
-				INPUT
+				NOPLACE
 				CUSTOM
 				(Max 3)
 				(On-Grab (Map suit GOAL (Soft-Move this suit)))
 			)
 			(Slot
 				BUTTON
-				INPUT
+				NOPLACE
 				(Grab-If (== (Count (- this 2)) 0))
 				(On-Grab
 					(Move 3 (- this 1) this)
