@@ -40,7 +40,7 @@ int main(int argc, char const *argv[]) {
 	Solisp::Game *gameptr = &game;
 	addActionButton(0, [gameptr]() {
 		gameptr->undo(2, true);
-		reloadAll();
+		UpdateList::sendSignal(RELOADGAME);
 	});
 	/*addActionButton(1, [gameptr]() {
 		gameptr->redo(2);

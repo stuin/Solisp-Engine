@@ -165,8 +165,9 @@ public:
 	    }
 	}
 
-	unc getIndex() {
-		return index;
+	void recieveSignal(int id) {
+		if(id == RELOADGAME)
+			reload();
 	}
 
 	sf::Vector2f getOffset(int count) {
@@ -198,6 +199,10 @@ public:
 
 		//Horizontal
 		return bet(0, pos.x / (offsetX * cardScaling), count);
+	}
+
+	unc getIndex() {
+		return index;
 	}
 
 	sf::Vector2f getCardSize() const {

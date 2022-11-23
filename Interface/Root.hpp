@@ -52,7 +52,7 @@ public:
 		stacks.push_back(new StackRenderer(game.get_stack(0), 0, this, POINTER));
 		for(unc i = 1; i < game.get_stack_count(); i++)
 			stacks.push_back(new StackRenderer(game.get_stack(i), i, this));
-		reloadAll();
+		UpdateList::sendSignal(RELOADGAME);
 
 		//Final setup
 		themeView->setHidden(true);

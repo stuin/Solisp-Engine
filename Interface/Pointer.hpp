@@ -9,11 +9,6 @@ std::vector<std::string> selectKeys = {
 	"/select/confirm", "/select/back"
 };
 
-void reloadAll() {
-	for(unc i = 1; i < game.get_stack_count(); i++)
-		stacks[i]->reload();
-}
-
 class Pointer : public Node {
 private:
 	//Card selections
@@ -203,7 +198,7 @@ public:
 				mouse->setHidden(false);
 				holding = true;
 			} else
-				reloadAll();
+				UpdateList::sendSignal(RELOADGAME);
 
 			//Check for win
 			if(game.get_remaining() <= 0) {
@@ -213,7 +208,7 @@ public:
 		} else {
 			//Place down cards
 			if(gameI->place(stack->getIndex(), user))
-				reloadAll();
+				UpdateList::sendSignal(RELOADGAME);
 			else
 				from->reload();
 			from = NULL;

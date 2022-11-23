@@ -27,7 +27,7 @@ public:
 			float scaleY = screenHeight / gameHeight;
 			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
 			std::cout << "Scaling = " << cardScaling << "\n";
-			reloadAll();
+			UpdateList::sendSignal(RELOADGAME);
 		}
 
 		setPosition(screenWidth / 2, screenHeight / 2);
