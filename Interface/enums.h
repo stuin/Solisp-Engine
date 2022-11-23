@@ -9,7 +9,8 @@ enum CollisionLayers {
 	MENU,
 	TEXT,
 	INPUT,
-	POINTER
+	POINTER,
+	CAMERA
 };
 
 enum SubMenus {
@@ -20,4 +21,8 @@ enum SubMenus {
 	LOADMENU,
 	CARDMENU1,
 	CARDMENU2
+};
+
+enum Signals {
+	RELOADGAME
 };

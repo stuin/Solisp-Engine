@@ -1,5 +1,6 @@
 #include "Skyrmion/InputHandler.h"
 #include "StackRenderer.hpp"
+#include "Camera.hpp"
 
 std::vector<StackRenderer*> stacks;
 Solisp::Game game;
@@ -57,8 +58,10 @@ public:
 			if(i == _pointer->moveInput.moving && stack != NULL) {
 				int offset = _pointer->cardOffset;
 				sf::Vector2f pos = stack->getGPosition();
-				sf::Vector2f size = sf::Vector2f(
-					stack->getCardSize().x / 2, stack->getCardSize().y / 2);
+				
+				//Get screen size
+				Camera *camera = (Camera *)UpdateList::getNode(CAMERA);
+				sf::Vector2f corner = camera->getCorner();
 				
 				//Distance between stacks
 				sf::Vector2f dir = _pointer->moveInput.getMovement(1);
@@ -78,9 +81,9 @@ public:
 					if(dir.y > 0 && offset < stack->stack->get_count() - 1) {
 						dest += stack->getOffset(offset + 1);
 						_pointer->cardOffset = offset;
-					} else if(dir.y < 0 && offset > 0 && 
-							!stack->stack->get_card(
-							stack->stack->get_count() - offset)->is_hidden()) {
+					} else if(dir.y < 0 && offset > 0 && _pointer->gameI->grab(
+							stack->stack->get_count() - offset + 1,
+							stack->getIndex(), 1)) {
 						dest += stack->getOffset(offset - 1);
 						_pointer->cardOffset = offset;
 					} else
@@ -89,7 +92,7 @@ public:
 					dest += dir;
 
 				//Check final position
-				if(dest.x > 0 && dest.y > 0)
+				if(dest.x > 0 && dest.y > 0 && dest.x < corner.x && dest.y < corner.y)
 					_pointer->setGPosition(dest);
 				else
 					_pointer->cardOffset = offset;

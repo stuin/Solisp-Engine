@@ -1,5 +1,4 @@
 #include "Root.hpp"
-#include "Camera.hpp"
 
 //Static camera functions
 Camera *camera = NULL;
@@ -49,7 +48,7 @@ int main(int argc, char const *argv[]) {
 		reloadAll();
 	});*/
 
-	UpdateList::startEngine("Solitaire", POINTER);
+	UpdateList::startEngine("Solitaire", CAMERA);
 }
 
 int bet(int min, int value, int max) {

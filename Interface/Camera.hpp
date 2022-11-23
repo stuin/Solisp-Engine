@@ -1,13 +1,15 @@
 #include "main.h"
 
 class Camera : public Node {
+private:
 	float gameWidth = 0;
 	float gameHeight = 0;
 	float screenWidth = 0;
 	float screenHeight = 0;
 
 public:
-	Camera() : Node(POINTER, sf::Vector2i(1920, 1080)) {
+
+	Camera() : Node(CAMERA, sf::Vector2i(1920, 1080)) {
 		setPosition(1920 / 2, 1080 / 2);
 
 		UpdateList::addNode(this);
@@ -47,5 +49,9 @@ public:
 			float scaleY = screenHeight / gameHeight;
 			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
 		}
+	}
+
+	sf::Vector2f getCorner() {
+		return sf::Vector2f(screenWidth, screenHeight);
 	}
 };
