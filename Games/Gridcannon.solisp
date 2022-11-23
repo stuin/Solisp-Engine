@@ -1,6 +1,6 @@
 Gridcannon, Challenge
 
-(Append (Four-Suit Standard) {J1 J1})
+(Append (Four-Suit Standard) {R14 B14})
 {(Max 1)}
 
 (HLayout

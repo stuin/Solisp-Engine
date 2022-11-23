@@ -22,7 +22,8 @@ cell GameEnviroment::general_move(int num, bool flip, unc player) {
 
 		DONE;
 		if((player==0 && genv->both_valid(from, to)) || genv->check_move(count, from, to)) {
-			genv->add_move(count, from, to, player, flip);
+			if(player != 2)
+				genv->add_move(count, from, to, player, flip);
 			return cell(count);
 		}
 		return cell(0);
@@ -43,8 +44,8 @@ void GameEnviroment::build_library_game() {
 	set("Soft-Flip", general_move(1, true, 1));
 
 	//Test move
-	set("Test-Move", general_move(1, false, 1));
-	set("Test-Flip", general_move(1, true, 1));
+	set("Test-Move", general_move(1, false, 2));
+	set("Test-Flip", general_move(1, true, 2));
 
 	//Count cards in stack
 	set("Count", cell([](Enviroment *env, marker pos, marker end) {
@@ -80,6 +81,8 @@ void GameEnviroment::build_library_game() {
 				return cell('R');
 			else if(suit == 'C' || suit == 'S')
 				return cell('B');
+			else if(card->get_data().value == 14)
+				return cell(suit);
 		}
 		return cell(0);
 	}));

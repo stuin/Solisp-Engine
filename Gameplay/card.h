@@ -68,14 +68,16 @@ public:
 		switch((char)data.suit) {
 			case 'D':
 				return data.value - 1;
-			case 'S':
+			case 'C':
 				return 13 + data.value;
 			case 'H':
 				return 27 + data.value;
-			case 'C':
+			case 'S':
 				return 41 + data.value;
-			case 'J':
-				return (data.value == 1) ? 13 : 27;
+			case 'R':
+				return 13;
+			case 'B':
+				return 27;
 		}
 		return 0;
 	}

@@ -1,6 +1,6 @@
 Concentration, Normal
 
-(Append (Hearts Standard) (Hearts Standard) {J2 J2})
+(Append (Hearts Standard) (Hearts Standard) {R14 R14})
 {(Max 1)}
 
 (HLayout
@@ -9,11 +9,8 @@ Concentration, Normal
 			(Slot
 				BUTTON
 				(Start 1 0)
-				(Filter (Append
-					{{J2 J2}}
-					(Map card (Seq 1 13)
-						(Red {card card})
-					)
+				(Filter (Map card (Seq 1 14)
+					(Red {card card})
 				))
 				(On-Grab
 					(Flip this this)

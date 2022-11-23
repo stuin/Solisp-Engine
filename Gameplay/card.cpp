@@ -111,6 +111,8 @@ char card_face(Solisp::cardData card) {
 			return 'Q';
 		case 13:
 			return 'K';
+		case 14:
+			return 'O';
 	}
 	return '0' + card.value;
 }

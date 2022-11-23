@@ -53,7 +53,8 @@ void buildMenus() {
 	//Load game resources
 	font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size);
 	actionTexture.loadFromMemory((void *)&_binary_icons_png_start, _icons_png_size);
-	getCardset()->loadFromMemory((void *)&_binary_minimal_dark_png_start, _minimal_dark_png_size);
+	//getCardset()->loadFromMemory((void *)&_binary_minimal_dark_png_start, _minimal_dark_png_size);
+	UpdateList::loadTexture(getCardset(), "res/faces/ornate_light.png");
 
 	//Main menu setup
 	menus[MAINMENU] = new SubMenu(sf::Vector2i(250, 1090), 200);
@@ -83,5 +84,5 @@ void buildMenus() {
 	addActionButton(2, []() { showMenu(PAUSEMENU, false); });
 
 	//Add system cardsets
-	addCardsetButton("Minimal Dark", &_binary_minimal_dark_png_start, _minimal_dark_png_size);
+	//addCardsetButton("Minimal Dark", &_binary_minimal_dark_png_start, _minimal_dark_png_size);
 }

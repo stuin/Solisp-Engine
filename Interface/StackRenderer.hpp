@@ -5,7 +5,7 @@
 #include "../Gameplay/game.h"
 
 sf::Texture cardset;
-float cardScaling = 1.5;
+float cardScaling = 0.75;
 
 class StackRenderer : public Node {
 public:
@@ -19,16 +19,16 @@ private:
 	sf::VertexArray vertices;
 
 	//Card image sizes
-	const int tileX = 103;
-	const int tileY = 142;
-	const int baseGapX = 53;
-	const int baseGapY = 38;
+	const int tileX = 206;
+	const int tileY = 284;
+	const int baseGapX = 106;
+	const int baseGapY = 76;
 
 	//Card rendering adjusters
 	int offsetX = tileX;
 	int offsetY = tileY / 6.5;
 	int overlapX = 0;
-	int overlapY = 5;
+	int overlapY = 10;
 	int gapX;
 	int gapY;
 
@@ -55,7 +55,7 @@ public:
 			hspread = true;
 			vspread = false;
 			offsetX /= offsetDiv;
-			overlapX = 5;
+			overlapX = 10;
 			offsetY = tileY;
 			overlapY = 0;
 

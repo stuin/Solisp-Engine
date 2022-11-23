@@ -1,6 +1,6 @@
 Minesweeper, Classic
 
-(Append (Clone 54 {J1}) (Clone 10 {D11}))
+(Append (Clone 54 {R14}) (Clone 10 {D11}))
 {(Max 1)}
 
 (HLayout

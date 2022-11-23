@@ -22,7 +22,7 @@ public:
 		stack->set_tag(SPREAD);
 		stack->set_tag(SPREAD_HORIZONTAL);
 		stack->set_cords(7, 7, 3, 8);
-		stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 1,'J'}, 8));
+		stack->set_card(new Solisp::Card({1,'S', 4,'D', 7,'C', 12,'H', 14,'B'}, 8));
 		themeView = new StackRenderer(stack, 1, NULL, DISPLAY, 1.3);
 		themeView->reload();
 	}
