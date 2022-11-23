@@ -7,7 +7,6 @@ Klondike, Classic
 	(HLayout
 		(Apply {
 				GOAL
-				NOGRAB
 				(On-Place (Map st CUSTOM (If (!= st from) (Soft-Move st this))))
 			}
 			(HLayout

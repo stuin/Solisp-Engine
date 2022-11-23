@@ -185,6 +185,7 @@ public:
 		if(!spread)
 			return 0;
 		int count = std::max((int)stack->get_count() - 1, 0);
+		pos += sf::Vector2f(1, 1);
 
 		//Vertical
 		if(overlapY != 0)

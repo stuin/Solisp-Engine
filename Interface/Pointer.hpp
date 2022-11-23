@@ -56,33 +56,43 @@ public:
 			StackRenderer *stack = _pointer->selected;
 			if(i == _pointer->moveInput.moving && stack != NULL) {
 				int offset = _pointer->cardOffset;
-				sf::Vector2f pos = stack->getPosition();
+				sf::Vector2f pos = stack->getGPosition();
 				sf::Vector2f size = sf::Vector2f(
-					stack->getCardSize().x / 2 + 1, stack->getCardSize().y / 2 + 1);
+					stack->getCardSize().x / 2, stack->getCardSize().y / 2);
 				
+				//Distance between stacks
 				sf::Vector2f dir = _pointer->moveInput.getMovement(1);
 				if(dir.y > 0)
-					dir.y *= stack->getCardOffset().y * (stack->stack->height - 1);
+					dir.y *= stack->getCardGap().y * stack->stack->height;
 				else
-					dir.y *= stack->getCardGap().y + 1;
+					dir.y *= stack->getCardGap().y * 2;
 				if(dir.x > 0)
-					dir.x *= stack->getCardOffset().x * (stack->stack->width - 1);
+					dir.x *= stack->getCardGap().x * stack->stack->width;
 				else
-					dir.x *= stack->getCardGap().x + 1;
+					dir.x *= stack->getCardGap().x * 2;
 
+				//Individual spread cards
 				sf::Vector2f dest = pos;
-				if(dir.y > 0 && !_pointer->holding && stack->vspread && 
-					offset < stack->stack->get_count())
-					dest += stack->getOffset(offset + 1);
-				else if(dir.y < 0 && !_pointer->holding && stack->vspread && offset > 0)
-					dest += stack->getOffset(offset - 1);
-				else
-					dest += dir + size;
+				_pointer->cardOffset = -1;
+				if(dir.y != 0 && stack->vspread && !_pointer->holding) {
+					if(dir.y > 0 && offset < stack->stack->get_count() - 1) {
+						dest += stack->getOffset(offset + 1);
+						_pointer->cardOffset = offset;
+					} else if(dir.y < 0 && offset > 0 && 
+							!stack->stack->get_card(
+							stack->stack->get_count() - offset)->is_hidden()) {
+						dest += stack->getOffset(offset - 1);
+						_pointer->cardOffset = offset;
+					} else
+						dest += dir;
+				} else
+					dest += dir;
 
-				if(dest.x > 0 && dest.y > 0) {
-					_pointer->setPosition(dest);
-					_pointer->cardOffset = -1;
-				}
+				//Check final position
+				if(dest.x > 0 && dest.y > 0)
+					_pointer->setGPosition(dest);
+				else
+					_pointer->cardOffset = offset;
 			}
 		};
 
@@ -140,22 +150,29 @@ public:
 			//Display possible placement
 			to = stack;
 			if(to == from) {
+				//Back to same stack
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count()));
 			} else if(gameI->test(stack->getIndex(), user)) {
+				//On new stack
 				mouse->setParent(to);
 				mouse->setPosition(to->getOffset(to->stack->get_count() + 1));
 			} else {
-				mouse->setPosition(0, 0);
+				//Invalid stack
+				mouse->setPosition(10, 10);
 				mouse->setParent(this);
 			}
 			selectionTime = 2;
 		} else if(!holding) {
-			from = stack;
-			if(cardOffset == -1 && stack->spread && stack->stack->get_count() > 0)
+			//Locate selected card
+			if(cardOffset == -1 && stack->spread && stack->stack->get_count() > 0) {
 				cardOffset = stack->stack->get_count() - 1;
-			else
-				cardOffset = from->checkOffset(getPosition() - from->getPosition());
+				setPosition(stack->getPosition() + stack->getOffset(cardOffset));
+			} else
+				cardOffset = stack->checkOffset(getPosition() - stack->getPosition());
+
+			//Highlight selected card
+			from = stack;
 			rect.setSize(stack->getCardSize() + sf::Vector2f(1, 1));
 			rect.setPosition(from->getPosition() + from->getOffset(cardOffset));
 			selectionTime = 2;

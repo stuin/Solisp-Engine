@@ -149,4 +149,13 @@ public:
 	Card *get_card() {
 		return stack;
 	}
+	Card *get_card(int i) {
+		Card *card = stack;
+		while(i > 0 && card != NULL) {
+			card = card->get_next();
+			i--;
+		}
+
+		return card;
+	}
 };
