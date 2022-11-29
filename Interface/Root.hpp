@@ -1,4 +1,4 @@
-#include "Pointer.hpp"
+#include "Pointer.h"
 //#include "../Network/GameClient.hpp"
 
 class Root : public Node {
@@ -8,12 +8,15 @@ private:
 	Pointer *pointer = NULL;
 
 	//Saving var
-	string next_save_file;
+	string saveFile;
+	string ruleFile;
 
 public:
 	Root() : Node(BACKGROUND) {
 		setPosition(100, 30);
 		pointer = new Pointer(this);
+
+		StackRenderer::cardScaling = 0.75;
 
 		//Add decorational Cards
 		Solisp::Stack *stack = new Solisp::Stack();
@@ -27,36 +30,41 @@ public:
 		themeView->reload();
 	}
 
-	void startGame(string rule_file, string save_file) {
-		if(save_file == "") {
+	void startGame(string _ruleFile, string _saveFile) {
+		Solisp::Game *game = &Pointer::game;
+		this->ruleFile = _ruleFile;
+
+		if(_saveFile == "") {
 			//Initialize game
-			Solisp::Builder builder(rule_file);
-			game.setup(&builder);
+			Solisp::Builder builder(_ruleFile);
+			game->setup(&builder);
 		} else {
-			game.load(save_file, rule_file);
-			std::remove(save_file.c_str());
+			game->load(_saveFile, _ruleFile);
+			std::remove(_saveFile.c_str());
 		}
 
 		//Get next save file name
-		int startI = rule_file.find_last_of(slash);
-		next_save_file = "saves/";
-		next_save_file += rule_file.substr(startI, rule_file.length() - startI - 6);
+		int startI = ruleFile.find_last_of(slash);
+		saveFile = "saves/";
+		saveFile += ruleFile.substr(startI, ruleFile.length() - startI - 6);
 		int n = 1;
-		while(std::filesystem::exists(next_save_file + std::to_string(n) + ".sav"))
+		while(std::filesystem::exists(saveFile + std::to_string(n) + ".sav"))
 			++n;
-		next_save_file += std::to_string(n) + ".sav";
+		saveFile += std::to_string(n) + ".sav";
 
 		//Set up slots
-		stacks.clear();
-		stacks.reserve((int)game.get_stack_count());
-		stacks.push_back(new StackRenderer(game.get_stack(0), 0, this, POINTER));
-		for(unc i = 1; i < game.get_stack_count(); i++)
-			stacks.push_back(new StackRenderer(game.get_stack(i), i, this));
-		UpdateList::sendSignal(RELOADGAME);
+		Pointer::stacks.clear();
+		Pointer::stacks.reserve((int)game->get_stack_count());
+		Pointer::stacks.push_back(new StackRenderer(game->get_stack(0), 0, this, POINTER));
+		for(unc i = 1; i < game->get_stack_count(); i++)
+			Pointer::stacks.push_back(new StackRenderer(
+				game->get_stack(i), i, this));
+		UpdateList::sendSignal(STARTGAME);
+		UpdateList::sendSignal(RELOADCARDS);
 
 		//Final setup
 		themeView->setHidden(true);
-		pointer->reset(stacks[0]);
+		pointer->reset(Pointer::stacks[0]);
 		showMenu(ACTIONMENU, false);
 	}
 
@@ -80,15 +88,21 @@ public:
 
 	void quitGame(bool save) {
 		if(save)
-			game.save(next_save_file);
+			Pointer::game.save(saveFile);
 
-		for(StackRenderer *s : stacks)
+		for(StackRenderer *s : Pointer::stacks)
 			s->setDelete();
-		game.clear();
+		Pointer::game.clear();
+		UpdateList::sendSignal(ENDGAME);
 
 		//Show menu
 		pointer->setHidden(true);
 		themeView->setHidden(false);
 		showMenu(0, false);
+	}
+
+	void restartGame() {
+		quitGame(false);
+		startGame(ruleFile, "");
 	}
 };

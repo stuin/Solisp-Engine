@@ -1,8 +1,6 @@
 #include "../Skyrmion/UpdateList.h"
 #include "../main.h" 
 
-sf::Font font;
-
 class Button : public DrawNode {
 private:
 	sf::Text text;
@@ -12,6 +10,8 @@ private:
 	bool locked;
 
 public:
+	static sf::Font font;
+
 	Button(string title, int y, int width, Node *parent, clickptr func, bool locked = false) : DrawNode(rect, MENU, sf::Vector2i(width, 50), parent) {
 		setPosition(width / 8 * 5, y);
 		this->func = func;

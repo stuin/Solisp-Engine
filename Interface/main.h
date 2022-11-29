@@ -25,6 +25,7 @@ int checkOpen();
 void startGame(string rule_file, string save_file);
 void joinServer(string ip);
 void quitGame(bool save);
+void restartGame();
 void setGameSize(int width, int height);
 sf::Texture *getCardset();
 

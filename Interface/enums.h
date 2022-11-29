@@ -24,5 +24,8 @@ enum SubMenus {
 };
 
 enum Signals {
-	RELOADGAME
+	STARTGAME,
+	RELOADCARDS,
+	WINGAME,
+	ENDGAME
 };

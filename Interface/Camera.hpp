@@ -25,9 +25,9 @@ public:
 		if(gameWidth > 0) {
 			float scaleX = screenWidth / gameWidth;
 			float scaleY = screenHeight / gameHeight;
-			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
-			std::cout << "Scaling = " << cardScaling << "\n";
-			UpdateList::sendSignal(RELOADGAME);
+			StackRenderer::cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
+			std::cout << "Scaling = " << StackRenderer::cardScaling << "\n";
+			UpdateList::sendSignal(RELOADCARDS);
 		}
 
 		setPosition(screenWidth / 2, screenHeight / 2);
@@ -47,7 +47,7 @@ public:
 
 			float scaleX = screenWidth / gameWidth;
 			float scaleY = screenHeight / gameHeight;
-			cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
+			StackRenderer::cardScaling = (scaleX > scaleY) ? scaleY : scaleX;
 		}
 	}
 

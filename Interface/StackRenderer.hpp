@@ -4,15 +4,15 @@
 #include "Skyrmion/UpdateList.h"
 #include "../Gameplay/game.h"
 
-sf::Texture cardset;
-float cardScaling = 0.75;
-
 class StackRenderer : public Node {
 public:
 	Solisp::Stack *stack;
 	bool spread;
 	bool vspread;
 	bool hspread;
+
+	static sf::Texture cardset;
+	static float cardScaling;
 
 private:
 	unc index;
@@ -147,15 +147,15 @@ public:
 
 				// define its 4 texture coordinates
 				quad[0].texCoords = sf::Vector2f(tu * tileX, tv * tileY);
-				quad[1].texCoords = sf::Vector2f(tu * tileX + offsetX + overlapX, tv * tileY);
-				quad[2].texCoords = sf::Vector2f(tu * tileX + offsetX + overlapX, tv * tileY + offsetY + overlapY);
-				quad[3].texCoords = sf::Vector2f(tu * tileX, tv * tileY + offsetY + overlapY);
+				quad[1].texCoords = sf::Vector2f((tu + 1) * tileX, tv * tileY);
+				quad[2].texCoords = sf::Vector2f((tu + 1) * tileX, (tv + 1) * tileY);
+				quad[3].texCoords = sf::Vector2f(tu * tileX, (tv + 1) * tileY);
 
 				// define its 4 corners
 				quad[0].position = sf::Vector2f(shiftX + i * offsetX, j * offsetY);
-				quad[1].position = sf::Vector2f(shiftX + (i + 1) * offsetX + overlapX, j * offsetY);
-				quad[2].position = sf::Vector2f(shiftX + (i + 1) * offsetX + overlapX, (j + 1) * offsetY + overlapY);
-				quad[3].position = sf::Vector2f(shiftX + i * offsetX, (j + 1) * offsetY + overlapY);
+				quad[1].position = sf::Vector2f(shiftX + i * offsetX + tileX, j * offsetY);
+				quad[2].position = sf::Vector2f(shiftX + i * offsetX + tileX, j * offsetY + tileY);
+				quad[3].position = sf::Vector2f(shiftX + i * offsetX, j * offsetY + tileY);
 			}
 	    } else {
 			vertices[0].position = sf::Vector2f(0, 0);
@@ -166,7 +166,7 @@ public:
 	}
 
 	void recieveSignal(int id) {
-		if(id == RELOADGAME)
+		if(id == RELOADCARDS)
 			reload();
 	}
 

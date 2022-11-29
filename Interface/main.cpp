@@ -18,8 +18,11 @@ void joinServer(string ip) {
 void quitGame(bool save) {
 	root->quitGame(save);
 }
+void restartGame() {
+	root->restartGame();
+}
 sf::Texture *getCardset() {
-	return &cardset;
+	return &StackRenderer::cardset;
 }
 
 int main(int argc, char const *argv[]) {
@@ -37,16 +40,28 @@ int main(int argc, char const *argv[]) {
 	camera = new Camera();
 
 	//Add undo/redo buttons
-	Solisp::Game *gameptr = &game;
+	Solisp::Game *gameptr = &Pointer::game;
 	addActionButton(0, [gameptr]() {
 		gameptr->undo(2, true);
-		UpdateList::sendSignal(RELOADGAME);
+		UpdateList::sendSignal(RELOADCARDS);
 	});
 	/*addActionButton(1, [gameptr]() {
 		gameptr->redo(2);
 		gameptr->update();
 		reloadAll();
 	});*/
+
+	//Efficiency settings
+	UpdateList::pauseLayer(BACKGROUND);
+	UpdateList::pauseLayer(MENU);
+	UpdateList::pauseLayer(TEXT);
+	UpdateList::staticLayer(STACKS);
+	UpdateList::staticLayer(DISPLAY);
+	UpdateList::staticLayer(ACTIONS);
+	UpdateList::staticLayer(FADE);
+	UpdateList::staticLayer(INPUT);
+	UpdateList::staticLayer(POINTER);
+	UpdateList::staticLayer(CAMERA);
 
 	UpdateList::startEngine("Solitaire", CAMERA);
 }

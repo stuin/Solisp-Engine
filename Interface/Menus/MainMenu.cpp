@@ -1,4 +1,5 @@
 #include "FolderMenu.hpp"
+#include "StatText.hpp"
 #include "menus.h"
 #include "resources.h"
 
@@ -7,6 +8,7 @@ SubMenu *menus[MENUCOUNT];
 int openMenu = 0;
 
 sf::Texture actionTexture;
+sf::Font Button::font;
 
 //Show specific menu or sub menu
 void showMenu(int selected, bool toggle) {
@@ -51,7 +53,7 @@ int checkOpen() {
 
 void buildMenus() {
 	//Load game resources
-	font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size);
+	Button::font.loadFromMemory((void *)&_binary_RomanAntique_ttf_start, _RomanAntique_ttf_size);
 	actionTexture.loadFromMemory((void *)&_binary_icons_png_start, _icons_png_size);
 	//getCardset()->loadFromMemory((void *)&_binary_minimal_dark_png_start, _minimal_dark_png_size);
 	UpdateList::loadTexture(getCardset(), "res/faces/ornate_light.png");
@@ -70,7 +72,11 @@ void buildMenus() {
 	menus[PAUSEMENU]->addButton("Resume", selectMenu(ACTIONMENU));
 	menus[PAUSEMENU]->addButton("Save & Quit", []() { quitGame(true); });
 	menus[PAUSEMENU]->addButton("Abandon Game", []() { quitGame(false); });
+	menus[PAUSEMENU]->addButton("Restart Game", []() { restartGame(); });
 	menus[PAUSEMENU]->addButton("Themes", selectMenu(CARDMENU2));
+
+	StatText *stats = new StatText(
+		menus[PAUSEMENU]->addButton("Stats", NULL));
 
 	//Sub menus
 	menus[STARTMENU] = new FolderMenu("Games", ".solisp", GameNamer, GameFunc, menus[0]);
