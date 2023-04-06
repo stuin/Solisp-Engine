@@ -1,7 +1,8 @@
 #include "../Skyrmion/UpdateList.h"
+#include "../Skyrmion/VertexGraph.hpp"
 #include "../main.h" 
 
-class Button : public DrawNode {
+class Button : public DrawNode, public Vertex<4> {
 private:
 	sf::Text text;
 	DrawNode *textNode;
@@ -12,7 +13,8 @@ private:
 public:
 	static sf::Font font;
 
-	Button(string title, int y, int width, Node *parent, clickptr func, bool locked = false) : DrawNode(rect, MENU, sf::Vector2i(width, 50), parent) {
+	Button(string title, int y, int width, Node *parent, Vertex<4> *root, clickptr func, bool locked = false) 
+	: DrawNode(rect, MENU, sf::Vector2i(width, 50), parent), Vertex(root) {
 		setPosition(width / 8 * 5, y);
 		this->func = func;
 		this->locked = locked;
@@ -33,8 +35,18 @@ public:
 	}
 
 	void run() {
+		printAddress();
+		select(RIGHT)->printAddress();
 		if(func != NULL)
 			func();
+	}
+
+	void onSelect(bool selected) {
+		Node *parent = getParent();
+		while(parent != NULL) {
+			parent->setHidden(!selected);
+			parent = parent->getParent();
+		}
 	}
 
 	void setText(string title) {

@@ -29,3 +29,10 @@ enum Signals {
 	WINGAME,
 	ENDGAME
 };
+
+enum MenuDirections {
+	UP,
+	RIGHT,
+	DOWN,
+	LEFT
+};

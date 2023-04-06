@@ -17,8 +17,8 @@ private:
 
 public:
 	FolderMenu(string dir, string ext, function<string(string)> name,
-			function<clickptr(string, Node*)> func, Node *parent)
-			: SubMenu(sf::Vector2i(400, 1090), 300, parent) {
+			function<clickptr(string, Node*)> func, Vertex<4> *root, Node *parent)
+			: SubMenu(sf::Vector2i(400, 1090), 300, root, parent) {
 		setPosition(260, 0);
 
 		//Save values to populate menu

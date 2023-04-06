@@ -18,6 +18,7 @@ std::map<string, stack_tags> Stack::tag_map = {
 	{"GOAL", GOAL},
 	{"NOPLACE", NOPLACE},
 	{"NOGRAB", NOGRAB},
+	{"HIDDEN", HIDDEN},
 	{"BUTTON", BUTTON},
 	{"MIRRORED", SPREAD_REVERSE},
 	{"MULTI", SPREAD_FAKE},
@@ -66,8 +67,13 @@ Card *make_card(const cell &source, bool shuffled, int slot=0) {
 			current->set_next(value);
 			current = value;
 		} else {
-			Card *value = new Card(builder_env.card_eval(card));
-			start = start->shuffle(value);
+			current = new Card(builder_env.card_eval(card));
+			start = start->shuffle(current);
+		}
+
+		if(slot != 0) {
+			current->set_slot(slot);
+			current->flip();
 		}
 	}
 	return start;
@@ -110,7 +116,7 @@ layout make_slot(Stack &stack, sexpr data, int type, layout current) {
 			} 
 			else if(builder_env.str_eval(list[0]) == "Start-With") {
 				Card *card = make_card(list[1], false, current.count);
-				cout << card->print_stack() << "\n";
+				//cout << card->print_stack() << "\n";
 				stack.set_card(card);
 				stack.full_count();
 			}
@@ -158,6 +164,9 @@ layout make_slot(Stack &stack, sexpr data, int type, layout current) {
 		default:
 			break;
 	}
+
+	if(stack.get_tag(HIDDEN))
+		return {0, 0, 1};
 
 	dim.x += 1;
 	dim.y += 2;

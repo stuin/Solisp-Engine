@@ -44,7 +44,7 @@ private:
 	Stage stage = NONE;
 
 	//Current game state
-	Stack stack[64];
+	Stack stack[128];
 	unsigned int cardsLeft = 0;
 
 	//Apply current moves to stack array

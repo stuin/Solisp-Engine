@@ -49,6 +49,9 @@ public:
 		vertices.setPrimitiveType(sf::Quads);
 		UpdateList::addNode(this);
 
+		if(stack->get_tag(HIDDEN))
+			setHidden(true);
+
 		//Edit offset values for spreading
 		spread = vspread = stack->get_tag(SPREAD);
 		if(stack->get_tag(SPREAD_HORIZONTAL)) {
@@ -71,6 +74,9 @@ public:
 	}
 
 	void reload(int count = 0, int skip = 0) {
+		if(stack->get_tag(HIDDEN))
+			return;
+
 		//Calculate proper count
 		if(!spread)
 			count = 1;

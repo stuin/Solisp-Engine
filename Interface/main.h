@@ -7,7 +7,8 @@
 
 using std::string;
 using std::function;
-typedef function<void(void)> clickptr;
+
+typedef std::function<void(void)> clickptr;
 
 #if __linux__
 	#define slash '/'

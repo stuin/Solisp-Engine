@@ -16,11 +16,11 @@ namespace Solisp {
 
 using std::bitset;
 
-#define STACKTAGCOUNT 10
+#define STACKTAGCOUNT 11
 #define STACKFUNCOUNT 6
 
 //List of tags to change stack properties
-enum stack_tags { GOAL, NOPLACE, NOGRAB, SPREAD,
+enum stack_tags { GOAL, NOPLACE, NOGRAB, HIDDEN, SPREAD,
 	SPREAD_HORIZONTAL, SPREAD_REVERSE, SPREAD_FAKE, BUTTON, SWAP, CUSTOM };
 enum func_tag { ONGRAB, ONPLACE, ONFLIP, ONSTART, GRABIF, PLACEIF };
 
@@ -116,6 +116,7 @@ public:
 			count++;
 			c = c->get_next();
 		}
+		stack->set_index(count);
 	}
 
 	//Check if new cards can be placed on stack

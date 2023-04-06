@@ -1,28 +1,30 @@
 Minesweeper, Classic
 
-(Append (Clone 54 {R14}) (Clone 10 {D11}))
+(Append (Clone 61 {S11}) (Clone 11 {D11}))
 {(Max 1)}
 
-(HLayout
+(VLayout
 	(Apply {
 			NOPLACE
 			NOGRAB
+			HIDDEN
 		}
-		(VLayout
-			(Slot {(Start-With {J1})})
-			(Slot {(Start-With (Clone 48 {S1}))})
-			(Slot {(Start-With (Clone 48 {S2}))})
-			(Slot {(Start-With (Clone 48 {S3}))})
-			(Slot {(Start-With (Clone 24 {S4}))})
-			(Slot {(Start-With (Clone 12 {S5}))})
-			(Slot {(Start-With (Clone 6 {S6}))})
-			(Slot {(Start-With (Clone 3 {S7}))})
-			(Slot {(Start-With (Clone 2 {S8}))})
+		(HLayout
+			(Slot {(Start-With {S11})})
+			(Slot {(Start-With (Clone 62 {N1}))})
+			(Slot {(Start-With (Clone 62 {S1}))})
+			(Slot {(Start-With (Clone 62 {S2}))})
+			(Slot {(Start-With (Clone 62 {S3}))})
+			(Slot {(Start-With (Clone 55 {S4}))})
+			(Slot {(Start-With (Clone 44 {S5}))})
+			(Slot {(Start-With (Clone 33 {S6}))})
+			(Slot {(Start-With (Clone 22 {S7}))})
+			(Slot {(Start-With (Clone 11 {S8}))})
 		)
 	)
 	(VLayout
-		(Clone 8 (HLayout
-			(Clone 8 (Slot {
+		(Clone 6 (HLayout
+			(Clone 12 (Slot {
 				GOAL
 				BUTTON
 				NOPLACE
@@ -32,10 +34,30 @@ Minesweeper, Classic
 						(Flip this this)
 						(If (Hidden this)
 							(+
-								(Move this 1)
-								(Move (+ (Sum (Map side {-9, -8, -7, -1, 1, 7, 8, 9} (
-									(== (Suit (+ this side)) D)
-								))) 1) this)
+								(Flip this 1)
+								(+ 
+									#Calculate number to display
+									(Move (+ (+ (Map side 
+										(Switch
+											{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
+											{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
+											{true {-13, -12, -11, -1, 1, 11, 12, 13}}
+										)
+										(== (Suit (+ this side)) D)
+									)) 2) this)
+
+									#Recursively flip blank surroundings
+									(If (== (Suit this) N) (+ (Map side2 
+										(Switch
+											{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
+											{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
+											{true {-13, -12, -11, -1, 1, 11, 12, 13}}
+										)
+										(If (Hidden (+ this side2))
+											(Soft-Move (+ this side2) (+ this side2))
+										)
+									)))
+								)
 							)
 						)
 					)

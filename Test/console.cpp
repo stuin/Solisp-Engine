@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
 
 	cout << "--Listing slots\n";
 	int i = 0;
-	while(game.get_stack(i) != NULL && i < 30)	{
+	while(game.get_stack(i) != NULL && i < game.get_stack_count())	{
 		cout << "Stack " << i << " at (" <<
 			game.get_stack(i)->x << "," << game.get_stack(i)->y << "): ";
 		if(game.get_stack(i)->get_card() != NULL)

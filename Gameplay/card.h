@@ -78,6 +78,10 @@ public:
 				return 13;
 			case 'B':
 				return 27;
+			case 'F':
+				return 41;
+			case 'N':
+				return 55;
 		}
 		return 0;
 	}

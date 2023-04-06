@@ -27,6 +27,8 @@ sf::Texture *getCardset() {
 
 int main(int argc, char const *argv[]) {
 	Settings::loadSettings("res/settings.json");
+	UpdateList::loadTexture(getCardset(), 
+		"res/faces/" + Settings::getString("/theme/face"));
 
 	//Draw background
 	sf::RectangleShape rect(sf::Vector2f(1930, 1090));

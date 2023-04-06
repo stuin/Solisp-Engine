@@ -9,5 +9,6 @@ std::string rule_files[] = {
 	"Games/Klondike.solisp",
 	"Games/Spider.solisp",
 	"Games/StreetsAlleys.solisp",
-	"Games/DevilsGrip.solisp"
+	"Games/DevilsGrip.solisp",
+	"Games/Minesweeper.solisp"
 };

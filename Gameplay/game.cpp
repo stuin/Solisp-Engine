@@ -143,6 +143,8 @@ void Game::setup(Builder *builder, bool saved) {
 		game_env.read_stream(*rule_file, EXPR);
 	}
 
+	cout << "Base setup complete\n";
+
 	//Start game history
 	if(!saved) {
 		stage = LOADING;

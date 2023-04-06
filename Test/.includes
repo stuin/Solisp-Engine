@@ -1,6 +1,6 @@
 parent=../Gameplay/.baseincludes
-files=test.cpp
+files=console.cpp
 output=/tmp/test.out
 
-testargs=1
+testargs=4
 testdir=../
