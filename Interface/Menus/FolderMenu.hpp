@@ -26,6 +26,8 @@ public:
 		this->ext = ext;
 		this->name = name;
 		this->func = func;
+
+		reload();
 	}
 
 	void reload() {

@@ -30,6 +30,7 @@ string ThemeNamer(string file) {
 clickptr GameFunc(string file, Node *parent) {
 	return [file, parent]() {
 		startGame(file, "");
+		actionVertex->select();
 	};
 }
 
@@ -50,6 +51,6 @@ clickptr LoadFunc(string file, Node *parent) {
 		rule_file += ".solisp";
 
 		startGame(rule_file, file);
-		showMenu(ACTIONMENU, false);
+		actionVertex->select();
 	};
 }

@@ -35,10 +35,13 @@ public:
 	}
 
 	void run() {
-		printAddress();
-		select(RIGHT)->printAddress();
-		if(func != NULL)
-			func();
+		if(getSelected()->getVertex(LEFT) == this)
+			select();
+		else {
+			select(RIGHT);
+			if(func != NULL)
+				func();
+		}
 	}
 
 	void onSelect(bool selected) {
