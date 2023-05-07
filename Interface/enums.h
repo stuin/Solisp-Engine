@@ -32,7 +32,7 @@ enum Signals {
 
 enum MenuDirections {
 	UP,
-	RIGHT,
+	LEFT,
 	DOWN,
-	LEFT
+	RIGHT
 };

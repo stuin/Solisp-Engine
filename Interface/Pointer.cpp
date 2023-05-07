@@ -152,7 +152,7 @@ void Pointer::collide(Node *object) {
 }
 
 void Pointer::recieveEvent(sf::Event event, WindowSize *windowSize) {
-	if(checkOpen() != ACTIONMENU) {
+	if(gameOpen()) {
 		if(holding)
 			drop();
 		rect.setPosition(-300, 0);
