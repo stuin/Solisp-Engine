@@ -19,6 +19,8 @@ public:
 		this->buttonWidth = buttonWidth;
 		buttonHeight = 60;
 
+		_root->setVertex(RIGHT, this, LEFT);
+
 		setOrigin(0, 0);
 		setHidden(true);
 		UpdateList::addNode(this);
@@ -48,7 +50,7 @@ public:
 
 		if(i == 0) {
 			getRoot()->setVertex(RIGHT, contents[i], LEFT);
-			setVertex(DOWN, contents[i]);
+			setVertex(DOWN, contents[i], UP);
 		} else {
 			contents[0]->addVertex(DOWN, contents[i], UP);
 			contents[i]->setVertex(LEFT, getRoot());
@@ -57,14 +59,13 @@ public:
 	}
 
 	void onSelect(bool selected) {
-		if(contents.size() > 0)
-			contents[0]->select();
-		else {
-			Node *parent = getParent();
-			while(parent != NULL) {
-				parent->setHidden(!selected);
-				parent = parent->getParent();
-			}
+		//if(contents.size() > 0)
+		//	contents[0]->select();
+		setHidden(!selected);
+		Node *parent = getParent();
+		while(parent != NULL) {
+			parent->setHidden(!selected);
+			parent = parent->getParent();
 		}
 	}
 

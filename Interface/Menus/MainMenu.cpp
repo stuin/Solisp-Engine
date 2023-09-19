@@ -25,7 +25,7 @@ void addCardsetButton(string name, const char *start, size_t size) {
 }
 
 bool gameOpen() {
-	return actionVertex->isSelected();
+	return !actionVertex->isSelected();
 }
 
 void buildMenus() {
@@ -46,8 +46,8 @@ void buildMenus() {
 	//In game menu setup
 	SubMenu *pause = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
 	Button *resumebutton = pause->addButton("Resume", NULL);
-	pause->addButton("Save & Quit", []() { quitGame(true); });
-	pause->addButton("Abandon Game", []() { quitGame(false); });
+	Button *savebutton = pause->addButton("Save & Quit", []() { quitGame(true); });
+	Button *quitbutton = pause->addButton("Abandon Game", []() { quitGame(false); });
 	pause->addButton("Restart Game", []() { restartGame(); });
 	Button *cardbutton2 = pause->addButton("Themes", NULL);
 	new StatText(pause->addButton("Stats", NULL));
@@ -64,6 +64,8 @@ void buildMenus() {
 	actionVertex = actions;
 	addActionButton(2, [resumebutton]() { resumebutton->select(); });
 	resumebutton->setVertex(RIGHT, actionVertex);
+	savebutton->setVertex(RIGHT, startbutton);
+	quitbutton->setVertex(RIGHT, startbutton);
 
 	rootVertex.printAddress();
 	startbutton->printAddress();

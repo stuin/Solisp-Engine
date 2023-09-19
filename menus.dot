@@ -1,0 +1,123 @@
+digraph {
+	-1->0 [color = red]
+	-1->Solitaire [color = red]
+	Solitaire->-1 [color = red]
+	0->Solitaire
+	Solitaire->LoadGame
+	LoadGame->Solitaire
+	LoadGame->-1 [color = red]
+	LoadGame->Localhost
+	Localhost->LoadGame
+	Localhost->-1 [color = red]
+	Localhost->Themes
+	Themes->Localhost
+	Themes->-1 [color = red]
+	Themes->Quit
+	Quit->Themes
+	Quit->-1 [color = red]
+	-1->6 [color = red]
+	-1->Resume [color = red]
+	Resume->-1 [color = red]
+	6->Resume
+	Resume->SaveQuit
+	SaveQuit->Resume
+	SaveQuit->-1 [color = red]
+	SaveQuit->AbandonGame
+	AbandonGame->SaveQuit
+	AbandonGame->-1 [color = red]
+	AbandonGame->RestartGame
+	RestartGame->AbandonGame
+	RestartGame->-1 [color = red]
+	RestartGame->Themes
+	Themes->RestartGame
+	Themes->-1 [color = red]
+	Themes->Stats
+	Stats->Themes
+	Stats->-1 [color = red]
+	Solitaire->13 [color = red]
+	-1->13 [color = red]
+	-1->Minesweeper [color = red]
+	Minesweeper->-1 [color = red]
+	13->Minesweeper
+	Minesweeper->Concentration
+	Concentration->Minesweeper
+	Concentration->-1 [color = red]
+	Concentration->DevilsGrip
+	DevilsGrip->Concentration
+	DevilsGrip->-1 [color = red]
+	DevilsGrip->FourCorners
+	FourCorners->DevilsGrip
+	FourCorners->-1 [color = red]
+	FourCorners->Gridcannon
+	Gridcannon->FourCorners
+	Gridcannon->-1 [color = red]
+	Gridcannon->Klondike
+	Klondike->Gridcannon
+	Klondike->-1 [color = red]
+	Klondike->Pyramid
+	Pyramid->Klondike
+	Pyramid->-1 [color = red]
+	Pyramid->Spider
+	Spider->Pyramid
+	Spider->-1 [color = red]
+	Spider->StreetsandAlleys
+	StreetsandAlleys->Spider
+	StreetsandAlleys->-1 [color = red]
+	-1->Concentration [color = red]
+	13->Concentration
+	Minesweeper->Klondike
+	Pyramid->Minesweeper
+	LoadGame->23 [color = red]
+	-1->23 [color = red]
+	-1->Klondike1 [color = red]
+	Klondike1->-1 [color = red]
+	23->Klondike1
+	Klondike1->DevilsGrip1
+	DevilsGrip1->Klondike1
+	DevilsGrip1->-1 [color = red]
+	-1->DevilsGrip1 [color = red]
+	23->DevilsGrip1
+	Klondike1->DevilsGrip1
+	Themes->26 [color = red]
+	-1->26 [color = red]
+	-1->MinimalDark [color = red]
+	MinimalDark->-1 [color = red]
+	26->MinimalDark
+	MinimalDark->MinimalLight
+	MinimalLight->MinimalDark
+	MinimalLight->-1 [color = red]
+	MinimalLight->OrnateLight
+	OrnateLight->MinimalLight
+	OrnateLight->-1 [color = red]
+	OrnateLight->Classic
+	Classic->OrnateLight
+	Classic->-1 [color = red]
+	-1->Classic [color = red]
+	26->Classic
+	MinimalDark->Classic
+	Themes->31 [color = red]
+	-1->31 [color = red]
+	-1->MinimalDark [color = red]
+	MinimalDark->-1 [color = red]
+	31->MinimalDark
+	MinimalDark->MinimalLight
+	MinimalLight->MinimalDark
+	MinimalLight->-1 [color = red]
+	MinimalLight->OrnateLight
+	OrnateLight->MinimalLight
+	OrnateLight->-1 [color = red]
+	OrnateLight->Classic
+	Classic->OrnateLight
+	Classic->-1 [color = red]
+	-1->Classic [color = red]
+	31->Classic
+	MinimalDark->Classic
+	-1->36 [color = red]
+	-1->_ [color = red]
+	_->-1 [color = red]
+	36->_
+	Resume->36 [color = red]
+	_->_
+	_->_
+	_->-1 [color = red]
+}

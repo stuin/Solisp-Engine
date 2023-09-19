@@ -35,13 +35,16 @@ public:
 	}
 
 	void run() {
-		if(getSelected()->getVertex(LEFT) == this)
-			select();
-		else {
-			select(RIGHT);
-			if(func != NULL)
-				func();
-		}
+		if(getVertex(RIGHT) != NULL) {
+			if(getSelected()->getVertex(LEFT) == this)
+				select();
+			else {
+				select(RIGHT);
+				if(func != NULL)
+					func();
+			}
+		} else if(func != NULL)
+			func();
 	}
 
 	void onSelect(bool selected) {
@@ -62,5 +65,15 @@ public:
 
 	bool isUnlocked() {
 		return !locked;
+	}
+
+	string displayName() {
+		std::string name = "";
+		for(char c : text.getString())
+			if(c != ' ' && c != '\'' && c != '&')
+				name += c;
+		if(name.length() == 0)
+			return "_";
+		return name;
 	}
 };
