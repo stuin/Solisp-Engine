@@ -3,13 +3,14 @@ Minesweeper, Classic
 (Append (Clone 61 {S11}) (Clone 11 {D11}))
 {(Max 1)}
 
-(VLayout
+(HLayout
 	(Apply {
 			NOPLACE
 			NOGRAB
 			HIDDEN
+			GOAL
 		}
-		(HLayout
+		(VLayout
 			(Slot {(Start-With {S11})})
 			(Slot {(Start-With (Clone 62 {N1}))})
 			(Slot {(Start-With (Clone 62 {S1}))})
@@ -27,42 +28,66 @@ Minesweeper, Classic
 			(Clone 12 (Slot {
 				GOAL
 				BUTTON
-				NOPLACE
+				(Max 2)
 				(Start 1 0)
+				(Grab-If
+					(+
+						(Hidden this)
+						(> (Count this) 1)
+					)
+				)
 				(On-Grab
-					(If (== (Suit this) D)
-						(Flip this this)
-						(If (Hidden this)
-							(+
-								(Flip this 1)
-								(+ 
-									#Calculate number to display
-									(Move (+ (+ (Map side 
-										(Switch
-											{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
-											{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
-											{true {-13, -12, -11, -1, 1, 11, 12, 13}}
-										)
-										(== (Suit (+ this side)) D)
-									)) 2) this)
+					(If (> (Count this) 1)
+						(Move this 83)
+						(If (== (Suit this) "D")
+							#Reveal mine
+							(Step
+								(Flip this this)
+								(Lose)
+							)
 
-									#Recursively flip blank surroundings
-									(If (== (Suit this) N) (+ (Map side2 
-										(Switch
-											{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
-											{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
-											{true {-13, -12, -11, -1, 1, 11, 12, 13}}
-										)
-										(If (Hidden (+ this side2))
-											(Soft-Move (+ this side2) (+ this side2))
-										)
-									)))
-								)
+							#Reveal non mine
+							(Step
+								(Flip this 1)
+
+								#Calculate number to display
+								(Move (+ (+ (Map side
+									(Switch
+										{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
+										{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
+										{true {-13, -12, -11, -1, 1, 11, 12, 13}}
+									)
+									(== (Suit (+ this side) (Count (+ this side))) "D")
+								)) 2) this)
+
+								#Recursively flip blank surroundings
+								(If (== (Suit this) "N") (+ (Map side2
+									(Switch
+										{(== (% this 12) 10) {-13, -12, -1, 11, 12}}
+										{(== (% this 12) 11) {-12, -11, 1, 12, 13}}
+										{true {-13, -12, -11, -1, 1, 11, 12, 13}}
+									)
+									(If (* (Hidden (Mutate id (+ this side2))) (== (Count id) 1))
+										(Soft-Move id id)
+									)
+								)))
 							)
 						)
 					)
 				)
+				(Place-If
+					(Not (Hidden this))
+				)
+				(Prevent-Win
+					(Hidden this)
+				)
 			}))
 		))
+	)
+	(VLayout
+		(Slot
+			(Start-With (Clone 11 {D1}))
+			(Filter (Clone 11 {D1}))
+		)
 	)
 )

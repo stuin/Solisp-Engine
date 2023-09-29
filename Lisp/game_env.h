@@ -25,6 +25,8 @@ private:
 	std::function<void(Move)> apply;
 
 public:
+	std::function<void(bool)> end_game;
+	
 	//Check if both slots in range
 	bool both_valid(unc from, unc to) {
 		return from > 0 && to > 0 &&
@@ -76,10 +78,11 @@ public:
 	}
 
 	//Build up lisp enviroment
-	void setup(Solisp::Stack *stacks, int STACKCOUNT, std::function<void(Move)> apply) {
+	void setup(Solisp::Stack *stacks, int STACKCOUNT, std::function<void(Move)> apply, std::function<void(bool)> end_game) {
 		this->STACKCOUNT = STACKCOUNT;
 		this->stacks = stacks;
 		this->apply = apply;
+		this->end_game = end_game;
 
 		//Build tag stack lists
 		sexpr tags[STACKTAGCOUNT];

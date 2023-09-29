@@ -31,7 +31,8 @@ std::map<string, func_tag> Stack::func_map = {
 	{"On-Flip", ONFLIP},
 	{"On-Start", ONSTART},
 	{"Grab-If", GRABIF},
-	{"Place-If", PLACEIF}
+	{"Place-If", PLACEIF},
+	{"Prevent-Win", PREVENTWIN}
 };
 
 //Ensure consistant tag data structure
@@ -134,7 +135,7 @@ layout make_slot(Stack &stack, sexpr data, int type, layout current) {
 			if(tag != Stack::tag_map.end()) {
 				//Base boolean tag
 				stack.set_tag(tag->second);
-			} else if(builder_env.str_eval(c, false) == "Start-Extra") {
+			} else if(builder_env.str_eval(c) == "Start-Extra") {
 				//cout << "\tStart-Extra\n";
 				stack.set_start(-1, 0);
 			} else
@@ -222,7 +223,7 @@ layout make_layout(Stack *stack, cell layout_c, sexpr tags={}, layout current={0
 				added = make_slot(stack[current.count], array, builder_env.num_eval(list[0]), current);
 			} catch(std::exception &e) {
 				std::cerr << "Slot Error: " << e.what() << std::endl;
-				std::cerr << builder_env.str_eval(cell(array)) << "\n";
+				std::cerr << builder_env.str_eval(cell(array), true) << "\n";
 			}
 			added.count += current.count;
 			return added;
@@ -247,7 +248,7 @@ struct setup Builder::build_ruleset(Stack *stack) {
 
 		//Setup hand
 		sexpr array;
-		array.push_back(cell("VStack"));
+		array.push_back(cell("VStack", NAME));
 		array.push_back(c);
 		make_slot(stack[0], tag_eval(builder_env.layout_eval(array), true), VStack, {-1, -1, 0});
 

@@ -34,7 +34,7 @@ public:
 	string to_string(cardData card);
 
 	//Extend existing cell types
-	string str_eval_cont(cell const &c, bool literal=false) override;
+	string str_eval_cont(cell const &c, bool literal=true) override;
 	int num_eval_cont(cell const &c) override;
 	sexpr list_eval_cont(cell const &c) override;
 

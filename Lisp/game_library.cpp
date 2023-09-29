@@ -54,27 +54,45 @@ void GameEnviroment::build_library_game() {
 		return cell((int)genv->get_stack(stack)->get_count());
 	}));
 
-	//Read top card
+	//Read card data
 	set("Value", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
+		int depth = 1;
+		if(pos != end)
+			depth = env->num_eval(*pos++);
 		DONE;
 		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		while(card != NULL && depth-- > 1)
+			card = card->get_next();
+		
 		if(card != NULL)
 			return cell(card->get_data().value);
 		return cell(0);
 	}));
 	set("Suit", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
+		int depth = 1;
+		if(pos != end)
+			depth = env->num_eval(*pos++);
 		DONE;
 		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		while(card != NULL && depth-- > 1)
+			card = card->get_next();
+		
 		if(card != NULL)
 			return cell(card->get_data().suit);
 		return cell(0);
 	}));
 	set("Color", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
+		int depth = 1;
+		if(pos != end)
+			depth = env->num_eval(*pos++);
 		DONE;
 		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		while(card != NULL && depth-- > 1)
+			card = card->get_next();
+
 		if(card != NULL) {
 			char suit = card->get_data().suit;
 			if(suit == 'H' || suit == 'D')
@@ -86,13 +104,30 @@ void GameEnviroment::build_library_game() {
 		}
 		return cell(0);
 	}));
-
-	//Check if top card is hidden
 	set("Hidden", cell([](Enviroment *env, marker pos, marker end) {
 		int stack = env->num_eval(*pos++);
+		int depth = 1;
+		if(pos != end)
+			depth = env->num_eval(*pos++);
 		DONE;
-		if(genv->get_stack(stack)->get_count() > 0)
-			return cell(genv->get_stack(stack)->get_card()->is_hidden());
+		Solisp::Card *card = genv->get_stack(stack)->get_card();
+		while(card != NULL && depth-- > 1)
+			card = card->get_next();
+
+		if(card != NULL)
+			return cell(card->is_hidden());
 		return cell(0);
+	}));
+
+	//Win or Lose
+	set("Win", cell([](Enviroment *env, marker pos, marker end) {
+		DONE;
+		genv->end_game(true);
+		return cell(1);
+	}));
+	set("Lose", cell([](Enviroment *env, marker pos, marker end) {
+		DONE;
+		genv->end_game(false);
+		return cell(1);
 	}));
 }

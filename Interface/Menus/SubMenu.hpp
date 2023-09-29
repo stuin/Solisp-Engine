@@ -42,11 +42,12 @@ public:
 		}
 	}
 
-	Button *addButton(string title, clickptr func, bool locked=false) {
+	Button *addButton(string title, clickptr func, Vertex<4> *right=NULL, bool locked=false) {
 		Button *b = new Button(title, buttonHeight * (contents.size() + 1), 
 			buttonWidth, this, getRoot(), func, locked);
 		int i = contents.size();
 		contents.push_back(b);
+		b->setVertex(RIGHT, right);
 
 		if(i == 0) {
 			getRoot()->setVertex(RIGHT, contents[i], LEFT);

@@ -65,6 +65,7 @@ public:
 		//Final setup
 		themeView->setHidden(true);
 		pointer->reset(Pointer::stacks[0]);
+		showMenu(1);
 	}
 
 	void joinServer(string ip) {
@@ -81,7 +82,7 @@ public:
 			//Final setup
 			themeView->setHidden(true);
 			pointer->reset(stacks[0], client, client->get_user());
-			showMenu(ACTIONMENU, false);
+			showMenu(false);
 		}*/
 	}
 
@@ -97,6 +98,7 @@ public:
 		//Show menu
 		pointer->setHidden(true);
 		themeView->setHidden(false);
+		showMenu(0);
 	}
 
 	void restartGame() {

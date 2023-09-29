@@ -70,11 +70,20 @@ void Game::apply(Move move, bool reverse) {
 		//Update win counter
 		if((from == 0 || stack[from].get_tag(GOAL)) && !stack[to].get_tag(GOAL))
 			cardsLeft += realCount;
-		else if(!stack[from].get_tag(GOAL) && stack[to].get_tag(GOAL)) {
+		else if(from != 0 && !stack[from].get_tag(GOAL) && stack[to].get_tag(GOAL)) {
 			cardsLeft -= realCount;
 			if(cardsLeft <= 0) {
-				cout << "YOU WIN!!\n";
-				cout << moves.size() << " moves recorded\n";
+				//Check for game end functions
+				bool win = true;
+				for(unc i = 1; i < STACKCOUNT; i++)
+					if(stack[i].run_function(PREVENTWIN, i, -1))
+						win = false;
+
+				if(win) {
+					cout << "YOU WIN!!\n";
+					cout << moves.size() << " moves recorded\n";
+					stage = END;
+				}
 			}
 		}
 
@@ -128,7 +137,8 @@ void Game::setup(Builder *builder, bool saved) {
 	STACKCOUNT = output.count;
 	stack[0].set_card(output.deck);
 	stack[0].full_count();
-	game_env.setup(stack, STACKCOUNT, [&](Move move) { apply(move); });
+	game_env.setup(stack, STACKCOUNT, [&](Move move) { apply(move); }, 
+		[&](bool win) { end_game(win); });
 	moves.reserve(1000);
 
 	//Setup user hands
@@ -174,6 +184,10 @@ void Game::deal() {
 			overflowSlot = i;
 		else
 			remaining += stack[i].start_hidden + stack[i].start_shown;
+
+		//Count preplaced cards
+		if(!stack[i].get_tag(GOAL))
+			cardsLeft += stack[i].get_count();
 	}
 
 	//Loop until all placed
@@ -420,7 +434,7 @@ Game::Game(const Game &other) {
 	//Copy complex state
 	for(int i = 0; i < STACKCOUNT; i++)
 		stack[i] = Stack(other.stack[i]);
-	for(int i = 0; i < other.moves.size(); i++)
+	for(long unsigned int i = 0; i < other.moves.size(); i++)
 		moves.push_back(other.moves[i]);
 
 	//Clear users

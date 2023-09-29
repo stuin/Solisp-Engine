@@ -1,6 +1,6 @@
 Concentration, Normal
 
-(Append (Hearts Standard) (Hearts Standard) {R14 R14})
+(Append (Hearts Standard) (Hearts Standard) {"R14" "R14"})
 {(Max 1)}
 
 (HLayout
@@ -12,6 +12,9 @@ Concentration, Normal
 				(Filter (Map card (Seq 1 14)
 					(Red {card card})
 				))
+				(Grab-If
+					(> (Count this) 0)
+				)
 				(On-Grab
 					(Flip this this)
 					(If (* (!= this prev) (Count this) (Count prev))

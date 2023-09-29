@@ -25,7 +25,8 @@ enum Stage {
 	NONE,
 	STARTING,
 	LOADING,
-	PLAYING
+	PLAYING,
+	END
 };
 
 class Solisp::GameInterface {
@@ -45,7 +46,7 @@ private:
 
 	//Current game state
 	Stack stack[128];
-	unsigned int cardsLeft = 0;
+	int cardsLeft = 0;
 
 	//Apply current moves to stack array
 	void apply(Move move, bool reverse);
@@ -100,5 +101,11 @@ public:
 	}
 	Stage get_stage() {
 		return stage;
+	}
+
+	void end_game(bool win) {
+		if(win)
+			cardsLeft = 0;
+		stage = END;
 	}
 };

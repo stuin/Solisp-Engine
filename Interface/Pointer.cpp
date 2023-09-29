@@ -192,10 +192,11 @@ void Pointer::clickStack(StackRenderer *stack) {
 		} else
 			UpdateList::sendSignal(RELOADCARDS);
 
-		//Check for win
-		if(game.get_remaining() <= 0) {
-			quitGame(false);
+		//Check for win/loss
+		if(game.get_stage() == END) {
+			//quitGame(false);
 			setHidden(true);
+			showMenu(2);
 		}
 	} else {
 		//Place down cards
@@ -207,10 +208,11 @@ void Pointer::clickStack(StackRenderer *stack) {
 		holding = false;
 		mouse->setHidden(true);
 
-		//Check for win
-		if(game.get_remaining() <= 0) {
-			quitGame(false);
+		//Check for win/loss
+		if(game.get_stage() == END) {
+			//quitGame(false);
 			setHidden(true);
+			showMenu(2);
 		}
 
 	}

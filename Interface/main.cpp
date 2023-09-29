@@ -30,12 +30,6 @@ int main(int argc, char const *argv[]) {
 	UpdateList::loadTexture(getCardset(), 
 		"res/faces/" + Settings::getString("/theme/face"));
 
-	//Draw background
-	sf::RectangleShape rect(sf::Vector2f(1930, 1090));
-	rect.setFillColor(sf::Color(7, 99, 36));
-	DrawNode background(rect, BACKGROUND);
-	UpdateList::addNode(&background);
-
 	//Load display resources
 	buildMenus();
 	root = new Root();

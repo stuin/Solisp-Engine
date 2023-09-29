@@ -43,6 +43,9 @@ void CardEnviroment::build_library_cards() {
 	sexpr jokers = {cell("R14"), cell("B14") };
 	set("Jokers", cell(jokers, DECK));
 
+	set("Get-Max", *get("Max"));
+	set("Max", cell("Max", STRING));
+
 	//Read dealer structure in as string
 	string dealer = "(HLayout (Slot Start-Extra BUTTON INPUT (On-Grab(Flip 3 (+ this 1) (+ this 2)) ";
 	dealer += "(If (== (Count this) 0) (Move-All (+ this 2) this)) (Flip 3 (+ this 1) (+ this 2))))";
@@ -96,7 +99,7 @@ void CardEnviroment::build_library_cards() {
 		//Copy all cards into functions for each suit
 		for(string s : suits) {
 			sexpr deck;
-			deck.push_back(cell(s));
+			deck.push_back(cell(s, NAME));
 			deck.push_back(*pos);
 			output.push_back(cell(deck, EXPR));
 		}
@@ -163,7 +166,7 @@ void CardEnviroment::build_library_cards() {
 		//Loop through all rows
 		while(pos != end) {
 			sexpr array;
-			array.push_back(cell("HLayout"));
+			array.push_back(cell("HLayout", NAME));
 			for(int i = 0; i < row_length && pos != end; i++)
 				array.push_back(*pos++);
 			output.push_back(cell(array, EXPR));

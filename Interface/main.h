@@ -18,10 +18,10 @@ typedef std::function<void(void)> clickptr;
 #endif
 
 //Menus side
-void buildMenus();
-void showMenu(int selected, bool toggle);
 void addActionButton(int tindex, clickptr func);
+void showMenu(int i);
 bool gameOpen();
+void buildMenus();
 
 //Root+main
 void startGame(string rule_file, string save_file);

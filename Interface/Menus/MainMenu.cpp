@@ -3,7 +3,7 @@
 #include "resources.h"
 
 Vertex<4> rootVertex(NULL);
-Vertex<4> *actionVertex;
+SubMenu *menus[4];
 
 #include "menus.h"
 
@@ -15,7 +15,7 @@ void addActionButton(int tindex, clickptr func) {
 	sf::Sprite *sprite = new sf::Sprite(actionTexture);
 	sprite->setScale(0.75, 0.75);
 	sprite->setTextureRect(sf::IntRect(0, tindex * 64, 64, (tindex + 1) * 64));
-	((SubMenu*)actionVertex)->addButton("", func)->setImage(*sprite);
+	menus[1]->addButton("", func)->setImage(*sprite);
 }
 
 void addCardsetButton(string name, const char *start, size_t size) {
@@ -24,8 +24,12 @@ void addCardsetButton(string name, const char *start, size_t size) {
 	//menus[CARDMENU2]->addButton(name, func, true);
 }
 
+void showMenu(int i) {
+	menus[i]->select();
+}
+
 bool gameOpen() {
-	return !actionVertex->isSelected();
+	return !menus[1]->isSelected();
 }
 
 void buildMenus() {
@@ -35,40 +39,41 @@ void buildMenus() {
 	//getCardset()->loadFromMemory((void *)&_binary_minimal_dark_png_start, _minimal_dark_png_size);
 
 	//Main menu setup
-	SubMenu *main = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
-	Button *startbutton = main->addButton("Solitaire", NULL);
-	Button *loadbutton = main->addButton("Load Game", NULL);
-	main->addButton("Localhost", []() { joinServer("127.0.0.1"); });
-	Button *cardbutton1 = main->addButton("Themes", NULL);
-	main->addButton("Quit", []() { UpdateList::stopEngine(); });
-	main->setHidden(false);
+	SubMenu *mainMenu = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
+	menus[0] = mainMenu;
+	new FolderMenu("Games", ".solisp", GameNamer, GameFunc, mainMenu->addButton("Solitaire", NULL), mainMenu);
+	new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, mainMenu->addButton("Load Game", NULL), mainMenu);
+	mainMenu->addButton("Localhost", []() { joinServer("127.0.0.1"); });
+	new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, mainMenu->addButton("Themes", NULL), mainMenu);
+	mainMenu->addButton("Quit", []() { UpdateList::stopEngine(); });
 
 	//In game menu setup
-	SubMenu *pause = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
-	Button *resumebutton = pause->addButton("Resume", NULL);
-	Button *savebutton = pause->addButton("Save & Quit", []() { quitGame(true); });
-	Button *quitbutton = pause->addButton("Abandon Game", []() { quitGame(false); });
-	pause->addButton("Restart Game", []() { restartGame(); });
-	Button *cardbutton2 = pause->addButton("Themes", NULL);
-	new StatText(pause->addButton("Stats", NULL));
-
-	//File based menus
-	new FolderMenu("Games", ".solisp", GameNamer, GameFunc, startbutton, main);
-	new FolderMenu("saves", ".sav", ThemeNamer, LoadFunc, loadbutton, main);
-	new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, cardbutton1, main);
-	new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, cardbutton2, pause);
+	SubMenu *pauseMenu = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
+	Button *resumebutton = pauseMenu->addButton("Resume", NULL);
+	pauseMenu->addButton("Save & Quit", []() { quitGame(true); }, mainMenu);
+	pauseMenu->addButton("Abandon Game", []() { quitGame(false); }, mainMenu);
+	pauseMenu->addButton("Restart Game", []() { restartGame(); });
+	new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, pauseMenu->addButton("Themes", NULL), pauseMenu);
+	new StatText(pauseMenu->addButton("Stats", NULL));
 
 	//Action menu
-	SubMenu *actions = new SubMenu(sf::Vector2i(74, 150), 64, &rootVertex);
-	actions->setPosition(0, -30);
-	actionVertex = actions;
+	SubMenu *actionMenu = new SubMenu(sf::Vector2i(74, 150), 64, &rootVertex);
+	menus[1] = actionMenu;
+	actionMenu->setPosition(0, -30);
 	addActionButton(2, [resumebutton]() { resumebutton->select(); });
-	resumebutton->setVertex(RIGHT, actionVertex);
-	savebutton->setVertex(RIGHT, startbutton);
-	quitbutton->setVertex(RIGHT, startbutton);
+	resumebutton->setVertex(RIGHT, actionMenu);
 
-	rootVertex.printAddress();
-	startbutton->printAddress();
+	//Win menu
+	SubMenu *winMenu = new SubMenu(sf::Vector2i(250, 1090), 200, &rootVertex);
+	menus[2] = winMenu;
+	winMenu->addButton("Main menu", []() { quitGame(false); }, mainMenu);
+	winMenu->addButton("Restart Game", []() { restartGame(); });
+	new FolderMenu("res/faces", ".png", ThemeNamer, ThemeFunc, winMenu->addButton("Themes", NULL), winMenu);
+
+	mainMenu->select();
+
+	//rootVertex.printAddress();
+	//startbutton->printAddress();
 
 	//Add system cardsets
 	//addCardsetButton("Minimal Dark", &_binary_minimal_dark_png_start, _minimal_dark_png_size);

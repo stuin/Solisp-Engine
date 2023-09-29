@@ -5,11 +5,11 @@ enum CollisionLayers {
 	STACKS,
 	DISPLAY,
 	ACTIONS,
+	POINTER,
 	FADE,
 	MENU,
 	TEXT,
 	INPUT,
-	POINTER,
 	CAMERA
 };
 
